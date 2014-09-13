@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7F6E5D63-D24C-40B1-A8AE-76CD0D4279A8}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Moonfish</RootNamespace>
+    <AssemblyName>Moonfish</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>1</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Moonfish.main</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BulletSharp">
+      <HintPath>..\..\..\..\Downloads\bulletsharp-2.82\Release OpenTK\BulletSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTK.GLControl.1.1.1589.5942\lib\NET40\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collision\Class1.cs" />
+    <Compile Include="Collision\DebugDrawer.cs" />
+    <Compile Include="Definitions\sbsp_definitions.cs" />
+    <Compile Include="GlobalStrings.cs" />
+    <Compile Include="Graphics\BulletDebugDrawer.cs" />
+    <Compile Include="Graphics\camera.cs" />
+    <Compile Include="Graphics\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Graphics\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Graphics\GraphicsEvents.cs" />
+    <Compile Include="Graphics\GraphicsExtensions.cs" />
+    <Compile Include="Graphics\OpenGL.cs" />
+    <Compile Include="Graphics\Maths.cs" />
+    <Compile Include="Graphics\modelWrapper.cs" />
+    <Compile Include="Graphics\mouse_pole.cs" />
+    <Compile Include="Graphics\primitive.cs" />
+    <Compile Include="Graphics\mesh.cs" />
+    <Compile Include="Graphics\node.cs" />
+    <Compile Include="Graphics\program.cs" />
+    <Compile Include="Graphics\resource.cs" />
+    <Compile Include="Graphics\Section.cs" />
+    <Compile Include="Graphics\shader.cs" />
+    <Compile Include="Graphics\Track.cs" />
+    <Compile Include="Guerilla\GuerillaAttributes.cs" />
+    <Compile Include="Guerilla\GuerillaBase.cs" />
+    <Compile Include="Guerilla\GuerillaExtensions.cs" />
+    <Compile Include="Guerilla\GuerillaFields.cs" />
+    <Compile Include="Guerilla\Validator.cs" />
+    <Compile Include="Guerilla\VirtualMemoryStream.cs" />
+    <Compile Include="IResource.cs" />
+    <Compile Include="main.cs" />
+    <Compile Include="Debug\Memory.cs" />
+    <Compile Include="Structures\EntConverter.cs" />
+    <Compile Include="Definitions\model_definitions.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Structures\GuerillaConverter.cs" />
+    <Compile Include="Structures\ITagBlockInterface.cs" />
+    <Compile Include="MapStream.cs" />
+    <Compile Include="Memory.cs" />
+    <Compile Include="Padding.cs" />
+    <Compile Include="Tags\Attributes.cs" />
+    <Compile Include="Tags\BinaryReaderExtensions.cs" />
+    <Compile Include="Tags\Biped.Code.cs" />
+    <Compile Include="Tags\Crate.cs" />
+    <Compile Include="Tags\Equipment.cs" />
+    <Compile Include="Tags\Deserializer.cs" />
+    <Compile Include="Guerilla\GuerillaToCs.cs" />
+    <Compile Include="Guerilla\GuerillaToEnt.cs" />
+    <Compile Include="Tags\RenderModel.Code.cs" />
+    <Compile Include="Tags\Scenario.cs" />
+    <Compile Include="Tags\HierarchyModel.Code.cs" />
+    <Compile Include="Tags\HierarchyModel.cs" />
+    <Compile Include="Tags\RenderModel.cs" />
+    <Compile Include="Tags\Scenery.cs" />
+    <Compile Include="Tags\ShaderTemplate.cs" />
+    <Compile Include="Tags\Sounds.Code.cs" />
+    <Compile Include="Tags\StructureBinarySeperationPlane.Code.cs" />
+    <Compile Include="Guerilla\TagGroups.cs" />
+    <Compile Include="Tags\ValueTypes.cs" />
+    <Compile Include="Tags\Vehicle.cs" />
+    <Compile Include="Tags\Weapon.cs" />
+    <Compile Include="ValueTypes\fourcc.cs" />
+    <Compile Include="ValueTypes\Range.cs" />
+    <Compile Include="Structures\TagBlockDefinition.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TagBlockWrapper.cs" />
+    <Compile Include="ValueTypes\StringID.cs" />
+    <Compile Include="ValueTypes\ValueTypes.cs" />
+    <Compile Include="ValueTypes\Vector3t.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documentation\tangent_space_calculations_cpp.txt" />
+    <Content Include="Documentation\vertex_formats.txt" />
+    <Content Include="Documentation\vertex_resource_raw.txt" />
+    <Content Include="Structures\about.txt" />
+    <Content Include="etc\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\sys_fragment.frag.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\sys_vertex.vert.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\fragment.frag.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\vertex.vert.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <Compile Include="Tags\Scenario.Code.cs" />
+    <Compile Include="Tags\Bitmap.Code.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Graphics\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

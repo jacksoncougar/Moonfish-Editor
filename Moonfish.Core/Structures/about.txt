@@ -1,0 +1,9 @@
+﻿About TabBlocks:
+TagBlocks are the structure of the tags, holding a byte array of the internal 
+data but not exposing any direct way of using that data or retrieiving values 
+from it. The job of a tagstruct is pretty traight forward: it keeps track of 
+pointers to references for you: so you don't have to directly handle setting 
+of chunk-counts or addresses, or string_ids or tag_ids. I would like to point 
+out that TagBlocks are 'dumb' though—they do not know about other blocks, or 
+other resources by themselves, you can think of them as a collection, but where
+all the processing is done by another class. -hmm.

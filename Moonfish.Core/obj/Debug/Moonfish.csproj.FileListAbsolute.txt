@@ -1,0 +1,15 @@
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\fragment.frag.glsl
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\vertex.vert.glsl
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\etc\default.png
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.pdb
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.dll
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.pdb
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.xml
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.pdb
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.exe
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.dll
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.xml
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Graphics.Form1.resources
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.csproj.GenerateResource.Cache
+C:\Users\stem\documents\visual studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.csprojResolveAssemblyReference.cache
