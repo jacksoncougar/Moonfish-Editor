@@ -145,6 +145,7 @@ namespace Moonfish.Graphics
     {
         Scenario scenario;
         Program program;
+        Program systemProgram;
         Dictionary<TagIdent, ScenarioObject> objects;
 
         internal void Add(HierarchyModel model, TagIdent id)
@@ -152,10 +153,11 @@ namespace Moonfish.Graphics
             objects[id] = new ScenarioObject(model);
         }
 
-        public MeshManager(Program program)
+        public MeshManager(Program program, Program systemProgram)
         {
             objects = new Dictionary<TagIdent, ScenarioObject>();
             this.program = program;
+            this.systemProgram = systemProgram;
         }
 
         public void LoadScenario(MapStream map)
@@ -192,6 +194,14 @@ namespace Moonfish.Graphics
                 RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
+        public void Draw(TagIdent item)
+        {
+            if (objects.ContainsKey(item))
+            {
+                IRenderable @object = objects[item] as IRenderable;
+                @object.Render(new[] { program, systemProgram });
+            }
+        }
 
         private void RenderPalette(IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances)
         {
@@ -204,6 +214,20 @@ namespace Moonfish.Graphics
                     @object.Render(new[] { program });
                 }
             }
+        }
+
+        internal void LoadHierarchyModels(MapStream map)
+        {
+            var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new { item = map[x.Identifier].Deserialize(), id = x.Identifier });
+            foreach (var tag in tags)
+            {
+                this.Add(tag.item, tag.id);
+            }
+        }
+
+        internal void Load(IEnumerable<dynamic> tags)
+        {
+            throw new NotImplementedException();
         }
     }
 

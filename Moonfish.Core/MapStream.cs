@@ -36,7 +36,7 @@ namespace Moonfish
     /// <summary>
     /// A minimalist class to load essential data which can be used to parse a retail cache map.
     /// </summary>
-    public class MapStream : FileStream, IMap
+    public class MapStream : FileStream, IMap, IEnumerable<Tag>
     {
         public readonly Version BuildVersion;
         /// <summary>
@@ -279,6 +279,7 @@ namespace Moonfish
                 return this;
             }
         }
+       
         public IMap this[TagIdent tag_id]
         {
             get
@@ -438,6 +439,19 @@ namespace Moonfish
                 checksum ^= BitConverter.ToInt32(buffer, (index + 3) * sizeof(uint));
             }
             return checksum;
+        }
+
+        IEnumerator<Tag> IEnumerable<Tag>.GetEnumerator()
+        {
+            foreach (var tag in this.Tags)
+            {
+                yield return tag;
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 

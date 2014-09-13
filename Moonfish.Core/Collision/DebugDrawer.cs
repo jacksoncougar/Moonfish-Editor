@@ -62,7 +62,7 @@ namespace Moonfish.Collision
 
         public static void DrawPoint(Vector3 coordinate)
         {
-            using (debugProgram.Use())
+            //using (debugProgram.Use())
             using (Point point = new Point(coordinate))
             {
                 point.Render(new[] { debugProgram });

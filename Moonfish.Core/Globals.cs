@@ -32,7 +32,13 @@ namespace Moonfish
         }
 
         public static GlobalPaths Paths { get; set; }
+        
+        public static dynamic GetReferenceObject(TagIdent identifier)
+        {
+            if (mapStream == null) return null;
 
+            return mapStream[identifier].Deserialize();
+        }
         public static dynamic GetReferenceObject(TagReference reference)
         {
             if (mapStream == null) return null;

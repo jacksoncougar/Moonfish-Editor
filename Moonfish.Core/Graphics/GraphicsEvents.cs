@@ -14,5 +14,5 @@ namespace Moonfish.Graphics
         public Vector2 ScreenCoordinates { get; private set; }
     }
 
-    public delegate void OnMouseMoveDelegate(object sender, MouseMoveEventArgs e);
+    delegate void OnMouseMoveDelegate(object sender, MouseMoveEventArgs e);
 }

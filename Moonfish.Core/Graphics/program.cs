@@ -14,13 +14,17 @@ namespace Moonfish.Graphics
     {
         int program_id;
 
+        public readonly string Name;
+
         Dictionary<string, int> uniforms;
         Dictionary<string, Stack<Object>> uniformStack;
 
         public int ID { get { return program_id; } }
 
-        public Program(List<Shader> shader_list)
+        public Program(List<Shader> shader_list, string name)
         {
+            this.Name = name;
+
             uniforms = new Dictionary<string, int>();
             uniformStack = new Dictionary<string, Stack<object>>();
 

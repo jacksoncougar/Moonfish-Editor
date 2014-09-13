@@ -4,6 +4,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -14,10 +15,71 @@ namespace Moonfish.Graphics
         void Render(IEnumerable<Program> shaderPasses);
         void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances);
     }
+
+    public class NodeCollection : List<RenderModelNodeBlock>
+    {
+        public NodeCollection() : base() { }
+        public NodeCollection(int capacity)
+            : base(capacity)
+        {
+        }
+        public NodeCollection(IEnumerable<RenderModelNodeBlock> collection)
+            : base(collection)
+        {
+        }
+        public Matrix4 GetWorldMatrix(int nodeIndex)
+        {
+            return GetWorldMatrix(this[nodeIndex]);
+        }
+        public Matrix4 GetWorldMatrix(RenderModelNodeBlock node)
+        {
+            if (!this.Contains(node)) throw new ArgumentOutOfRangeException();
+
+            var worldMatrix = node.WorldMatrix;
+            if ((int)node.parentNode < 0) return worldMatrix;
+            return worldMatrix * GetWorldMatrix(this[(int)node.parentNode]);
+        }
+    }
+
+
+    public class SkeletonNode
+    {
+        IList<SkeletonNode> nodeList;
+        public SkeletonNode Parent
+        {
+            get
+            {
+                var parent = (int)this.node.parentNode < 0 ? null : nodeList[(int)this.node.parentNode];
+                return parent;
+            }
+        }
+
+        public Matrix4 WorldMatrix
+        {
+            get
+            {
+                var worldMatrix = Matrix4.Identity;
+                if (Parent != null)
+                    worldMatrix = Parent.WorldMatrix;
+                var translation = Matrix4.CreateTranslation(this.node.defaultTranslation);
+                var rotation = Matrix4.CreateFromQuaternion(this.node.defaultRotation);
+                return worldMatrix = translation * rotation * worldMatrix;
+            }
+        }
+
+        RenderModelNodeBlock node;
+
+        public SkeletonNode(RenderModelNodeBlock node)
+        {
+            this.node = node;
+        }
+    }
+
     public class ScenarioObject : IRenderable
     {
         HierarchyModel model;
         List<Mesh> sectionBuffers;
+        NodeCollection nodes;
 
         public StringID activePermuation;
 
@@ -25,6 +87,7 @@ namespace Moonfish.Graphics
         {
             activePermuation = StringID.Zero;
             sectionBuffers = new List<Mesh>();
+            nodes = new NodeCollection();
         }
         public ScenarioObject(HierarchyModel model)
             : this()
@@ -34,6 +97,7 @@ namespace Moonfish.Graphics
             {
                 sectionBuffers.Add(new Mesh(section));
             }
+            this.nodes = new NodeCollection(model.RenderModel.nodes);
         }
 
         public IEnumerable<StringID> Permutations
@@ -57,30 +121,55 @@ namespace Moonfish.Graphics
 
         private void RenderPass(Matrix4 objectMatrix, Program program)
         {
-            using (program.Using("object_extents", objectMatrix))
+            if (program.Name != "system")
             {
-                foreach (var region in model.RenderModel.regions)
+                using (program.Use())
+                using (program.Using("object_extents", objectMatrix))
+                using (program.Using("object_matrix", Matrix4.Identity))
                 {
-                    var section_index = region.permutations[0].l6SectionIndexHollywood;
-                    var mesh = sectionBuffers[section_index];
-                    using (mesh.Bind())
+                    foreach (var region in model.RenderModel.regions)
                     {
-                        foreach (var part in mesh.Parts)
+                        var section_index = region.permutations[0].l6SectionIndexHollywood;
+                        var mesh = sectionBuffers[section_index];
+                        using (mesh.Bind())
                         {
-                            GL.DrawElements(BeginMode.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort, part.stripStartIndex * 2);
+                            foreach (var part in mesh.Parts)
+                            {
+                                GL.DrawElements(BeginMode.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort, part.stripStartIndex * 2);
+                            }
                         }
                     }
-                }
-                foreach (var markerGroup in model.RenderModel.markerGroups)
-                {
-                    foreach (var marker in markerGroup.markers)
-                    {
-                        var node = marker.nodeIndex;
-                        var translation = marker.translation;
-                        var rotation = marker.rotation;
-                        var scale = marker.scale;
 
-                        DebugDrawer.DrawPoint(translation);
+                }
+            }
+            if (program.Name == "system")
+            {
+                using(program.Use())
+                using (OpenGL.Disable(EnableCap.DepthTest))
+                {
+                    foreach (var markerGroup in model.RenderModel.markerGroups)
+                    {
+                        foreach (var marker in markerGroup.markers)
+                        {
+                            var nodeIndex = marker.nodeIndex;
+                            var translation = marker.translation;
+                            var rotation = marker.rotation;
+                            var scale = marker.scale;
+
+                            var worldMatrix = Matrix4.Identity;
+                            if (nodeIndex >= 0)
+                            {
+                                worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
+                            }
+                            using (program.Using("object_matrix", worldMatrix))
+                            {
+
+                                GL.VertexAttrib3(1, Color.Red.ToFloatRgba());
+                                GL.PointSize(5.5f);
+                                
+                                DebugDrawer.DrawPoint(translation);
+                            }
+                        }
                     }
                 }
             }

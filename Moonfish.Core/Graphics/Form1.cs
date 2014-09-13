@@ -24,8 +24,11 @@ namespace Moonfish.Graphics
         private Stopwatch timer;
         private Camera camera;
         private CoordinateGrid grid;
-        private MeshManager manager;
+        private MeshManager manager; 
+        private MapStream map;
         BulletSharp.CollisionWorld collisionWorld;
+
+        TagIdent? activeObject;
 
         Scenario Scenario;
         bool gl_loaded = false;
@@ -99,7 +102,7 @@ namespace Moonfish.Graphics
                 errorState = GL.GetError();
                 //pole.Draw();
                 
-                slider.Render(new[] { system_program });
+                //slider.Render(new[] { system_program });
 
             }
             using (system_program.Use())
@@ -110,6 +113,11 @@ namespace Moonfish.Graphics
             using (Grid grid = new Grid(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector2(1, 1), 8, 8))
             {
                 //grid.Draw();
+            }
+
+            if (activeObject != null)
+            {
+                manager.Draw(activeObject.Value);
             }
 
             glControl1.SwapBuffers();
@@ -135,6 +143,17 @@ namespace Moonfish.Graphics
             //manager.LoadScenario(map);
             //Application.Exit();
 
+        }
+
+        private void LoadModels()
+        {
+            this.map = new MapStream(@"C:\Users\stem\Documents\modding\sharedx.map");
+            var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new ListViewItem( x.Path){ Tag = x}).ToArray();
+            this.listView1.Columns.Add("Name");
+            this.listView1.FullRowSelect = true;
+            this.listView1.MultiSelect = false;
+            this.listView1.Items.AddRange(tags.ToArray());
+            manager.LoadHierarchyModels(map);
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -171,14 +190,14 @@ namespace Moonfish.Graphics
             GL.PointSize(2.0f);
 
             // initialize manager
-            manager = new MeshManager(program);
-            slider = new ArrowSlider(Vector3.UnitZ, Vector3.UnitX, Vector3.UnitY);
+            manager = new MeshManager(program, system_program);
+            slider = new ArrowSlider(Vector3.UnitZ, Vector3.UnitX, Vector3.UnitY, Color.Red);
             LoadScenerio();
             LoadPhysics();
 
             grid = new CoordinateGrid();
-
-            LoadMeshes();
+            LoadModels();
+            //LoadMeshes();
             DebugDrawer.debugProgram = system_program;
 
             gl_loaded = true;
@@ -215,7 +234,7 @@ namespace Moonfish.Graphics
         {
             Shader vertex_shader = new Shader("data/vertex.vert.glsl", ShaderType.VertexShader);
             Shader fragment_shader = new Shader("data/fragment.frag.glsl", ShaderType.FragmentShader);
-            this.program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader });
+            this.program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "shaded");
 
 
             program.Use();
@@ -226,7 +245,7 @@ namespace Moonfish.Graphics
 
             vertex_shader = new Shader("data/sys_vertex.vert.glsl", ShaderType.VertexShader);
             fragment_shader = new Shader("data/sys_fragment.frag.glsl", ShaderType.FragmentShader);
-            this.system_program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader });
+            this.system_program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "system");
 
 
             system_program.Use();
@@ -268,6 +287,16 @@ namespace Moonfish.Graphics
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             RenderFrame();
+        }
+
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (!e.IsSelected) return;
+            var tag = e.Item.Tag as Tag;
+            if (tag != null)
+            {
+                activeObject = tag.Identifier;
+            }
         }
     }
 }

@@ -581,21 +581,21 @@ namespace Moonfish.Tags
 
 
     [StructLayout(LayoutKind.Sequential, Size = 96, Pack = 0)]
-    public class RenderModelNodeBlock
+    public partial class RenderModelNodeBlock
     {
-        StringID name;
-        ShortBlockIndex1 parentNode; //   &render_model_node_block},
-        ShortBlockIndex1 firstChildNode; //   &render_model_node_block},
-        ShortBlockIndex1 nextSiblingNode; //   &render_model_node_block},
-        short importNodeIndex;
-        Vector3 defaultTranslation;
-        Vector4 defaultRotation;
-        Vector3 inverseForward;
-        Vector3 inverseLeft;
-        Vector3 inverseUp;
-        Vector3 inversePosition;
-        float inverseScale;
-        float distanceFromParent;
+        public StringID name;
+        public ShortBlockIndex1 parentNode; //   &render_model_node_block},
+        public ShortBlockIndex1 firstChildNode; //   &render_model_node_block},
+        public ShortBlockIndex1 nextSiblingNode; //   &render_model_node_block},
+        public short importNodeIndex;
+        public Vector3 defaultTranslation;
+        public Quaternion defaultRotation;
+        public Vector3 inverseForward;
+        public Vector3 inverseLeft;
+        public Vector3 inverseUp;
+        public Vector3 inversePosition;
+        public float inverseScale;
+        public float distanceFromParent;
     };
 
 

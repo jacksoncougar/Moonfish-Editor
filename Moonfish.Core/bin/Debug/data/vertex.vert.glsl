@@ -22,6 +22,6 @@ void main()
 	vec4 normal = normaltanbi;
 	normal = normalize(normal);
 	float cosineAngleIncident = dot(normal, vec4(0.0, 0.0, 1.0, 1.0));
-	cosineAngleIncident = clamp(cosineAngleIncident, 0, 1);
-	frag_diffuse_color = vec4(1.0, 1.0, 0.0, 1.0) * cosineAngleIncident;
+	cosineAngleIncident = clamp(cosineAngleIncident, .8, 1);
+	frag_diffuse_color = vec4(.88, .88, .88, 1.0) * cosineAngleIncident;
 }
