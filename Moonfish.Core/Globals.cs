@@ -32,11 +32,13 @@ namespace Moonfish
         }
 
         public static GlobalPaths Paths { get; set; }
-        
-        public static dynamic GetReferenceObject(TagIdent identifier)
+
+
+        public static dynamic GetReferenceObject(TagIdent identifier, bool reload = false)
         {
             if (mapStream == null) return null;
-
+            if (reload)
+                mapStream.Remove(identifier);
             return mapStream[identifier].Deserialize();
         }
         public static dynamic GetReferenceObject(TagReference reference)
@@ -47,6 +49,9 @@ namespace Moonfish
         }
 
         static MapStream mapStream;
+        static MapStream resourceShared;
+        static MapStream resourceSinglePlayer;
+        static MapStream resourceMainMenu;
         static TagGroupLookup tagGroups = new TagGroupLookup();
         static GlobalStrings strings = new GlobalStrings();
         static Dictionary<TagClass, Type> definedTagGroupsDictionary;
@@ -69,6 +74,24 @@ namespace Moonfish
             }
         }
 
+        public static bool LoadResource(MapStream map)
+        {
+            switch (map.Type)
+            {
+                case MapStream.MapType.Shared:
+                    resourceShared = map;
+                    return true;
+                case MapStream.MapType.SinglePlayerShared:
+                    resourceSinglePlayer = map;
+                    return true;
+                case MapStream.MapType.MainMenu:
+                    resourceMainMenu = map;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static Type GetTypeOf(TagClass className)
         {
             return definedTagGroupsDictionary[className];
@@ -83,6 +106,46 @@ namespace Moonfish
         internal static void ActiveMap(MapStream mapstream)
         {
             mapStream = mapstream;
+        }
+
+        internal static bool ObjectChanged(TagIdent ident)
+        {
+            var newHash = mapStream.CalculateTaghash(ident);
+            var currentHash = mapStream.GetTagHash(ident);
+            if (currentHash == null) return false;
+            else
+            {
+                var equals = currentHash == newHash;
+                return !equals;
+            }
+        }
+
+        internal static bool TryGettingResourceStream(int resourceAddress, out System.IO.Stream resourceStream)
+        {
+            var resourceSource = (ResourceSource)((resourceAddress & 0xC0000000) >> 30);
+            switch (resourceSource)
+            {
+                case ResourceSource.Shared:
+                    resourceStream = Halo2.resourceShared;
+                    break;
+                case ResourceSource.SinglePlayerShared:
+                    resourceStream = Halo2.resourceSinglePlayer;
+                    break;
+                case ResourceSource.MainMenu:
+                    resourceStream = Halo2.resourceMainMenu;
+                    break;
+                default: resourceStream = null;
+                    return false;
+            }
+            var hasResource = resourceStream == null ? false : true;
+            return hasResource;
+        }
+
+        enum ResourceSource
+        {
+            MainMenu = 1,
+            Shared = 2,
+            SinglePlayerShared = 4,
         }
     }
 

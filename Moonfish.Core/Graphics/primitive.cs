@@ -90,6 +90,7 @@ namespace Moonfish.Graphics
 
         private void GenerateOpenGLBuffers()
         {
+            
             // generate buffers
             vertex_array_buffer_id = GL.GenVertexArray();
             array_buffer_id = GL.GenBuffer();

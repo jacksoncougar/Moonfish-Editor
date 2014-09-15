@@ -37,6 +37,25 @@ namespace Moonfish
             //GuerillaCs ripper = new GuerillaCs(@"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe");
             //ripper.DumpTagLayout(@"C:\Users\stem\Documents\h2pc to h2xbox", "scnr", "Scenario");
             //return;
+            //using (OpenFileDialog dialog = new OpenFileDialog())
+            //{
+            //    dialog.Filter = "Halo 2 cache map (*.map)|*.map|All files (*.*)|*.*";
+            //    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //    {
+
+            //        var directory = Path.GetDirectoryName(dialog.FileName);
+            //        var maps = Directory.GetFiles(directory, "*.map", SearchOption.TopDirectoryOnly);
+            //        var resourceMaps = maps.Select(x => new MapStream(x))
+            //            .Where(x => x.Type == MapStream.MapType.Shared).Select(x => x).ToList();
+            //        resourceMaps.ForEach(x => Halo2.LoadResource(x));
+
+            //        var map = new MapStream(dialog.FileName);
+            //        var test = map["mode", "warthog"].Deserialize();
+            //       // LoadModels();
+            //    }
+            //}
+
+            //return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

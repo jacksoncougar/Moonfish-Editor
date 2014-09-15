@@ -77,7 +77,7 @@ namespace Moonfish.Graphics
             var mouseState = Mouse.GetState();
             var keyboardState = Keyboard.GetState();
             var currentMouseCoordinate = new Vector2(e.X, e.Y);
-            if (keyboardState.IsKeyDown(Key.ShiftLeft) && mouseState[MouseButton.Middle])
+            if (keyboardState.IsKeyDown(Key.ShiftLeft) && (mouseState[MouseButton.Middle] || (mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft])))
             {
                 var d = 5;
                 var previousMouseWorldCoordinate = Maths.Project(ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
@@ -86,7 +86,7 @@ namespace Moonfish.Graphics
                 delta *= d;
                 panTrack.Update(delta.X, delta.Y);
             }
-            else if (keyboardState.IsKeyDown(Key.ControlLeft) && mouseState[MouseButton.Middle])
+            else if (keyboardState.IsKeyDown(Key.AltLeft) && (mouseState[MouseButton.Middle] || (mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft])))
             {
                 var previousMouseWorldCoordinate = Maths.Project(ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
                 var mouseWorldCoordinate = Maths.Project(ViewMatrix, ProjectionMatrix, currentMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);

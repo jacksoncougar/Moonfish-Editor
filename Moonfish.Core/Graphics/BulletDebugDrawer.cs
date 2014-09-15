@@ -29,14 +29,18 @@ namespace Moonfish.Graphics
 
         public override void DrawBox(ref OpenTK.Vector3 bbMin, ref OpenTK.Vector3 bbMax, OpenTK.Graphics.Color4 color)
         {
-            using (Box box = new Box(bbMin, bbMax))
+            using (debugProgram.Use())
             {
-                box.Render(new[] { debugProgram });
+                using (Box box = new Box(bbMin, bbMax))
+                {
+                    box.Render(new[] { debugProgram });
+                }
             }
         }
 
         public override void DrawBox(ref OpenTK.Vector3 bbMin, ref OpenTK.Vector3 bbMax, ref OpenTK.Matrix4 trans, OpenTK.Graphics.Color4 color)
         {
+            using (debugProgram.Use())
             using (debugProgram.Using("object_matrix", trans))
             using (Box box = new Box(bbMin, bbMax))
             {

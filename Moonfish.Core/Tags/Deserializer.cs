@@ -110,9 +110,7 @@ namespace Moonfish.Tags
 
             ProcessFieldTypes(fields, out fieldMethods);
 
-
             InvokeFields(sourceReader, item, fields, fieldMethods);
-
 
             return item;
         }

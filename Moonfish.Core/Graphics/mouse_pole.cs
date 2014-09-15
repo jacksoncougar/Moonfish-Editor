@@ -78,14 +78,79 @@ namespace Moonfish.Graphics
             GL.DeleteBuffer(elementBuffer);
         }
     }
-    
+
+    class TranslationGizmo : IRenderable
+    {
+        public Vector3 origin;
+        public ArrowSlider axisU;
+        public ArrowSlider axisV;
+        public ArrowSlider axisW;
+
+        public TranslationGizmo()
+        {
+            Vector3 axisUp = Vector3.UnitZ, axisRight = Vector3.UnitX, axisForward = Vector3.UnitY;
+            axisU = new ArrowSlider(axisUp, axisRight, axisForward, Color.Blue);
+            axisV = new ArrowSlider(axisRight, axisUp, axisForward, Color.Red);
+            axisW = new ArrowSlider(axisForward, axisRight, axisUp, Color.Green);
+
+            axisU.WorldMatrixChanged += AxisWorldMatrixChanged;
+            axisV.WorldMatrixChanged += AxisWorldMatrixChanged;
+            axisW.WorldMatrixChanged += AxisWorldMatrixChanged;
+        }
+
+        void AxisWorldMatrixChanged(object sender, MatrixChangedEventArgs e)
+        {
+            var position = e.Matrix.ExtractTranslation();
+            origin = position;
+            if (axisU.Equals(sender))
+                axisU.Position = Vector3.Zero;
+            if (axisV.Equals(sender))
+                axisV.Position = Vector3.Zero;
+            if (axisW.Equals(sender))
+                axisW.Position = Vector3.Zero;
+        }
+
+
+
+        public void Render(IEnumerable<Program> shaderPasses)
+        {
+            {
+                axisU.Render(shaderPasses);
+                axisV.Render(shaderPasses);
+                axisW.Render(shaderPasses);
+            }
+        }
+
+        public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     class ArrowSlider : Primitive, IDisposable, IRenderable
     {
         public delegate void WorldMatrixChangedEventHandler(object sender, MatrixChangedEventArgs e);
         public event WorldMatrixChangedEventHandler WorldMatrixChanged;
 
         public BulletSharp.CollisionObject CollisionObject { get; private set; }
-        public Matrix4 WorldMatrix { get { return Matrix4.CreateTranslation(position) * Matrix4.CreateFromQuaternion(rotation) * Matrix4.Identity; } }
+        public Matrix4 WorldMatrix
+        {
+            get
+            {
+                var matrixPosition = Matrix4.CreateTranslation(position);
+                var matrixRotation = Matrix4.CreateFromQuaternion(rotation.Normalized());
+                var matrix = matrixPosition * matrixRotation;
+                return matrix;
+            }
+        }
+        public Vector3 Position
+        {
+            set
+            {
+                //var inverserWorldMatrix = Matrix4.Invert(WorldMatrix);
+                this.position = value;// Vector3.Transform(value, inverserWorldMatrix);
+            }
+        }
         // states
         public bool IsSelected { get; private set; }
 
@@ -117,7 +182,10 @@ namespace Moonfish.Graphics
                 axisRight,
                 axisForward,
                 axisUp);
-            this.rotation = Quaternion.FromMatrix(rotationMatrix);
+            var rotationX = Matrix3.CreateRotationX((float)Math.Acos(Vector3.Dot(Vector3.UnitX, axisRight)));
+            var rotationY = Matrix3.CreateRotationY((float)Math.Acos(Vector3.Dot(Vector3.UnitY, axisForward)));
+            var rotationZ = Matrix3.CreateRotationZ((float)Math.Acos(Vector3.Dot(Vector3.UnitZ, axisUp)));
+            this.rotation = Quaternion.FromMatrix(rotationX * rotationY * rotationZ);
             this.position = new Vector3(0f, 0f, 0f);
             this.diffuseColor = color; // Color.FromArgb(254, 242, 0);
 
@@ -135,6 +203,7 @@ namespace Moonfish.Graphics
             this.rotation = Quaternion.FromAxisAngle(Vector3.UnitY, (float)0);
             this.position = new Vector3(0f, 0f, 0f);
             this.diffuseColor = Color.FromArgb(254, 242, 0);
+            this.IsSelected = false;
         }
 
         private void BufferData(Vector3[] coordinates, ushort[] indices)
@@ -171,11 +240,8 @@ namespace Moonfish.Graphics
         public void Render(IEnumerable<Program> shaderPasses)
         {
             GL.BindVertexArray(vao);
-            using (shaderPasses.First().Use())
-            using (OpenGL.Disable(EnableCap.DepthTest))
-            using (shaderPasses.First().Using("object_matrix", WorldMatrix))
             {
-                if (IsSelected)
+                if (!IsSelected)
                     GL.VertexAttrib3(1, diffuseColor.ToFloatRgba());
                 else
                     GL.VertexAttrib3(1, new[] { 204f / 255f, 202f / 255f, 0f });
@@ -183,6 +249,7 @@ namespace Moonfish.Graphics
 
                 top.Render(shaderPasses);
             }
+            GL.BindVertexArray(0);
         }
 
         public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
@@ -286,6 +353,7 @@ namespace Moonfish.Graphics
                     var worldPosition = this.WorldMatrix.ExtractTranslation();
                     registrationPoint = intersectionPoint - worldPosition;
                 }
+
                 GL.PointSize(2);
                 DebugDrawer.DrawPoint(registrationPoint.Value);
                 GL.PointSize(6);
@@ -502,11 +570,7 @@ namespace Moonfish.Graphics
 
         public void Render(IEnumerable<Program> shaderPasses)
         {
-            using (shaderPasses.First().Use())
-            using (OpenGL.Enable(EnableCap.PrimitiveRestartFixedIndex))
-            {
-                GL.DrawElementsBaseVertex(PrimitiveType.TriangleFan, base.elementCount, DrawElementsType.UnsignedShort, (IntPtr)base.elementBufferOffset, base.elementBufferOffset / sizeof(ushort));
-            }
+            GL.DrawElementsBaseVertex(PrimitiveType.TriangleFan, base.elementCount, DrawElementsType.UnsignedShort, (IntPtr)base.elementBufferOffset, base.elementBufferOffset / sizeof(ushort));
         }
 
         public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)

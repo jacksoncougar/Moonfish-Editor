@@ -8,6 +8,7 @@ using Moonfish.Tags;
 using System.Reflection;
 using Fasterflect;
 using Moonfish.Graphics;
+using System.Security.Cryptography;
 
 namespace Moonfish
 {
@@ -56,6 +57,16 @@ namespace Moonfish
         /// </summary>
         public readonly int SecondaryMagic;
 
+        public readonly MapType Type;
+
+        public enum MapType
+        {
+            Multiplayer = 1,
+            MainMenu = 2,
+            Shared = 3,
+            SinglePlayerShared = 4,
+        }
+
         public readonly UnicodeValueNamePair[] Unicode;
         public readonly string[] Strings;
         public readonly Tag[] Tags;
@@ -66,6 +77,7 @@ namespace Moonfish
         public readonly VirtualMappedAddress[] MemoryBlocks;
 
         private Dictionary<TagIdent, dynamic> deserializedTags;
+        private Dictionary<TagIdent, string> hashTags;
 
         public MapStream(string filename)
             : base(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
@@ -79,18 +91,22 @@ namespace Moonfish
             if (bin.ReadTagClass() != (TagClass)"head")
                 throw new InvalidDataException("Not a halo-map file");
 
-            //this.Seek(36, SeekOrigin.Begin);
-            //var version = bin.ReadInt32();
-            //switch (version)
-            //{
-            //    case 0:
-            //        BuildVersion = Version.XBOX_RETAIL;
-            //        break;
-            //    case -1:
-            //        BuildVersion = Version.PC_RETAIL;
-            //        break;
-            //    default:
-            //}
+            using (this.Pin())
+            {
+                this.Seek(42, SeekOrigin.Begin);
+                var version = bin.ReadInt32();
+                switch (version)
+                {
+                    case 0:
+                        BuildVersion = Version.XBOX_RETAIL;
+                        break;
+                    case 1:
+                        BuildVersion = Version.PC_RETAIL;
+                        return;
+                        break;
+                }
+
+            }
             BuildVersion = Version.XBOX_RETAIL;
             this.Seek(16, SeekOrigin.Begin);
 
@@ -101,6 +117,13 @@ namespace Moonfish
 
             if (BuildVersion == Version.PC_RETAIL)
                 this.Seek(12, SeekOrigin.Current);
+
+            // Read maptype
+            using (this.Pin())
+            {
+                this.Seek(320, SeekOrigin.Begin);
+                this.Type = (MapType)bin.ReadInt32();
+            }
 
             this.Seek(332, SeekOrigin.Current);
 
@@ -262,6 +285,7 @@ namespace Moonfish
             }
 
             this.deserializedTags = new Dictionary<TagIdent, dynamic>(this.Tags.Length);
+            this.hashTags = new Dictionary<TagIdent, string>(this.Tags.Length);
             Halo2.ActiveMap(this);
         }
 
@@ -279,7 +303,7 @@ namespace Moonfish
                 return this;
             }
         }
-       
+
         public IMap this[TagIdent tag_id]
         {
             get
@@ -295,6 +319,12 @@ namespace Moonfish
         {
             this.Seek(this.current_tag.VirtualAddress, SeekOrigin.Begin);
         }
+
+        public void Remove(TagIdent ident)
+        {
+            deserializedTags.Remove(ident);
+        }
+
 
         dynamic IMap.Deserialize()
         {
@@ -312,7 +342,23 @@ namespace Moonfish
 
             var ident = (this as IMap).Meta.Identifier;
             deserializedTags[ident] = Moonfish.Tags.Deserializer.Deserialize(this, typeQuery);
+            this.hashTags[ident] = CalculateTaghash(ident);
             return deserializedTags[ident];
+        }
+
+        public string CalculateTaghash(TagIdent ident)
+        {
+            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+            {
+                var hash = Convert.ToBase64String(sha1.ComputeHash(this[ident].TagData));
+                Console.WriteLine(hash);
+                return hash;
+            }
+        }
+
+        public string GetTagHash(TagIdent ident)
+        {
+            return this.hashTags.ContainsKey(ident) ? this.hashTags[ident] : null;
         }
 
         Tag IMap.Meta
@@ -453,6 +499,19 @@ namespace Moonfish
         {
             throw new NotImplementedException();
         }
+
+
+        byte[] IMap.TagData
+        {
+            get
+            {
+
+                this.Position = this.current_tag.VirtualAddress;
+                var buffer = new byte[this.current_tag.Length];
+                this.Read(buffer, 0, buffer.Length);
+                return buffer;
+            }
+        }
     }
 
     public enum Version
@@ -563,6 +622,8 @@ namespace Moonfish
         /// Access meta information about the tag
         /// </summary>
         Tag Meta { get; set; }
+
+        byte[] TagData { get; }
 
         void Seek();
     }

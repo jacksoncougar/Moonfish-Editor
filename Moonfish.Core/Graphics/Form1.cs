@@ -24,7 +24,7 @@ namespace Moonfish.Graphics
         private Stopwatch timer;
         private Camera camera;
         private CoordinateGrid grid;
-        private MeshManager manager; 
+        private MeshManager manager;
         private MapStream map;
         BulletSharp.CollisionWorld collisionWorld;
 
@@ -48,26 +48,26 @@ namespace Moonfish.Graphics
 
         void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            BulletSharp.RaycastInfo raycast = new BulletSharp.RaycastInfo();
-            BulletSharp.CollisionWorld.ClosestRayResultCallback callback = new BulletSharp.CollisionWorld.ClosestRayResultCallback(Vector3.Zero, Vector3.UnitX);
-            Vector3 nearPoint, farPoint;
-            nearPoint = Maths.Project(camera.ViewMatrix, camera.ProjectionMatrix, new Vector3(e.X, e.Y, 0f), (Rectangle)camera.Viewport).Xyz;
-            farPoint = Maths.Project(camera.ViewMatrix, camera.ProjectionMatrix, new Vector3(e.X, e.Y, 1f), (Rectangle)camera.Viewport).Xyz;
-            collisionWorld.RayTest(nearPoint, farPoint, callback);
+            //BulletSharp.RaycastInfo raycast = new BulletSharp.RaycastInfo();
+            //BulletSharp.CollisionWorld.ClosestRayResultCallback callback = new BulletSharp.CollisionWorld.ClosestRayResultCallback(Vector3.Zero, Vector3.UnitX);
+            //Vector3 nearPoint, farPoint;
+            //nearPoint = Maths.Project(camera.ViewMatrix, camera.ProjectionMatrix, new Vector3(e.X, e.Y, 0f), (Rectangle)camera.Viewport).Xyz;
+            //farPoint = Maths.Project(camera.ViewMatrix, camera.ProjectionMatrix, new Vector3(e.X, e.Y, 1f), (Rectangle)camera.Viewport).Xyz;
+            //collisionWorld.RayTest(nearPoint, farPoint, callback);
 
-            if (callback.HasHit)
-            {
-                Console.WriteLine(callback.CollisionObject.ToString());
-                var control = (callback.CollisionObject.UserObject as ArrowSlider);
-                if (control != null)
-                {
-                    control.Hook(system_program, glControl1);
-                }
-            }
-            else
-            {
-                Console.WriteLine("nothing");
-            }
+            //if (callback.HasHit)
+            //{
+            //    Console.WriteLine(callback.CollisionObject.ToString());
+            //    var control = (callback.CollisionObject.UserObject as ArrowSlider);
+            //    if (control != null)
+            //    {
+            //        control.Hook(system_program, glControl1);
+            //    }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("nothing");
+            //}
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -81,11 +81,21 @@ namespace Moonfish.Graphics
 
         private void UpdateFrame()
         {
-            this.propertyGrid1.Refresh();
             if (!gl_loaded) return;
             camera.Update();
 
-            collisionWorld.PerformDiscreteCollisionDetection();
+            //collisionWorld.PerformDiscreteCollisionDetection();
+            if (!activeObject.HasValue) return;
+            var model = (Halo2.GetReferenceObject(this.activeObject.Value) as HierarchyModel);
+            if (activeObject.HasValue && model != null && Halo2.ObjectChanged(model.renderModel.TagID))
+            {
+                manager.Remove(activeObject.Value);
+                Halo2.GetReferenceObject(activeObject.Value, true);
+                Halo2.GetReferenceObject(model.renderModel.TagID, true);
+                manager.Add(activeObject.Value);
+                LoadPropertyGrid();
+            }
+
         }
 
         private void RenderFrame()
@@ -95,29 +105,29 @@ namespace Moonfish.Graphics
 
             //manager.Draw();
 
+            if (activeObject != null)
+            {
+                manager.Draw(activeObject.Value);
+            }
+
             using (system_program.Use())
             {
                 errorState = GL.GetError();
                 grid.Draw();
                 errorState = GL.GetError();
                 //pole.Draw();
-                
+
                 //slider.Render(new[] { system_program });
 
             }
             using (system_program.Use())
             {
-                collisionWorld.DebugDrawWorld();
+                //collisionWorld.DebugDrawWorld();
             }
             using (system_program.Use())
             using (Grid grid = new Grid(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector2(1, 1), 8, 8))
             {
                 //grid.Draw();
-            }
-
-            if (activeObject != null)
-            {
-                manager.Draw(activeObject.Value);
             }
 
             glControl1.SwapBuffers();
@@ -132,7 +142,7 @@ namespace Moonfish.Graphics
 
         private void LoadScenerio()
         {
-            MapStream map = new MapStream(@"C:\Users\stem\Documents\modding\sharedx.map");
+            // MapStream map = new MapStream(@"C:\Users\stem\Documents\modding\sharedx.map");
 
             //this.Scenario = map["scnr", ""].Deserialize();
             //test = map["hlmt", @"warthog"].Deserialize();
@@ -147,12 +157,15 @@ namespace Moonfish.Graphics
 
         private void LoadModels()
         {
-            this.map = new MapStream(@"C:\Users\stem\Documents\modding\sharedx.map");
-            var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new ListViewItem( x.Path){ Tag = x}).ToArray();
+            if (map == null) return;
+            var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new ListViewItem(x.Path) { Tag = x }).ToArray();
+            this.listView1.Clear();
             this.listView1.Columns.Add("Name");
             this.listView1.FullRowSelect = true;
             this.listView1.MultiSelect = false;
             this.listView1.Items.AddRange(tags.ToArray());
+            this.listView1.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            manager.Clear();
             manager.LoadHierarchyModels(map);
         }
 
@@ -191,9 +204,9 @@ namespace Moonfish.Graphics
 
             // initialize manager
             manager = new MeshManager(program, system_program);
-            slider = new ArrowSlider(Vector3.UnitZ, Vector3.UnitX, Vector3.UnitY, Color.Red);
-            LoadScenerio();
-            LoadPhysics();
+            // slider = new ArrowSlider(Vector3.UnitZ, Vector3.UnitX, Vector3.UnitY, Color.Red);
+            // LoadScenerio();
+            //.LoadPhysics();
 
             grid = new CoordinateGrid();
             LoadModels();
@@ -296,6 +309,59 @@ namespace Moonfish.Graphics
             if (tag != null)
             {
                 activeObject = tag.Identifier;
+                manager.Add(activeObject.Value);
+                LoadPropertyGrid();
+            }
+        }
+
+        private void LoadPropertyGrid()
+        {
+            if (activeObject != null)
+            {
+                var model = (Halo2.GetReferenceObject(activeObject.Value) as HierarchyModel);
+                if (model != null)
+                {
+                    var f = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToList();
+                    this.propertyGrid1.SelectedObject = model.RenderModel.markerGroups;// f;
+                }
+            }
+
+        }
+
+        private void propertyGrid1_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
+        {
+
+            if (e.NewSelection.Value.GetType() == typeof(RenderModelMarkerBlock) && activeObject.HasValue)
+            {
+                manager[activeObject.Value].Select(new[] { e.NewSelection.Value });
+            }
+            else if (e.NewSelection.Value.GetType() == typeof(RenderModelMarkerGroupBlock) && activeObject.HasValue)
+            {
+                var markerGroup = e.NewSelection.Value as RenderModelMarkerGroupBlock;
+                manager[activeObject.Value].Select(markerGroup.Markers);
+            }
+        }
+
+        private void openMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "Halo 2 cache map (*.map)|*.map|All files (*.*)|*.*";
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    this.activeObject = null;
+                    var directory = Path.GetDirectoryName(dialog.FileName);
+                    var maps = Directory.GetFiles(directory, "*.map", SearchOption.TopDirectoryOnly);
+                    var resourceMaps = maps.Select(x => new MapStream(x))
+                        .Where(x => x.Type == MapStream.MapType.Shared 
+                            || x.Type == MapStream.MapType.MainMenu 
+                            || x.Type== MapStream.MapType.SinglePlayerShared)
+                            .Select(x => x).ToList();
+                    resourceMaps.ForEach(x => Halo2.LoadResource(x));
+
+                    this.map = new MapStream(dialog.FileName);
+                    LoadModels();
+                }
             }
         }
     }

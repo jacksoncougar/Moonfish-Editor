@@ -41,7 +41,6 @@ namespace Moonfish.Graphics
         }
     }
 
-
     public class SkeletonNode
     {
         IList<SkeletonNode> nodeList;
@@ -83,10 +82,13 @@ namespace Moonfish.Graphics
 
         public StringID activePermuation;
 
+        IList<object> selectedObjects;
+
         public ScenarioObject()
         {
             activePermuation = StringID.Zero;
             sectionBuffers = new List<Mesh>();
+            selectedObjects = new List<object>();
             nodes = new NodeCollection();
         }
         public ScenarioObject(HierarchyModel model)
@@ -124,9 +126,10 @@ namespace Moonfish.Graphics
             if (program.Name != "system")
             {
                 using (program.Use())
-                using (program.Using("object_extents", objectMatrix))
-                using (program.Using("object_matrix", Matrix4.Identity))
                 {
+                    program["object_extents"] = objectMatrix;
+                    program["object_matrix"] = Matrix4.Identity;
+
                     foreach (var region in model.RenderModel.regions)
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
@@ -144,7 +147,7 @@ namespace Moonfish.Graphics
             }
             if (program.Name == "system")
             {
-                using(program.Use())
+                using (program.Use())
                 using (OpenGL.Disable(EnableCap.DepthTest))
                 {
                     foreach (var markerGroup in model.RenderModel.markerGroups)
@@ -156,18 +159,22 @@ namespace Moonfish.Graphics
                             var rotation = marker.rotation;
                             var scale = marker.scale;
 
-                            var worldMatrix = Matrix4.Identity;
-                            if (nodeIndex >= 0)
-                            {
-                                worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
-                            }
+                            var worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
+
                             using (program.Using("object_matrix", worldMatrix))
                             {
+                                if (selectedObjects.Contains(marker))
+                                {
+                                    GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
+                                }
+                                else
+                                {
+                                    GL.VertexAttrib3(1, Color.WhiteSmoke.ToFloatRgba());
+                                }
 
-                                GL.VertexAttrib3(1, Color.Red.ToFloatRgba());
                                 GL.PointSize(5.5f);
-                                
                                 DebugDrawer.DrawPoint(translation);
+                                DebugDrawer.DrawFrame(translation, rotation);
                             }
                         }
                     }
@@ -183,6 +190,15 @@ namespace Moonfish.Graphics
         void IRenderable.Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
         {
             throw new NotImplementedException();
+        }
+
+        internal void Select(IEnumerable<object> collection)
+        {
+            selectedObjects.Clear();
+            foreach (var item in collection)
+            {
+                selectedObjects.Add(item);
+            }
         }
     }
 

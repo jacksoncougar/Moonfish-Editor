@@ -84,6 +84,14 @@ namespace Moonfish.Graphics
                         GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
+                    case VertexAttributeType.coordinate_with_double_node:                        
+                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
+                        GL.VertexAttribBinding(i, i);
+                        break;
+                    case VertexAttributeType.coordinate_with_triple_node:
+                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
+                        GL.VertexAttribBinding(i, i);
+                        break;
                     case VertexAttributeType.texture_coordinate_compressed:
                         GL.VertexAttribFormat(i, 2, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
@@ -153,6 +161,11 @@ namespace Moonfish.Graphics
             objects[id] = new ScenarioObject(model);
         }
 
+        public ScenarioObject this[TagIdent ident]
+        {
+            get { return this.objects.ContainsKey(ident) ? objects[ident] : null; }
+        }
+
         public MeshManager(Program program, Program systemProgram)
         {
             objects = new Dictionary<TagIdent, ScenarioObject>();
@@ -194,6 +207,10 @@ namespace Moonfish.Graphics
                 RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
+        public void Add(TagIdent item)
+        {
+            objects[item] = new ScenarioObject(Halo2.GetReferenceObject(item));
+        }
         public void Draw(TagIdent item)
         {
             if (objects.ContainsKey(item))
@@ -201,6 +218,8 @@ namespace Moonfish.Graphics
                 IRenderable @object = objects[item] as IRenderable;
                 @object.Render(new[] { program, systemProgram });
             }
+            else
+                objects[item] = new ScenarioObject(Halo2.GetReferenceObject(item));
         }
 
         private void RenderPalette(IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances)
@@ -218,16 +237,21 @@ namespace Moonfish.Graphics
 
         internal void LoadHierarchyModels(MapStream map)
         {
-            var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new { item = map[x.Identifier].Deserialize(), id = x.Identifier });
-            foreach (var tag in tags)
-            {
-                this.Add(tag.item, tag.id);
-            }
+            //var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new { item = map[x.Identifier].Deserialize(), id = x.Identifier });
+            //foreach (var tag in tags)
+            //{
+            //    this.Add(tag.item, tag.id);
+            //}
         }
 
-        internal void Load(IEnumerable<dynamic> tags)
+        internal void Remove(TagIdent item)
         {
-            throw new NotImplementedException();
+            this.objects.Remove(item);
+        }
+
+        internal void Clear()
+        {
+            this.objects.Clear();
         }
     }
 
