@@ -161,21 +161,21 @@ namespace Moonfish.Graphics
 
                             var worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
 
-                            using (program.Using("object_matrix", worldMatrix))
-                            {
-                                if (selectedObjects.Contains(marker))
-                                {
-                                    GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
-                                }
-                                else
-                                {
-                                    GL.VertexAttrib3(1, Color.WhiteSmoke.ToFloatRgba());
-                                }
+                            program["object_matrix"] = worldMatrix;
 
-                                GL.PointSize(5.5f);
-                                DebugDrawer.DrawPoint(translation);
-                                DebugDrawer.DrawFrame(translation, rotation);
+                            if (selectedObjects.Contains(marker))
+                            {
+                                GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
                             }
+                            else
+                            {
+                                GL.VertexAttrib3(1, Color.WhiteSmoke.ToFloatRgba());
+                            }
+
+                            GL.PointSize(5.5f);
+                            DebugDrawer.DrawPoint(translation);
+                            if (selectedObjects.Contains(marker))
+                                DebugDrawer.DrawFrame(translation, rotation);
                         }
                     }
                 }

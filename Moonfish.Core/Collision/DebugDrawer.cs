@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -97,9 +98,9 @@ namespace Moonfish.Collision
             var axisUp = Vector3.Transform(Vector3.UnitZ, Quaternion.Identity);
             var axisRight = Vector3.Transform(Vector3.UnitX, Quaternion.Identity);
             var axisForward = Vector3.Transform(Vector3.UnitY, Quaternion.Identity);
-            var coordinates = new[] { origin, axisUp, axisRight, axisForward };
+            var coordinates = new[] { origin, origin, origin, axisUp, axisRight, axisForward };
 
-            for (var i = 1; i < coordinates.Length; ++i)
+            for (var i = 3; i < coordinates.Length; ++i)
             {
                 coordinates[i] = Vector3.Transform(coordinates[i], Matrix4.CreateScale(0.1f));
                 coordinates[i] += coordinates[0];
@@ -107,24 +108,45 @@ namespace Moonfish.Collision
 
 
             var indices = new short[] { 
-                0, 1, 
-                0, 2,  
-                0, 3};
-            int arrayBuffer = GL.GenBuffer(), elementBuffer = GL.GenBuffer(), vao = GL.GenVertexArray();
+                0, 3, 
+                1, 4,  
+                2, 5};
+            var colours = Color.Blue.ToFloatRgb().Concat(Color.Red.ToFloatRgb()).Concat(Color.Green.ToFloatRgb())
+                .Concat(Color.Blue.ToFloatRgb()).Concat(Color.Red.ToFloatRgb()).Concat(Color.Green.ToFloatRgb()).ToArray();
+
+            int arrayBuffer = GL.GenBuffer(),
+                elementBuffer = GL.GenBuffer(),
+                colourBuffer = GL.GenBuffer(),
+                vao = GL.GenVertexArray();
+
             GL.BindVertexArray(vao);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, arrayBuffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                 (IntPtr)(Vector3.SizeInBytes * coordinates.Length), coordinates, BufferUsageHint.DynamicDraw);
-            GL.BindVertexBuffer(0, arrayBuffer, (IntPtr)0, Vector3.SizeInBytes);
             GL.VertexAttribFormat(0, 3, VertexAttribType.Float, false, 0);
             GL.VertexAttribBinding(0, 0);
+            GL.BindVertexBuffer(0, arrayBuffer, (IntPtr)0, Vector3.SizeInBytes);
             GL.EnableVertexAttribArray(0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, colourBuffer);
+            GL.BufferData<float>(BufferTarget.ArrayBuffer,
+                (IntPtr)(sizeof(float) * colours.Length), colours, BufferUsageHint.DynamicDraw);
+            //GL.VertexAttribFormat(1, 3, VertexAttribType.Float, false, 0);
+            //GL.VertexAttribBinding(1, 1);
+            //GL.BindVertexBuffer(1, arrayBuffer, (IntPtr)0, 3 * sizeof(float));
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            GL.EnableVertexAttribArray(1);
+
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer);
             GL.BufferData<short>(BufferTarget.ElementArrayBuffer,
                 (IntPtr)(sizeof(short) * indices.Length), indices, BufferUsageHint.DynamicDraw);
-            GL.LineWidth(2);
-            GL.DrawElements(BeginMode.Lines, indices.Length, DrawElementsType.UnsignedShort, 0);
-            GL.DeleteBuffers(2, new[] { arrayBuffer, elementBuffer });
+            //GL.LineWidth(2);
+            using (debugProgram.Use())
+            {
+                GL.DrawElements(BeginMode.Lines, indices.Length, DrawElementsType.UnsignedShort, 0);
+            }
+            GL.DeleteBuffers(2, new[] { arrayBuffer, elementBuffer, colourBuffer });
             GL.DeleteVertexArray(vao);
 
         }

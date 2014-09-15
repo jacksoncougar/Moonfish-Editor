@@ -54,7 +54,7 @@ namespace Moonfish.Graphics
 
         private void Initialize()
         {
-            //GL.binfra(ID, 0, "frag_color");
+            GL.BindFragDataLocation(ID, 1, "frag_color");
         }
 
         public IDisposable Using(string uniformName, object value)
@@ -77,7 +77,7 @@ namespace Moonfish.Graphics
 
             public void Dispose()
             {
-               // Program.SetUniform(previous_uniform_value, uniform_id);
+                // Program.SetUniform(previous_uniform_value, uniform_id);
             }
         }
 
@@ -85,17 +85,16 @@ namespace Moonfish.Graphics
         {
             set
             {
-                using (Use())
+                this.Use();
+                int uid;
+                uid = GetUniformID(uniform_name);
+                if (!uniformStack.ContainsKey(uniform_name))
                 {
-                    int uid;
-                    uid = GetUniformID(uniform_name);
-                    if (!uniformStack.ContainsKey(uniform_name))
-                    {
-                        uniformStack[uniform_name] = new Stack<object>();
-                        uniformStack[uniform_name].Push(value);
-                    }
-                    SetUniform(value, uid);
+                    uniformStack[uniform_name] = new Stack<object>();
+                    uniformStack[uniform_name].Push(value);
                 }
+                SetUniform(value, uid);
+
             }
             get
             {

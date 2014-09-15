@@ -112,6 +112,7 @@ namespace Moonfish.Graphics
 
             using (system_program.Use())
             {
+                system_program["object_matrix"] = Matrix4.Identity;
                 errorState = GL.GetError();
                 grid.Draw();
                 errorState = GL.GetError();
