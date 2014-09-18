@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,6 +15,15 @@ namespace Moonfish
     /// </summary>
     public static class Halo2
     {
+        public static MapStream.MapType CheckMapType(string filename)
+        {
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(filename)))
+            {
+                reader.BaseStream.Seek(320, SeekOrigin.Begin);
+                return (MapStream.MapType)reader.ReadInt32();
+            }
+        }
+
         public const int NullPtr = 0;
 
         /// <summary>
@@ -60,7 +70,17 @@ namespace Moonfish
         {
             Paths = new GlobalPaths();
             definedTagGroupsDictionary = new Dictionary<TagClass, Type>(3);
-            var types = Assembly.GetExecutingAssembly().GetTypes();
+            var assembly = typeof(Moonfish.Tag).Assembly;
+            if (assembly == null) throw new ArgumentNullException("assembly");
+            Type[] types;
+            try
+            {
+                types =  assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types.Where(t => t != null).ToArray();
+            }
             foreach (var type in types)
             {
                 //if (!type.IsNested)

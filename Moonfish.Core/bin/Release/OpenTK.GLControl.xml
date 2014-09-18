@@ -169,5 +169,23 @@
             Needed to delay the invoke on OS X. Also needed because OpenTK is .NET 2, otherwise I'd use an inline Action.
             </summary>
         </member>
+        <member name="M:OpenTK.Platform.MacOS.Agl.aglChoosePixelFormat(System.IntPtr,System.Int32,System.Int32[])">
+            <summary>
+            Use this overload only with IntPtr.Zero for the first argument.
+            </summary>
+            <param name="gdevs">
+            </param>
+            <param name="ndev">
+            </param>
+            <param name="attribs">
+            </param>
+            <returns>
+            </returns>
+        </member>
+        <member name="T:OpenTK.Platform.MacOS.AglContext">
+            <summary>
+            AGL context implementation for WinForms compatibility.
+            </summary>
+        </member>
     </members>
 </doc>

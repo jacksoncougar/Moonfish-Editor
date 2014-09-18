@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
 using Fasterflect;
+using Moonfish.Graphics;
 
 namespace Moonfish.Tags
 {
@@ -22,6 +23,48 @@ namespace Moonfish.Tags
                 return markerGroup.name.ToString();
             }
             return base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
+    public class MarkerWrapper : IClickable
+    {
+        public event EventHandler<MouseEventArgs> OnMouseClick;
+
+        public RenderModelMarkerBlock marker;
+
+        public MarkerWrapper(RenderModelMarkerBlock marker)
+        {
+            this.marker = marker;
+        }
+
+        public Action<Matrix4> MarkerUpdatedCallback;
+
+        public event EventHandler MarkerUpdated;
+
+        internal void mousePole_WorldMatrixChanged(object sender, MatrixChangedEventArgs e)
+        {
+            var translation = e.Delta.ExtractTranslation();
+            this.marker.Translation += translation;
+            if (MarkerUpdated != null) MarkerUpdated(this, null);
+            if (MarkerUpdatedCallback != null) MarkerUpdatedCallback(e.Matrix);
+        }
+
+        void IClickable.OnMouseDown(object sender, MouseEventArgs e)
+        {
+        }
+
+        void IClickable.OnMouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        void IClickable.OnMouseUp(object sender, MouseEventArgs e)
+        {
+        }
+
+        void IClickable.OnMouseClickHandler(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("Click");
+            if (this.OnMouseClick != null) this.OnMouseClick(this, e);
         }
     }
 

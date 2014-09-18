@@ -351,7 +351,7 @@ namespace Moonfish
             using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
             {
                 var hash = Convert.ToBase64String(sha1.ComputeHash(this[ident].TagData));
-                Console.WriteLine(hash);
+                //Console.WriteLine(hash);
                 return hash;
             }
         }

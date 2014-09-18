@@ -10,6 +10,11 @@ using System.Text;
 
 namespace Moonfish.Graphics
 {
+    public interface ISelectable
+    {
+        void Select();
+    }
+
     public interface IRenderable
     {
         void Render(IEnumerable<Program> shaderPasses);
@@ -41,48 +46,19 @@ namespace Moonfish.Graphics
         }
     }
 
-    public class SkeletonNode
-    {
-        IList<SkeletonNode> nodeList;
-        public SkeletonNode Parent
-        {
-            get
-            {
-                var parent = (int)this.node.parentNode < 0 ? null : nodeList[(int)this.node.parentNode];
-                return parent;
-            }
-        }
-
-        public Matrix4 WorldMatrix
-        {
-            get
-            {
-                var worldMatrix = Matrix4.Identity;
-                if (Parent != null)
-                    worldMatrix = Parent.WorldMatrix;
-                var translation = Matrix4.CreateTranslation(this.node.defaultTranslation);
-                var rotation = Matrix4.CreateFromQuaternion(this.node.defaultRotation);
-                return worldMatrix = translation * rotation * worldMatrix;
-            }
-        }
-
-        RenderModelNodeBlock node;
-
-        public SkeletonNode(RenderModelNodeBlock node)
-        {
-            this.node = node;
-        }
-    }
-
-    public class ScenarioObject : IRenderable
+    public class ScenarioObject : IRenderable, IEnumerable<BulletSharp.CollisionObject>
     {
         HierarchyModel model;
         List<Mesh> sectionBuffers;
-        NodeCollection nodes;
+        public NodeCollection nodes;
+
+        public Dictionary<RenderModelMarkerBlock, MarkerWrapper> markers;
 
         public StringID activePermuation;
 
         IList<object> selectedObjects;
+
+
 
         public ScenarioObject()
         {
@@ -100,6 +76,7 @@ namespace Moonfish.Graphics
                 sectionBuffers.Add(new Mesh(section));
             }
             this.nodes = new NodeCollection(model.RenderModel.nodes);
+            this.markers = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToDictionary(x => x, x => new MarkerWrapper(x));
         }
 
         public IEnumerable<StringID> Permutations
@@ -199,6 +176,41 @@ namespace Moonfish.Graphics
             {
                 selectedObjects.Add(item);
             }
+        }
+
+        IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator()
+        {
+
+            foreach (var markerGroup in model.RenderModel.markerGroups)
+            {
+                foreach (var marker in markerGroup.markers)
+                {
+                    var collisionObject = new BulletSharp.CollisionObject();
+                    collisionObject.CollisionShape = new BulletSharp.BoxShape(0.045f);
+                    collisionObject.WorldTransform = Matrix4.CreateTranslation(marker.translation) * this.nodes.GetWorldMatrix(marker.nodeIndex);
+                    collisionObject.UserObject = this.markers[marker];
+                    yield return collisionObject;
+
+                    var setPropertyMethodInfo = typeof(BulletSharp.CollisionObject).GetProperty("WorldTransform").GetSetMethod();
+                    var setProperty = Delegate.CreateDelegate(typeof(Action<Matrix4>), collisionObject, setPropertyMethodInfo);
+
+                    this.markers[marker].MarkerUpdatedCallback += (Action<Matrix4>)setProperty;
+                }
+            }
+        }
+
+        void marker_MarkerUpdated(object sender, EventArgs e)
+        {
+            var markerQuery = model.RenderModel.markerGroups.SelectMany(x => x.markers).Where(x => x.Equals(sender)).FirstOrDefault();
+            if (markerQuery != null)
+            {
+
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return null;
         }
     }
 

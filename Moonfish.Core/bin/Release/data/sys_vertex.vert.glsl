@@ -11,6 +11,6 @@ smooth out vec4 frag_diffuse_color;
 void main()
 {
 	vec4 normalized_position = position;
-    gl_Position = object_matrix * view_projection_matrix * normalized_position;
+    gl_Position = view_projection_matrix * object_matrix * normalized_position;
 	frag_diffuse_color = diffuse_color;
 }

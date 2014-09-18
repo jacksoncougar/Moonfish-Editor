@@ -163,7 +163,17 @@ namespace Moonfish.Tags
                 if (field.FieldType.IsArray)
                 {
                     var elementType = field.FieldType.GetElementType();
-                    var elementSize = Marshal.SizeOf(elementType);
+                    var elementSize = 0;
+                    try
+                    {
+                        elementSize = SizeOf(elementType);
+                    }
+                    catch (ArgumentException)
+                    {
+                        var layoutAttribute = elementType.Attribute(typeof(TagBlockLayoutAttribute)) as TagBlockLayoutAttribute;
+                        if (layoutAttribute != null)
+                            elementSize = layoutAttribute.Size;
+                    }
 
                     if (field.IsDefined(typeof(TagBlockFieldAttribute), false))
                     {
@@ -246,7 +256,7 @@ namespace Moonfish.Tags
         private static void DefaultProcessTagBlockArray(BinaryReader sourceReader, object item, FieldInfo field)
         {
             Type elementType = field.FieldType.GetElementType();
-            int elementSize = Marshal.SizeOf(elementType);
+            int elementSize = SizeOf(elementType);
 
             var count = sourceReader.ReadInt32();
             var address = sourceReader.ReadInt32();
@@ -256,10 +266,20 @@ namespace Moonfish.Tags
             var array = Deserializer.DeserializeArray(sourceReader, elementType, elementSize, count);
             field.Set(item, array);
         }
+
+        private static int SizeOf(Type elementType)
+        {
+            var elementSize = 0;
+            var layoutAttribute = elementType.Attribute(typeof(TagBlockLayoutAttribute)) as TagBlockLayoutAttribute;
+            if (layoutAttribute != null)
+                elementSize = layoutAttribute.Size;
+            else elementSize = Marshal.SizeOf(elementType);
+            return elementSize;
+        }
         private static void ProcessFixedStructArray(BinaryReader sourceReader, object item, FieldInfo field)
         {
             Type elementType = field.FieldType.GetElementType();
-            int elementSize = Marshal.SizeOf(elementType);
+            int elementSize = SizeOf(elementType);
 
             var marhsalAsAttribute = field.Attribute<MarshalAsAttribute>();
             var count = marhsalAsAttribute.SizeConst;
@@ -384,13 +404,13 @@ namespace Moonfish.Tags
                 var marshalAsAttribute = field.GetCustomAttributes(typeof(MarshalAsAttribute), false)[0] as MarshalAsAttribute;
                 if (marshalAsAttribute.Value == UnmanagedType.ByValArray)
                 {
-                    var elementSize = Marshal.SizeOf(field.FieldType.GetElementType());
+                    var elementSize = SizeOf(field.FieldType.GetElementType());
                     var count = marshalAsAttribute.SizeConst;
                     return elementSize * count;
                 }
             }
-            if (field.FieldType.IsEnum) return Marshal.SizeOf(Enum.GetUnderlyingType(field.FieldType));
-            return Marshal.SizeOf(field.FieldType);
+            if (field.FieldType.IsEnum) return SizeOf(Enum.GetUnderlyingType(field.FieldType));
+            return SizeOf(field.FieldType);
         }
 
         internal static int OffsetOf(Type type, string p)

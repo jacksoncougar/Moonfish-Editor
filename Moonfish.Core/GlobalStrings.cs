@@ -2039,7 +2039,7 @@ public class GlobalStrings : IEnumerable<string>, IEnumerable<StringID>
 
 public class GlobalPaths : IEnumerable<string>
 {
-    IList<string> localPaths;
+    List<string> localPaths;
 
     public string this[int index]
     {
@@ -2049,9 +2049,9 @@ public class GlobalPaths : IEnumerable<string>
         }
     }
 
-    public void Assign(IList<string> values)
+    public void Assign(IEnumerable<string> values)
     {
-        this.localPaths = values;
+        this.localPaths = new List<string>(values);
     }
 
     IEnumerator<string> IEnumerable<string>.GetEnumerator()

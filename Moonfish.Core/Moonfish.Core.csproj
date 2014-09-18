@@ -17,6 +17,21 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -73,7 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collision\Class1.cs" />
+    <Compile Include="Collision\Shapes.cs" />
     <Compile Include="Collision\DebugDrawer.cs" />
     <Compile Include="Definitions\sbsp_definitions.cs" />
     <Compile Include="GlobalStrings.cs" />
@@ -87,6 +102,7 @@
     </Compile>
     <Compile Include="Graphics\GraphicsEvents.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
+    <Compile Include="Graphics\MousePole.cs" />
     <Compile Include="Graphics\OpenGL.cs" />
     <Compile Include="Graphics\Maths.cs" />
     <Compile Include="Graphics\modelWrapper.cs" />
@@ -108,6 +124,7 @@
     <Compile Include="IResource.cs" />
     <Compile Include="main.cs" />
     <Compile Include="Debug\Memory.cs" />
+    <Compile Include="PropertyGridExtensions.cs" />
     <Compile Include="Structures\EntConverter.cs" />
     <Compile Include="Definitions\model_definitions.cs" />
     <Compile Include="Extensions.cs" />
@@ -157,16 +174,19 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\sys_fragment.frag.glsl">
+    <None Include="data\viewscreen.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="data\sys_vertex.vert.glsl">
+    <None Include="data\sys_fragment.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="data\fragment.frag.glsl">
+    <None Include="data\sys_vertex.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="data\vertex.vert.glsl">
+    <None Include="data\fragment.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\vertex.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -177,6 +197,28 @@
     <EmbeddedResource Include="Graphics\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

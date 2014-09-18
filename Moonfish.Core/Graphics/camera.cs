@@ -42,6 +42,7 @@ namespace Moonfish.Graphics
 
         public Matrix4 ViewMatrix { get; private set; }
         public Matrix4 ProjectionMatrix { get; private set; }
+        public Matrix4 ViewProjectionMatrix { get { return ViewMatrix * ProjectionMatrix; } }
         #endregion
 
         #region Public Methods
@@ -50,29 +51,19 @@ namespace Moonfish.Graphics
         {
             Position = track.WorldMatrix.ExtractTranslation();
             Rotation = track.WorldMatrix.ExtractRotation();
+            if (CameraUpdated != null) CameraUpdated(this, new CameraEventArgs(this));
         }
 
         Vector2 previousMouseCoordinate;
-        public void MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            //var mouseState = Mouse.GetState();
-            //var keyboardState = Keyboard.GetState();
-            //var currentMouseCoordinate = new Vector2(e.X, e.Y);
-
-            //if (keyboardState.IsKeyDown(Key.ShiftLeft) && mouseState[MouseButton.Middle])
-            //{
-            //    track = new PanTrack(track);
-            //}
-            //else if (keyboardState.IsKeyDown(Key.ControlLeft) && mouseState[MouseButton.Middle])
-            //{
-            //    track = new ZoomTrack(track);
-            //}
+            if (this.MouseDown != null) this.MouseDown(this, e);
         }
-        public void MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            //track = new Track(track);
+            if (this.MouseUp != null) MouseUp(this, e);
         }
-        public void MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             var mouseState = Mouse.GetState();
             var keyboardState = Keyboard.GetState();
@@ -100,7 +91,12 @@ namespace Moonfish.Graphics
                 //delta *= 10;
                 orbitTrack.Update(delta.X, delta.Y);
             }
+            if (this.MouseMove != null) this.MouseMove(this, new MouseEventArgs(this, new Vector2(e.X, e.Y), default(Vector3), e.Button));
             previousMouseCoordinate = currentMouseCoordinate;
+        }
+        public void OnMouseCaptureChanged(object sender, EventArgs e)
+        {
+            if (this.MouseCaptureChanged != null) this.MouseCaptureChanged(this, e);
         }
 
         #endregion
@@ -163,115 +159,50 @@ namespace Moonfish.Graphics
             zoomTrack.Zoom(-5f);
 
             viewport.ProjectionChanged += viewport_ProjectionChanged;
+
+            this.Update();
         }
         #endregion
 
         #region Events
+
+        public event MouseMoveEventHandler MouseMove;
+
+        public event MouseEventHandler MouseUp;
+
+        public event MouseEventHandler MouseDown;
+
+        public event EventHandler MouseCaptureChanged;
+
+        public event EventHandler<CameraEventArgs> CameraUpdated;
 
         public event ViewMatrixChangedEventHandler ViewMatrixChanged;
 
         public event ViewProjectionMatrixChangedEventHandler ViewProjectionMatrixChanged;
 
         #endregion
+
+        internal float CreateScale(Vector3 origin, float halfExtents, float pixelSize)
+        {
+            var pointA = origin;
+            var pointB = origin + this.WorldMatrix.Row0.Xyz * halfExtents;
+            var screenPointA = this.UnProject(pointA, Maths.ProjectionTarget.View);
+            var screenPointB = this.UnProject(pointB, Maths.ProjectionTarget.View);
+            var currentPixelSize = (screenPointB - screenPointA).Length;
+
+            var scale = pixelSize / currentPixelSize;
+            return scale;
+        }
     }
+    public class CameraEventArgs : EventArgs
+    {
+        public Camera Camera;
 
-    //public class OrbitTrack : Track
-    //{
-    //    #region Properties
-    //    public override Matrix4 TransformationMatrix
-    //    {
-    //        get { return transformation_matrix; }
-    //    }        
-    //    public override Vector2 Input
-    //    {
-    //        set
-    //        {
-    //            setAzimuth(value.X);
-    //            setAltitude(value.Y);
-    //            CalculateTransformationMatrix();
-    //            setRadial(value.Y);
-    //        }
-    //    }
-    //    #endregion
-
-    //    #region Private Fields
-    //    float radial;
-    //    float azimuth;
-    //    float altitude;
-    //    float delta_distance = 0.5f;
-    //    float min_distance = 1.0f;
-    //    float max_distance = 1000.0f;
-    //    Matrix4 transformation_matrix;
-    //    #endregion
-
-    //    #region Private Methods
-    //    void CalculateTransformationMatrix()
-    //    {
-    //        float cos_altitude = (float)Math.Cos(altitude);
-    //        float sin_altitude = (float)Math.Sin(altitude);
-    //        float cos_azimuth = (float)Math.Cos(azimuth);
-    //        float sin_azimuth = (float)Math.Sin(azimuth);
-
-
-    //        float x = radial * cos_azimuth * sin_altitude;
-    //        float y = radial * sin_azimuth * sin_altitude;
-    //        float z = radial * cos_altitude;
-
-    //        Vector3 eye = new Vector3(x, y, z);
-
-    //        var radial_axis = new Vector3(eye);
-    //        var azimuth_axis = new Vector3(
-    //            -sin_azimuth,
-    //            cos_azimuth,
-    //            0);
-    //        var altitude_axis = new Vector3(
-    //            cos_azimuth * cos_altitude,
-    //            sin_azimuth * cos_altitude,
-    //            -sin_altitude
-    //            );
-
-    //        radial_axis.Normalize();
-    //        azimuth_axis.Normalize();
-    //        altitude_axis.Normalize();
-
-    //        transformation_matrix = new Matrix4(
-    //            new Vector4(azimuth_axis, 0),
-    //            new Vector4(altitude_axis, 0),
-    //            new Vector4(radial_axis, 0),
-    //            new Vector4(eye, 1));
-    //    }
-    //    void setRadial(float value)
-    //    {
-    //        //var step = -value * delta_distance;
-    //        //if (radial + step < min_distance)
-    //        //    radial = min_distance;
-    //        //else if (radial + step > max_distance)
-    //        //    radial = max_distance;
-    //        //else
-    //        //    radial += step;
-    //    }
-    //    void setAzimuth(float value)
-    //    {
-    //        azimuth += MathHelper.DegreesToRadians(value);
-    //    }
-    //    void setAltitude(float value)
-    //    {
-    //        altitude += MathHelper.DegreesToRadians(value);
-    //   }
-    //    #endregion
-
-    //    #region Constructor
-    //    public OrbitTrack()
-    //    {
-    //        radial = 5.0f;
-    //        azimuth = MathHelper.DegreesToRadians(0);
-    //        altitude = MathHelper.DegreesToRadians(-0);
-    //        //state = States.Disabled;
-    //        transformation_matrix = Matrix4.Identity;
-    //        CalculateTransformationMatrix();
-    //    }
-    //    #endregion
-    //}
+        public CameraEventArgs(Camera camera)
+        {
+            this.Camera = camera;
+        }
+    }
 
     public class Viewport
     {
@@ -292,6 +223,7 @@ namespace Moonfish.Graphics
                 {
                     width = value;
                     CalculateProjectionMatrix();
+                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
                 }
             }
         }
@@ -304,6 +236,7 @@ namespace Moonfish.Graphics
                 {
                     height = value;
                     CalculateProjectionMatrix();
+                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
                 }
             }
         }
@@ -317,6 +250,7 @@ namespace Moonfish.Graphics
                     width = value.Width;
                     height = value.Height;
                     CalculateProjectionMatrix();
+                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
                 }
             }
         }
@@ -370,7 +304,7 @@ namespace Moonfish.Graphics
             ProjectionChanged = null;
             width = default_width;
             height = default_height;
-            z_near = 0.5f;
+            z_near = 0.001f;
             z_far = 100.0f;
             field_of_view = (float)Math.PI / 4;
             projection_matrix = Matrix4.Identity;
@@ -388,15 +322,33 @@ namespace Moonfish.Graphics
 
         #region Events
         public event ProjectionMatrixChangedEventHandler ProjectionChanged;
+        public event EventHandler<ViewportEventArgs> ViewportChanged;
+
+        public class ViewportEventArgs : EventArgs
+        {
+            public Rectangle Viewport;
+
+            public ViewportEventArgs(Rectangle viewport)
+            {
+                this.Viewport = viewport;
+            }
+        }
         #endregion
     }
 
     public class MatrixChangedEventArgs : EventArgs
     {
+        public Matrix4 Delta;
         public Matrix4 Matrix;
         public MatrixChangedEventArgs(ref Matrix4 view_projection_matrix)
         {
             Matrix = view_projection_matrix;
+        }
+
+        public MatrixChangedEventArgs(Matrix4 beforeMatrix, Matrix4 afterMatrix)
+        {
+            Delta = afterMatrix - beforeMatrix;
+            Matrix = afterMatrix;
         }
     }
 

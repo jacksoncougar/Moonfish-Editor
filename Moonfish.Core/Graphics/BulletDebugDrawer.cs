@@ -31,6 +31,7 @@ namespace Moonfish.Graphics
         {
             using (debugProgram.Use())
             {
+                debugProgram["object_matrix"] = OpenTK.Matrix4.Identity;
                 using (Box box = new Box(bbMin, bbMax))
                 {
                     box.Render(new[] { debugProgram });
@@ -47,6 +48,15 @@ namespace Moonfish.Graphics
                 GL.VertexAttrib3(1, new[] { 1f, 1f, 1f });
                 box.Render(new[] { debugProgram });
             }
+        }
+
+        public override void DrawSphere(float radius, ref OpenTK.Matrix4 transform, OpenTK.Graphics.Color4 color)
+        {
+            var position = transform.ExtractTranslation();
+            var min = position - new OpenTK.Vector3(-radius,-radius,-radius);
+            var max = position - new OpenTK.Vector3(radius,radius,radius);
+            DrawBox(ref min, ref max, color);
+            base.DrawSphere(radius, ref transform, color);
         }
 
 

@@ -63,11 +63,17 @@ namespace Moonfish.Collision
 
         public static void DrawPoint(Vector3 coordinate)
         {
-            //using (debugProgram.Use())
             using (Point point = new Point(coordinate))
             {
                 point.Render(new[] { debugProgram });
             }
+        }
+
+        internal static void DrawPoint(Vector3 coordinate, float pointSize)
+        {
+            GL.PointSize(pointSize);
+            DrawPoint(coordinate);
+            GL.PointSize(size: 1);
         }
 
 
@@ -84,10 +90,13 @@ namespace Moonfish.Collision
             var rotation = Matrix4.Identity * Matrix4.CreateFromAxisAngle(axis, x);
             var translation = Matrix4.Identity * Matrix4.CreateTranslation(plane.Normal * plane.Distance);
             using (debugProgram.Use())
-            using (debugProgram.Using("object_matrix", rotation * translation))
-            using (Grid grid = new Grid(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector2(1, 1), 8, 8))
             {
-                grid.Draw();
+                debugProgram["object_matrix"] = translation * rotation;
+                using (Grid grid = new Grid(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector2(1, 1), 8, 8))
+                {
+                    grid.Draw();
+                }
+                debugProgram["object_matrix"] = Matrix4.Identity;
             }
 
         }

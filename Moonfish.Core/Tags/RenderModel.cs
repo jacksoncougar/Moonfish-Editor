@@ -536,6 +536,7 @@ namespace Moonfish.Tags
 
 
     [StructLayout(LayoutKind.Sequential, Size = 36, Pack = 0)]
+    [TagBlockLayout(Size = 36)]
     public partial class RenderModelMarkerBlock
     {
         public byte regionIndex;
