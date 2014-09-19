@@ -160,6 +160,9 @@ namespace Moonfish.Graphics
 
             viewport.ProjectionChanged += viewport_ProjectionChanged;
 
+            orbitTrack.Update(70, 60);
+            zoomTrack.Update(-5);
+
             this.Update();
         }
         #endregion

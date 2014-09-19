@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Moonfish.Graphics
 {
@@ -84,7 +85,7 @@ namespace Moonfish.Graphics
                         GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
-                    case VertexAttributeType.coordinate_with_double_node:                        
+                    case VertexAttributeType.coordinate_with_double_node:
                         GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
@@ -97,7 +98,7 @@ namespace Moonfish.Graphics
                         GL.VertexAttribBinding(i, i);
                         break;
                     case VertexAttributeType.tangent_space_unit_vectors_compressed:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Int, true, 0);
+                        GL.VertexAttribIFormat(i, 3, VertexAttribIntegerType.Int, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
                     case VertexAttributeType.coordinate_float:
@@ -207,9 +208,15 @@ namespace Moonfish.Graphics
                 RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
-        public void Add(TagIdent item)
+        public async Task<bool> Add(TagIdent item)
         {
-            objects[item] = new ScenarioObject(Halo2.GetReferenceObject(item));
+            var success = await Task.Factory.StartNew<bool>(()=>
+            {
+                var data = Halo2.GetReferenceObject(item);
+                objects[item] = new ScenarioObject((HierarchyModel)data);
+                return data != null;
+            }, System.Threading.CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.FromCurrentSynchronizationContext());
+            return success;
         }
         public void Draw(TagIdent item)
         {
@@ -219,7 +226,10 @@ namespace Moonfish.Graphics
                 @object.Render(new[] { program, systemProgram });
             }
             else
-                objects[item] = new ScenarioObject(Halo2.GetReferenceObject(item));
+            {
+                var data = Halo2.GetReferenceObject(item);
+                objects[item] = new ScenarioObject((HierarchyModel)data);
+            }
         }
 
         private void RenderPalette(IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances)

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +15,7 @@ namespace Moonfish.Graphics
 
         public int ID { get { return shader_id; } }
 
-        public Shader(string filename, OpenTK.Graphics.OpenGL4.ShaderType shader_type)
+        public Shader(string filename, ShaderType shader_type)
         {
             shader_id = GL.CreateShader(shader_type);
             var wd = Directory.GetCurrentDirectory();

@@ -1,8 +1,9 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Definitions;
+using Moonfish.Graphics.Input;
 using Moonfish.Tags;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Moonfish.Graphics
@@ -41,8 +43,6 @@ namespace Moonfish.Graphics
         public static Program ScreenProgram { get; private set; }
 
         HierarchyModel test;
-        MousePole slider;
-        TranslationGizmo gizmo;
 
         public Form1()
         {
@@ -65,18 +65,18 @@ namespace Moonfish.Graphics
             camera.Update();
 
             UpdateGUI();
-
+            propertyGrid1.Refresh();
             collisionWorld.PerformDiscreteCollisionDetection();
             if (!activeObject.HasValue) return;
-            var model = (Halo2.GetReferenceObject(this.activeObject.Value) as HierarchyModel);
-            if (activeObject.HasValue && model != null && Halo2.ObjectChanged(model.renderModel.TagID))
-            {
-                manager.Remove(activeObject.Value);
-                Halo2.GetReferenceObject(activeObject.Value, true);
-                Halo2.GetReferenceObject(model.renderModel.TagID, true);
-                manager.Add(activeObject.Value);
-                LoadPropertyGrid();
-            }
+            //var model = (Halo2.GetReferenceObject(this.activeObject.Value) as HierarchyModel);
+            //if (activeObject.HasValue && model != null && Halo2.ObjectChanged(model.renderModel.TagID))
+            //{
+            //    manager.Remove(activeObject.Value);
+            //    Halo2.GetReferenceObject(activeObject.Value, true);
+            //    Halo2.GetReferenceObject(model.renderModel.TagID, true);
+            //    manager.Add(activeObject.Value);
+            //    LoadPropertyGrid();
+            //}
         }
 
         private void UpdateGUI()
@@ -84,7 +84,7 @@ namespace Moonfish.Graphics
             foreach (var item in selectableObjects)
             {
                 var origin = item.WorldTransform.ExtractTranslation();
-                var scale = camera.CreateScale(origin, 0.1f, pixelSize: 25);
+                var scale = camera.CreateScale(origin, 0.1f, pixelSize: 10);
                 var scaleMatrix = Matrix4.CreateScale(scale);
                 var inverseScaleMatrix = Matrix4.CreateScale(item.WorldTransform.ExtractScale()).Inverted();
                 item.WorldTransform = scaleMatrix * inverseScaleMatrix * item.WorldTransform;
@@ -126,7 +126,7 @@ namespace Moonfish.Graphics
                 mousePole.Render(viewscreenProgram);
                 using (system_program.Use())
                 {
-                    collisionWorld.DebugDrawWorld();
+                    //collisionWorld.DebugDrawWorld();
                 }
             }
             glControl1.SwapBuffers();
@@ -180,7 +180,7 @@ namespace Moonfish.Graphics
 
             // initialize OpenGL
 
-            GL.ClearColor(Color.FromArgb(0x1E1E1E));
+            GL.ClearColor(Colours.ClearColour);
             this.BackColor = Color.FromArgb(0xFF, 0x39, 0x39, 0x39);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.PolygonMode(MaterialFace.Back, PolygonMode.Fill);
@@ -189,26 +189,19 @@ namespace Moonfish.Graphics
             GL.Disable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
             GL.Enable(EnableCap.DepthTest);
-            GL.PointSize(2.0f);
 
             // initialize manager
             manager = new MeshManager(program, system_program);
-            // slider = new ArrowSlider(Vector3.UnitZ, Vector3.UnitX, Vector3.UnitY, Color.Red);
-            // LoadScenerio();
-            gizmo = new TranslationGizmo();
-            camera.CameraUpdated += gizmo.Update;
             mousePole = new MousePole2D(ActiveCamera);
             camera.CameraUpdated += mousePole.OnCameraUpdate;
             LoadPhysics();
 
-
             grid = new CoordinateGrid();
             LoadModels();
-            //LoadMeshes();
+
             DebugDrawer.debugProgram = system_program;
 
             gl_loaded = true;
-
 
             glControl1_Resize(this, new EventArgs());
         }
@@ -297,14 +290,15 @@ namespace Moonfish.Graphics
         }
 
         List<BulletSharp.CollisionObject> selectableObjects = new List<BulletSharp.CollisionObject>();
-        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        private async void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (!e.IsSelected) return;
             var tag = e.Item.Tag as Tag;
             if (tag != null)
             {
                 activeObject = tag.Identifier;
-                manager.Add(activeObject.Value);
+
+                bool b = await manager.Add(activeObject.Value);
 
                 foreach (var item in selectableObjects)
                 {
@@ -391,16 +385,20 @@ namespace Moonfish.Graphics
                     this.activeObject = null;
                     var directory = Path.GetDirectoryName(dialog.FileName);
                     var maps = Directory.GetFiles(directory, "*.map", SearchOption.TopDirectoryOnly);
-                    var resourceMaps = maps.Where(x =>
-                    {
-                        var type = Halo2.CheckMapType(x);
-                        return type == MapStream.MapType.Shared
-                            || type == MapStream.MapType.MainMenu
-                            || type == MapStream.MapType.SinglePlayerShared;
-                    }).Select(x => new MapStream(x)).ToList();
-                    resourceMaps.ForEach(x => Halo2.LoadResource(x));
+                    var resourceMaps = maps.GroupBy(
+                        x =>
+                        {
+                            return Halo2.CheckMapType(x);
+                        }
+                    ).Where(x => x.Key == MapType.MainMenu
+                        || x.Key == MapType.Shared
+                        || x.Key == MapType.SinglePlayerShared)
+                        .Select(g => g.First()).ToList();
+                    resourceMaps.ForEach(x => Halo2.LoadResource(new MapStream(x)));
+                    StaticBenchmark.Begin();
 
                     this.map = new MapStream(dialog.FileName);
+                    StaticBenchmark.End();
                     this.Text = string.Format("{0} - Moonfish Marker Viewer 2014 for Remnantmods", (this.map as FileStream).Name);
                     LoadModels();
                 }

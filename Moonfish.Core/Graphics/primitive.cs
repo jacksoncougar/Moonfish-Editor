@@ -9,9 +9,9 @@ namespace Moonfish.Graphics
 {
     class Grid : IDisposable
     {
-        int array_buffer_id;
-        int index_buffer_id;
-        int vertex_array_buffer_id;
+        protected int array_buffer_id;
+        protected int index_buffer_id;
+        protected int vertex_array_buffer_id;
 
         protected Vector3[] Vertices;
         protected ushort[] Indices;
@@ -139,12 +139,9 @@ namespace Moonfish.Graphics
     {
         Vector3[] DiffuseColours;
 
-        int array_buffer_id;
-        int index_buffer_id;
-        int vertex_array_buffer_id;
 
         public CoordinateGrid()
-            : base(new Vector3(-8, -8, 0), new Vector2(16, 16), 16, 16)
+            : base(new Vector3(-4, -4, 0), new Vector2(8, 8), 16, 16)
         {
             // generate diffuse colours
             int count = 2 * (17 + 17);
@@ -153,10 +150,10 @@ namespace Moonfish.Graphics
             {
                 DiffuseColours[i] = new Vector3(0.22f, 0.22f, 0.22f);
             }
-            DiffuseColours[16] = new Vector3(132f / 255f, 32f / 255f, 32f / 255f);
-            DiffuseColours[17] = new Vector3(132f / 255f, 32f / 255f, 32f / 255f);
-            DiffuseColours[50] = new Vector3(22f / 255f, 132f / 255f, 22f / 255f);
-            DiffuseColours[51] = new Vector3(22f / 255f, 132f / 255f, 22f / 255f);
+            DiffuseColours[50] = new Vector3(132f / 255f, 32f / 255f, 32f / 255f);
+            DiffuseColours[51] = new Vector3(132f / 255f, 32f / 255f, 32f / 255f);
+            DiffuseColours[16] = new Vector3(22f / 255f, 132f / 255f, 22f / 255f);
+            DiffuseColours[17] = new Vector3(22f / 255f, 132f / 255f, 22f / 255f);
 
             GenerateOpenGLBuffers();
         }
@@ -164,9 +161,9 @@ namespace Moonfish.Graphics
         private void GenerateOpenGLBuffers()
         {
             // generate buffers
-            vertex_array_buffer_id = GL.GenVertexArray();
-            array_buffer_id = GL.GenBuffer();
-            index_buffer_id = GL.GenBuffer();
+            base.vertex_array_buffer_id = GL.GenVertexArray();
+            base.array_buffer_id = GL.GenBuffer();
+            base.index_buffer_id = GL.GenBuffer();
 
             // bind VAO
             GL.BindVertexArray(vertex_array_buffer_id);

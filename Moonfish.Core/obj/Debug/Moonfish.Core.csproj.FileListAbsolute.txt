@@ -44,3 +44,4 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sys_verte
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\fragment.frag
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\vertex.vert
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\viewscreen.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe.config

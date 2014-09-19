@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Moonfish
 {
@@ -15,12 +16,12 @@ namespace Moonfish
     /// </summary>
     public static class Halo2
     {
-        public static MapStream.MapType CheckMapType(string filename)
+        public static MapType CheckMapType(string filename)
         {
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(filename)))
+            using (BinaryReader reader = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 2048, FileOptions.SequentialScan | FileOptions.Asynchronous)))
             {
                 reader.BaseStream.Seek(320, SeekOrigin.Begin);
-                return (MapStream.MapType)reader.ReadInt32();
+                return (MapType)reader.ReadInt32();
             }
         }
 
@@ -43,6 +44,13 @@ namespace Moonfish
 
         public static GlobalPaths Paths { get; set; }
 
+        public static Task<dynamic> GetReferenceObjectAsync(TagIdent identifier, bool reload = false)
+        {
+            if (mapStream == null) return null;
+            if (reload)
+                mapStream.Remove(identifier);
+            return Task.Run((Func<dynamic>)mapStream[identifier].Deserialize);
+        }
 
         public static dynamic GetReferenceObject(TagIdent identifier, bool reload = false)
         {
@@ -75,7 +83,7 @@ namespace Moonfish
             Type[] types;
             try
             {
-                types =  assembly.GetTypes();
+                types = assembly.GetTypes();
             }
             catch (ReflectionTypeLoadException e)
             {
@@ -98,13 +106,13 @@ namespace Moonfish
         {
             switch (map.Type)
             {
-                case MapStream.MapType.Shared:
+                case MapType.Shared:
                     resourceShared = map;
                     return true;
-                case MapStream.MapType.SinglePlayerShared:
+                case MapType.SinglePlayerShared:
                     resourceSinglePlayer = map;
                     return true;
-                case MapStream.MapType.MainMenu:
+                case MapType.MainMenu:
                     resourceMainMenu = map;
                     return true;
                 default:

@@ -12,6 +12,15 @@ using System.Security.Cryptography;
 
 namespace Moonfish
 {
+
+    public enum MapType
+    {
+        Multiplayer = 1,
+        MainMenu = 2,
+        Shared = 3,
+        SinglePlayerShared = 4,
+    }
+
     public static class StreamExtensions
     {
         public static IDisposable Pin(this Stream stream)
@@ -59,14 +68,6 @@ namespace Moonfish
 
         public readonly MapType Type;
 
-        public enum MapType
-        {
-            Multiplayer = 1,
-            MainMenu = 2,
-            Shared = 3,
-            SinglePlayerShared = 4,
-        }
-
         public readonly UnicodeValueNamePair[] Unicode;
         public readonly string[] Strings;
         public readonly Tag[] Tags;
@@ -80,7 +81,7 @@ namespace Moonfish
         private Dictionary<TagIdent, string> hashTags;
 
         public MapStream(string filename)
-            : base(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+            : base(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1024)
         {
             this.MemoryBlocks = new VirtualMappedAddress[2];
             //HEADER
@@ -174,7 +175,6 @@ namespace Moonfish
              * 
              *  */
             this.Seek(indexAddress, SeekOrigin.Begin);
-
             int tagClassTableVirtualAddress = bin.ReadInt32();
             this.IndexVirtualAddress = tagClassTableVirtualAddress - 32;
 
@@ -256,38 +256,40 @@ namespace Moonfish
                     }
                 }
 
-                //UNICODE
-                this.Seek(Tags[GlobalsID.Index].VirtualAddress - SecondaryMagic + 400, SeekOrigin.Begin);
-                int unicodeCount = bin.ReadInt32();
-                int unicodeTableLength = bin.ReadInt32();
-                int unicodeIndexAddress = bin.ReadInt32();
-                int unicodeTableAddress = bin.ReadInt32();
+                ////UNICODE
+                //this.Seek(Tags[GlobalsID.Index].VirtualAddress - SecondaryMagic + 400, SeekOrigin.Begin);
+                //int unicodeCount = bin.ReadInt32();
+                //int unicodeTableLength = bin.ReadInt32();
+                //int unicodeIndexAddress = bin.ReadInt32();
+                //int unicodeTableAddress = bin.ReadInt32();
 
-                Unicode = new UnicodeValueNamePair[unicodeCount];
+                //Unicode = new UnicodeValueNamePair[unicodeCount];
 
-                StringID[] strRefs = new StringID[unicodeCount];
-                int[] strOffsets = new int[unicodeCount];
+                //StringID[] strRefs = new StringID[unicodeCount];
+                //int[] strOffsets = new int[unicodeCount];
 
-                this.Seek(unicodeIndexAddress, SeekOrigin.Begin);
-                for (int i = 0; i < unicodeCount; i++)
-                {
-                    strRefs[i] = (StringID)bin.ReadInt32();
-                    strOffsets[i] = bin.ReadInt32();
-                }
-                for (int i = 0; i < unicodeCount; i++)
-                {
-                    this.Seek(unicodeTableAddress + strOffsets[i], SeekOrigin.Begin);
-                    StringBuilder unicodeString = new StringBuilder(byte.MaxValue);
-                    while (bin.PeekChar() != char.MinValue)
-                        unicodeString.Append(bin.ReadChar());
-                    Unicode[i] = new UnicodeValueNamePair { Name = strRefs[i], Value = unicodeString.ToString() };
-                }
+                //this.Seek(unicodeIndexAddress, SeekOrigin.Begin);
+                //for (int i = 0; i < unicodeCount; i++)
+                //{
+                //    strRefs[i] = (StringID)bin.ReadInt32();
+                //    strOffsets[i] = bin.ReadInt32();
+                //}
+                //for (int i = 0; i < unicodeCount; i++)
+                //{
+                //    this.Seek(unicodeTableAddress + strOffsets[i], SeekOrigin.Begin);
+                //    StringBuilder unicodeString = new StringBuilder(byte.MaxValue);
+                //    while (bin.PeekChar() != char.MinValue)
+                //        unicodeString.Append(bin.ReadChar());
+                //    Unicode[i] = new UnicodeValueNamePair { Name = strRefs[i], Value = unicodeString.ToString() };
+                //}
             }
 
             this.deserializedTags = new Dictionary<TagIdent, dynamic>(this.Tags.Length);
             this.hashTags = new Dictionary<TagIdent, string>(this.Tags.Length);
             Halo2.ActiveMap(this);
         }
+
+
 
         Tag current_tag = new Tag();
         public IMap this[string tag_class, string tag_name]
@@ -326,6 +328,9 @@ namespace Moonfish
         }
 
 
+
+
+
         dynamic IMap.Deserialize()
         {
             var tagQuery = (from tag in deserializedTags
@@ -341,6 +346,7 @@ namespace Moonfish
                              select types).FirstOrDefault();
 
             var ident = (this as IMap).Meta.Identifier;
+            
             deserializedTags[ident] = Moonfish.Tags.Deserializer.Deserialize(this, typeQuery);
             this.hashTags[ident] = CalculateTaghash(ident);
             return deserializedTags[ident];

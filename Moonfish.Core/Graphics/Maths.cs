@@ -9,6 +9,9 @@ namespace Moonfish.Graphics
 {
     public static class Maths
     {
+        public const float Phi = 1.6180339887f;
+        public const float PhiConjugate = 0.6180339887f;
+
         public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
         {
             if (val.CompareTo(min) < 0) return min;

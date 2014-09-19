@@ -1,6 +1,6 @@
 ﻿using Moonfish.Collision;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
@@ -78,92 +78,7 @@ namespace Moonfish.Graphics
             GL.DeleteBuffer(elementBuffer);
         }
     }
-
-    class TranslationGizmo : IRenderable
-    {
-        public Vector3 origin;
-
-        public MousePole axisU;
-        public MousePole axisV;
-        public MousePole axisW;
-
-        Matrix4 worldMatrix;
-        Vector3 positionU, positionV, positionW;
-        float scale = 1f;
-
-        public event MatrixChangedEventHandler OnMatrixChanged;
-
-        public TranslationGizmo()
-        {
-            worldMatrix = Matrix4.Identity;
-
-            Vector3 axisUp = Vector3.UnitZ, axisRight = Vector3.UnitX, axisForward = Vector3.UnitY;
-            axisU = new MousePole(axisUp, axisRight, axisForward, Color.Blue);
-            axisV = new MousePole(axisRight, axisUp, axisForward, Color.Red);
-            axisW = new MousePole(axisForward, axisRight, axisUp, Color.Green);
-
-            axisU.WorldMatrixChanged += AxisWorldMatrixChanged;
-            axisV.WorldMatrixChanged += AxisWorldMatrixChanged;
-            axisW.WorldMatrixChanged += AxisWorldMatrixChanged;
-
-            this.OnMatrixChanged += axisU.ParentWorldMatrixChanged;
-            this.OnMatrixChanged += axisV.ParentWorldMatrixChanged;
-            this.OnMatrixChanged += axisW.ParentWorldMatrixChanged;
-        }
-
-        void AxisWorldMatrixChanged(object sender, MatrixChangedEventArgs e)
-        {
-            if (sender == axisU)
-                positionU = e.Matrix.ExtractTranslation();
-            else if (sender == axisV)
-                positionV = e.Matrix.ExtractTranslation();
-            else if (sender == axisW)
-                positionW = e.Matrix.ExtractTranslation();
-            else return;
-
-            origin = positionU + positionV + positionW;
-            CalculateWorldMatrix();
-        }
-
-        public void Update(object sender, CameraEventArgs e)
-        {
-            this.scale = e.Camera.CreateScale(origin, 1.0f, pixelSize: 80.0f);
-            CalculateWorldMatrix();
-        }
-
-        private void CalculateWorldMatrix()
-        {
-            worldMatrix = Matrix4.CreateTranslation(origin) * Matrix4.CreateScale(scale);
-            if (OnMatrixChanged != null)
-                OnMatrixChanged(this, new MatrixChangedEventArgs(ref worldMatrix));
-        }
-
-
-
-        public void Render(IEnumerable<Program> shaderPasses)
-        {
-            {
-                var program = shaderPasses.First();
-                using (program.Use())
-                using (OpenGL.Enable(EnableCap.PrimitiveRestartFixedIndex))
-                {
-                    program["object_matrix"] = axisU.WorldMatrix * worldMatrix;
-                    axisU.Render(shaderPasses);
-                    program["object_matrix"] = axisV.WorldMatrix * worldMatrix;
-                    axisV.Render(shaderPasses);
-                    program["object_matrix"] = axisW.WorldMatrix * worldMatrix;
-                    axisW.Render(shaderPasses);
-                }
-            }
-        }
-
-        public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
+    
     public class Primitive : IDisposable
     {
         protected int elementBufferOffset;

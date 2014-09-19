@@ -1,7 +1,7 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Tags;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -142,17 +142,20 @@ namespace Moonfish.Graphics
 
                             if (selectedObjects.Contains(marker))
                             {
+                                GL.VertexAttrib3(1, Color.Black.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 7);
                                 GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 4);
                             }
                             else
                             {
-                                GL.VertexAttrib3(1, Color.WhiteSmoke.ToFloatRgba());
+                                GL.VertexAttrib3(1, Color.White.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 7);
+                                GL.VertexAttrib3(1, Color.SkyBlue.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 3);
                             }
 
-                            GL.PointSize(5.5f);
-                            DebugDrawer.DrawPoint(translation);
-                            if (selectedObjects.Contains(marker))
-                                DebugDrawer.DrawFrame(translation, rotation);
+                            DebugDrawer.DrawPoint(translation, 5);
                         }
                     }
                 }
