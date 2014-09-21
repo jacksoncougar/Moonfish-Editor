@@ -10,6 +10,7 @@ using System.Security.Permissions;
 using System.Text;
 using Fasterflect;
 using Moonfish.Graphics;
+using Moonfish.ResourceManagement;
 
 namespace Moonfish.Tags
 {
@@ -68,6 +69,20 @@ namespace Moonfish.Tags
         }
     }
 
+    public partial class GlobalGeometryCompressionInfoBlock
+    {
+        public Matrix4 ToExtentsMatrix()
+        {
+            Matrix4 extents_matrix = new Matrix4(
+                new Vector4(positionBoundsX.Length / 2, 0.0f, 0.0f, 0.0f),
+                new Vector4(0.0f, positionBoundsY.Length / 2, 0.0f, 0.0f),
+                new Vector4(0.0f, 0.0f, positionBoundsZ.Length / 2, 0.0f),
+                new Vector4(positionBoundsX.min + positionBoundsX.Length / 2, positionBoundsY.min + positionBoundsY.Length / 2, positionBoundsZ.min + positionBoundsZ.Length / 2, 1.0f)
+                );
+            return extents_matrix;
+        }
+    };
+
     [TypeConverter(typeof(ExpandableObjectConverter))]
     partial class RenderModelMarkerBlock
     {
@@ -78,11 +93,13 @@ namespace Moonfish.Tags
         public Quaternion Rotation { get { return this.rotation; } set { this.rotation = value; } }
         public float Scale { get { return this.scale; } set { this.scale = value; } }
     }
+
     [TypeConverter(typeof(MarkerGroupConverter))]
     partial class RenderModelMarkerGroupBlock
     {
         public RenderModelMarkerBlock[] Markers { get { return this.markers; } }
     }
+
     partial class RenderModelNodeBlock
     {
 
@@ -97,14 +114,28 @@ namespace Moonfish.Tags
             }
         }
     }
+
+    public partial class GlobalGeometryBlockInfoStruct
+    {
+        public int BlockAddress { get { return (int)(this.blockOffset & ~0xC0000000); } }
+        public bool IsInternal
+        {
+            get
+            {
+                return (blockOffset & 0xC0000000) == 0;
+            }
+        }
+    };
+
     partial class RenderModelSectionBlock
     {
+
+
         [ReflectionPermission(SecurityAction.Assert, Unrestricted = true)]
         public void ReadSectionData(BinaryReader sourceReader, Object item, FieldInfo field)
         {
             var originalDelegate = Deserializer.ProcessTagBlockArray.Clone();
             Deserializer.ProcessTagBlockArray = new Deserializer.ProcessTagBlockArrayDelegate(CustomProcessTagBlockArray);
-            //DeserializerOLD.PreprocessField = new DeserializerOLD.PreprocessFieldDelegate(PreprocessField);
 
             if (!geometryBlockInfo.IsInternal)
             {
@@ -137,6 +168,14 @@ namespace Moonfish.Tags
             }
         }
 
+        public bool LoadSectionData()
+        {
+            ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
+            BinaryReader reader = new BinaryReader(source);
+            this.sectionData = new[] { new RenderModelSectionDataBlock(reader) };
+            return false;
+        }
+
         private void CustomProcessTagBlockArray(BinaryReader sourceReader, object item, FieldInfo field)
         {
             Type elementType = field.FieldType.GetElementType();
@@ -148,8 +187,7 @@ namespace Moonfish.Tags
             var array = Array.CreateInstance(elementType, count);
             if (count > 0)
             {
-                var off = Marshal.OffsetOf(item.GetType(), field.Name);
-                var offset = (int)Deserializer.OffsetOf(item.GetType(), field.Name);
+                var offset = Deserializer.OffsetOf(item.GetType(), field.Name);
                 if (item.GetType() == typeof(GlobalGeometryPointDataStruct))
                 {
                     var size = Marshal.SizeOf(typeof(GlobalGeometrySectionStruct));

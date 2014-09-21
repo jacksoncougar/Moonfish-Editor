@@ -20,6 +20,9 @@ namespace Moonfish
         [STAThread]
         static void Main()
         {
+            //GuerillaCs ripper = new GuerillaCs(@"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe");
+            //ripper.DumpTagLayout(@"C:\Users\stem\Documents\h2pc to h2xbox", "mode", "RenderModel");
+            //return;
             //GuerillaToEnt ripper = new GuerillaToEnt();
             //foreach (var tag in ripper.DumpTagLayout(@"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe", @"C:\Users\stem\Documents\h2pc to h2xbox", ""))
             //{

@@ -1,117 +1,399 @@
 ﻿using Moonfish.Model;
 using OpenTK;
 using System;
-using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
+using System.IO;
+using Moonfish.ResourceManagement;
 using System.Linq;
-using Fasterflect;
-using System.Security.Permissions;
+using System.Collections.Generic;
 
 namespace Moonfish.Tags
 {
-    [StructLayout(LayoutKind.Sequential, Size = 132, Pack = 0)]
+    [StructLayout(LayoutKind.Sequential, Size = 132, Pack = 4)]
     [TagClass("mode")]
-    public class RenderModel
+    public partial class RenderModel
     {
-        StringID name;
-        Flags flags;
-
-
-        [TagBlockField(Offset = 20)]
-        public GlobalGeometryCompressionInfoBlock[] compressionInfo;
-
-        [TagBlockField(Offset = 28)]
-        public RenderModelRegionBlock[] regions;
-
-        [TagBlockField(Offset = 36)]
-        public RenderModelSectionBlock[] Sections;
-
-        [TagBlockField(Offset = 72)]
-        public RenderModelNodeBlock[] nodes;
-
-        [TagBlockField(Offset = 88)]
-        public RenderModelMarkerGroupBlock[] markerGroups;
-
-        [TagBlockField(Offset = 96)]
-        public GlobalGeometryMaterialBlock[] materials;
-
-        enum Flags : short
-        {
-            RenderModelForceThirdPersonBit = 0,
-            ForceCarmackReverse = 0,
-            ForceNodeMaps = 0,
-            GeometryPostprocessed = 0,
-        }
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 528, Pack = 0)]
-    public class TagImportFileBlock
-    {
-        String256 path;
-        String32 modificationDate;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        byte[] skipinvalidName_;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 88)]
-        byte[] paddinginvalidName_0;
-        int checksumCrc32;
-        int sizeBytes;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        byte[] paddingzippedData;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-        byte[] paddinginvalidName_1;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 592, Pack = 0)]
-    public class GlobalTagImportInfoBlock
-    {
-        int build;
-        String256 version;
-        String32 importDate;
-        String32 culprit;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 96)]
-        byte[] paddinginvalidName_;
-        String32 importTime;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddinginvalidName_0;
-        [TagBlockField]
-        TagImportFileBlock[] files;
+        public StringID name;
+        public Flags flags;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding;
+        #endregion
+        #region padding
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingfiles0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-        byte[] paddinginvalidName_1;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 56, Pack = 0)]
-    public class GlobalGeometryCompressionInfoBlock
-    {
-        Range positionBoundsX;
-        Range positionBoundsY;
-        Range positionBoundsZ;
-        Range texcoordBoundsX;
-        Range texcoordBoundsY;
-        Range secondaryTexcoordBoundsX;
-        Range secondaryTexcoordBoundsY;
-
-        public Matrix4 ToExtentsMatrix()
+        private byte[] padding0;
+        #endregion
+        [TagBlockField]
+        public GlobalTagImportInfoBlock[] importInfo;
+        [TagBlockField]
+        public GlobalGeometryCompressionInfoBlock[] compressionInfo;
+        [TagBlockField]
+        public RenderModelRegionBlock[] regions;
+        [TagBlockField]
+        public RenderModelSectionBlock[] sections;
+        [TagBlockField]
+        public RenderModelInvalidSectionPairsBlock[] invalidSectionPairBits;
+        [TagBlockField]
+        public RenderModelSectionGroupBlock[] sectionGroups;
+        public byte l1SectionGroupIndexSuperLow;
+        public byte l2SectionGroupIndexLow;
+        public byte l3SectionGroupIndexMedium;
+        public byte l4SectionGroupIndexHigh;
+        public byte l5SectionGroupIndexSuperHigh;
+        public byte l6SectionGroupIndexHollywood;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding1;
+        #endregion
+        public int nodeListChecksum;
+        [TagBlockField]
+        public RenderModelNodeBlock[] nodes;
+        [TagBlockField]
+        public RenderModelNodeMapBlockOLD[] nodeMapOLD;
+        [TagBlockField]
+        public RenderModelMarkerGroupBlock[] markerGroups;
+        [TagBlockField]
+        public GlobalGeometryMaterialBlock[] materials;
+        [TagBlockField]
+        public GlobalErrorReportCategoriesBlock[] errors;
+        public float dontDrawOverCameraCosineAngleDontDrawFpModelWhenCameraThisAngleCosine11Sugg020Disables;
+        [TagBlockField]
+        public PrtInfoBlock[] pRTInfo;
+        [TagBlockField]
+        public SectionRenderLeavesBlock[] sectionRenderLeaves;
+        public RenderModel()
         {
-
-            Matrix4 extents_matrix = new Matrix4(
-                new Vector4(positionBoundsX.Length / 2, 0.0f, 0.0f, 0.0f),
-                new Vector4(0.0f, positionBoundsY.Length / 2, 0.0f, 0.0f),
-                new Vector4(0.0f, 0.0f, positionBoundsZ.Length / 2, 0.0f),
-                new Vector4(positionBoundsX.min + positionBoundsX.Length / 2, positionBoundsY.min + positionBoundsY.Length / 2, positionBoundsZ.min + positionBoundsZ.Length / 2, 1.0f)
-                );
-            return extents_matrix;
         }
-    };
+        public RenderModel(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadStringID();
+            this.flags = (Flags)binaryReader.ReadInt16();
+            this.padding = binaryReader.ReadBytes(2);
+            this.padding0 = binaryReader.ReadBytes(4);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalTagImportInfoBlock));
+                this.importInfo = new GlobalTagImportInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.importInfo[i] = new GlobalTagImportInfoBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+                this.compressionInfo = new GlobalGeometryCompressionInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.compressionInfo[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelRegionBlock));
+                this.regions = new RenderModelRegionBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.regions[i] = new RenderModelRegionBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionBlock));
+                this.sections = new RenderModelSectionBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.sections[i] = new RenderModelSectionBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelInvalidSectionPairsBlock));
+                this.invalidSectionPairBits = new RenderModelInvalidSectionPairsBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.invalidSectionPairBits[i] = new RenderModelInvalidSectionPairsBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionGroupBlock));
+                this.sectionGroups = new RenderModelSectionGroupBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.sectionGroups[i] = new RenderModelSectionGroupBlock(binaryReader);
+                    }
+                }
+            }
+            this.l1SectionGroupIndexSuperLow = binaryReader.ReadByte();
+            this.l2SectionGroupIndexLow = binaryReader.ReadByte();
+            this.l3SectionGroupIndexMedium = binaryReader.ReadByte();
+            this.l4SectionGroupIndexHigh = binaryReader.ReadByte();
+            this.l5SectionGroupIndexSuperHigh = binaryReader.ReadByte();
+            this.l6SectionGroupIndexHollywood = binaryReader.ReadByte();
+            this.padding1 = binaryReader.ReadBytes(2);
+            this.nodeListChecksum = binaryReader.ReadInt32();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeBlock));
+                this.nodes = new RenderModelNodeBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.nodes[i] = new RenderModelNodeBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlockOLD));
+                this.nodeMapOLD = new RenderModelNodeMapBlockOLD[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.nodeMapOLD[i] = new RenderModelNodeMapBlockOLD(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerGroupBlock));
+                this.markerGroups = new RenderModelMarkerGroupBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.markerGroups[i] = new RenderModelMarkerGroupBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialBlock));
+                this.materials = new GlobalGeometryMaterialBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.materials[i] = new GlobalGeometryMaterialBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalErrorReportCategoriesBlock));
+                this.errors = new GlobalErrorReportCategoriesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.errors[i] = new GlobalErrorReportCategoriesBlock(binaryReader);
+                    }
+                }
+            }
+            this.dontDrawOverCameraCosineAngleDontDrawFpModelWhenCameraThisAngleCosine11Sugg020Disables = binaryReader.ReadSingle();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtInfoBlock));
+                this.pRTInfo = new PrtInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.pRTInfo[i] = new PrtInfoBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(SectionRenderLeavesBlock));
+                this.sectionRenderLeaves = new SectionRenderLeavesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.sectionRenderLeaves[i] = new SectionRenderLeavesBlock(binaryReader);
+                    }
+                }
+            }
+        }
+        [Flags]
+        public enum Flags : short
+        {
+            RenderModelForceThirdPersonBit = 1,
+            ForceCarmackReverse = 2,
+            ForceNodeMaps = 4,
+            GeometryPostprocessed = 8,
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 0)]
-    public class RenderModelPermutationBlock
+    [StructLayout(LayoutKind.Sequential, Size = 528, Pack = 4)]
+    public partial class TagImportFileBlock
+    {
+        public String256 path;
+        public String32 modificationDate;
+        #region skip
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        private byte[] skip;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 88)]
+        private byte[] padding0;
+        #endregion
+        public int checksumCrc32;
+        public int sizeBytes;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        private byte[] paddingzippedData;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        private byte[] padding1;
+        #endregion
+        public TagImportFileBlock()
+        {
+        }
+        public TagImportFileBlock(BinaryReader binaryReader)
+        {
+            this.path = binaryReader.ReadString256();
+            this.modificationDate = binaryReader.ReadString32();
+            this.skip = binaryReader.ReadBytes(8);
+            this.padding0 = binaryReader.ReadBytes(88);
+            this.checksumCrc32 = binaryReader.ReadInt32();
+            this.sizeBytes = binaryReader.ReadInt32();
+            this.paddingzippedData = binaryReader.ReadBytes(8);
+            this.padding1 = binaryReader.ReadBytes(128);
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 592, Pack = 4)]
+    public partial class GlobalTagImportInfoBlock
+    {
+        public int build;
+        public String256 version;
+        public String32 importDate;
+        public String32 culprit;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 96)]
+        private byte[] padding;
+        #endregion
+        public String32 importTime;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        private byte[] padding0;
+        #endregion
+        [TagBlockField]
+        public TagImportFileBlock[] files;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        private byte[] padding1;
+        #endregion
+        public GlobalTagImportInfoBlock()
+        {
+        }
+        public GlobalTagImportInfoBlock(BinaryReader binaryReader)
+        {
+            this.build = binaryReader.ReadInt32();
+            this.version = binaryReader.ReadString256();
+            this.importDate = binaryReader.ReadString32();
+            this.culprit = binaryReader.ReadString32();
+            this.padding = binaryReader.ReadBytes(96);
+            this.importTime = binaryReader.ReadString32();
+            this.padding0 = binaryReader.ReadBytes(4);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(TagImportFileBlock));
+                this.files = new TagImportFileBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.files[i] = new TagImportFileBlock(binaryReader);
+                    }
+                }
+            }
+            this.padding1 = binaryReader.ReadBytes(128);
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 56, Pack = 4)]
+    public partial class GlobalGeometryCompressionInfoBlock
+    {
+        public Range positionBoundsX;
+        public Range positionBoundsY;
+        public Range positionBoundsZ;
+        public Range texcoordBoundsX;
+        public Range texcoordBoundsY;
+        public Range secondaryTexcoordBoundsX;
+        public Range secondaryTexcoordBoundsY;
+        public GlobalGeometryCompressionInfoBlock()
+        {
+        }
+        public GlobalGeometryCompressionInfoBlock(BinaryReader binaryReader)
+        {
+            this.positionBoundsX = binaryReader.ReadRange();
+            this.positionBoundsY = binaryReader.ReadRange();
+            this.positionBoundsZ = binaryReader.ReadRange();
+            this.texcoordBoundsX = binaryReader.ReadRange();
+            this.texcoordBoundsY = binaryReader.ReadRange();
+            this.secondaryTexcoordBoundsX = binaryReader.ReadRange();
+            this.secondaryTexcoordBoundsY = binaryReader.ReadRange();
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 4)]
+    public partial class RenderModelPermutationBlock
     {
         public StringID name;
         public short l1SectionIndexSuperLow;
@@ -120,24 +402,59 @@ namespace Moonfish.Tags
         public short l4SectionIndexHigh;
         public short l5SectionIndexSuperHigh;
         public short l6SectionIndexHollywood;
-    };
+        public RenderModelPermutationBlock()
+        {
+        }
+        public RenderModelPermutationBlock(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadStringID();
+            this.l1SectionIndexSuperLow = binaryReader.ReadInt16();
+            this.l2SectionIndexLow = binaryReader.ReadInt16();
+            this.l3SectionIndexMedium = binaryReader.ReadInt16();
+            this.l4SectionIndexHigh = binaryReader.ReadInt16();
+            this.l5SectionIndexSuperHigh = binaryReader.ReadInt16();
+            this.l6SectionIndexHollywood = binaryReader.ReadInt16();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 0)]
-    public class RenderModelRegionBlock
+    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 4)]
+    public partial class RenderModelRegionBlock
     {
         public StringID name;
         public short nodeMapOffsetOLD;
         public short nodeMapSizeOLD;
         [TagBlockField]
         public RenderModelPermutationBlock[] permutations;
-    };
+        public RenderModelRegionBlock()
+        {
+        }
+        public RenderModelRegionBlock(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadStringID();
+            this.nodeMapOffsetOLD = binaryReader.ReadInt16();
+            this.nodeMapSizeOLD = binaryReader.ReadInt16();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelPermutationBlock));
+                this.permutations = new RenderModelPermutationBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.permutations[i] = new RenderModelPermutationBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 40, Pack = 0)]
-    public class GlobalGeometrySectionInfoStruct
+    [StructLayout(LayoutKind.Sequential, Size = 40, Pack = 4)]
+    public partial class GlobalGeometrySectionInfoStruct
     {
-        //FIELD_EXPLAINATION("SECTION INFO", "EMPTY STRING"),
         public short totalVertexCount;
         public short totalTriangleCount;
         public short totalPartCount;
@@ -152,12 +469,50 @@ namespace Moonfish.Tags
         public GeometryClassification geometryClassification;
         public GeometryCompressionFlags geometryCompressionFlags;
         [TagBlockField]
-        GlobalGeometryCompressionInfoBlock[] eMPTYSTRING;
+        public GlobalGeometryCompressionInfoBlock[] eMPTYSTRING;
         public byte hardwareNodeCount;
         public byte nodeMapSize;
         public short softwarePlaneCount;
         public short totalSubpartCont;
         public SectionLightingFlags sectionLightingFlags;
+        public GlobalGeometrySectionInfoStruct()
+        {
+        }
+        public GlobalGeometrySectionInfoStruct(BinaryReader binaryReader)
+        {
+            this.totalVertexCount = binaryReader.ReadInt16();
+            this.totalTriangleCount = binaryReader.ReadInt16();
+            this.totalPartCount = binaryReader.ReadInt16();
+            this.shadowCastingTriangleCount = binaryReader.ReadInt16();
+            this.shadowCastingPartCount = binaryReader.ReadInt16();
+            this.opaquePointCount = binaryReader.ReadInt16();
+            this.opaqueVertexCount = binaryReader.ReadInt16();
+            this.opaquePartCount = binaryReader.ReadInt16();
+            this.opaqueMaxNodesVertex = binaryReader.ReadByte();
+            this.transparentMaxNodesVertex = binaryReader.ReadByte();
+            this.shadowCastingRigidTriangleCount = binaryReader.ReadInt16();
+            this.geometryClassification = (GeometryClassification)binaryReader.ReadInt16();
+            this.geometryCompressionFlags = (GeometryCompressionFlags)binaryReader.ReadInt16();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+                this.eMPTYSTRING = new GlobalGeometryCompressionInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.eMPTYSTRING[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
+                    }
+                }
+            }
+            this.hardwareNodeCount = binaryReader.ReadByte();
+            this.nodeMapSize = binaryReader.ReadByte();
+            this.softwarePlaneCount = binaryReader.ReadInt16();
+            this.totalSubpartCont = binaryReader.ReadInt16();
+            this.sectionLightingFlags = (SectionLightingFlags)binaryReader.ReadInt16();
+        }
         public enum GeometryClassification : short
         {
             Worldspace = 0,
@@ -166,46 +521,90 @@ namespace Moonfish.Tags
             Skinned = 3,
             UnsupportedReimport = 4,
         }
+        [Flags]
         public enum GeometryCompressionFlags : short
         {
-            CompressedPosition = 0,
-            CompressedTexcoord = 0,
-            CompressedSecondaryTexcoord = 0,
+            CompressedPosition = 1,
+            CompressedTexcoord = 2,
+            CompressedSecondaryTexcoord = 4,
         }
+        [Flags]
         public enum SectionLightingFlags : short
         {
-            HasLmTexcoords = 0,
-            HasLmIncRad = 0,
-            HasLmColors = 0,
-            HasLmPrt = 0,
+            HasLmTexcoords = 1,
+            HasLmIncRad = 2,
+            HasLmColors = 4,
+            HasLmPrt = 8,
         }
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 72, Pack = 0)]
-    public class GlobalGeometryPartBlockNew
+    [StructLayout(LayoutKind.Sequential, Size = 72, Pack = 4)]
+    public partial class GlobalGeometryPartBlockNew
     {
         public Type type;
         public Flags flags;
-        public ShortBlockIndex1 material; //   &global_geometry_material_block},
+        public ShortBlockIndex1 material;
         public short stripStartIndex;
         public short stripLength;
         public short firstSubpartIndex;
         public short subpartCount;
         public byte maxNodesVertex;
         public byte contributingCompoundNodeCount;
-        //FIELD_EXPLAINATION("CENTROID", "EMPTY STRING"),
         public Vector3 position;
-
-        
+        public struct NodeIndices
+        {
+            public byte nodeIndex;
+            public NodeIndices(BinaryReader binaryReader)
+            {
+                this.nodeIndex = binaryReader.ReadByte();
+            }
+        }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public byte[] nodeIndices;
-
+        public NodeIndices[] nodeIndices;
+        public struct NodeWeights
+        {
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
+        }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public float[] nodeWeights;
+        public NodeWeights[] nodeWeights;
         public float lodMipmapMagicNumber;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
-        byte[] skipinvalidName_;
+        #region skip
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
+        private byte[] skip;
+        #endregion
+        public GlobalGeometryPartBlockNew()
+        {
+        }
+        public GlobalGeometryPartBlockNew(BinaryReader binaryReader)
+        {
+            this.type = (Type)binaryReader.ReadInt16();
+            this.flags = (Flags)binaryReader.ReadInt16();
+            this.material = binaryReader.ReadShortBlockIndex1();
+            this.stripStartIndex = binaryReader.ReadInt16();
+            this.stripLength = binaryReader.ReadInt16();
+            this.firstSubpartIndex = binaryReader.ReadInt16();
+            this.subpartCount = binaryReader.ReadInt16();
+            this.maxNodesVertex = binaryReader.ReadByte();
+            this.contributingCompoundNodeCount = binaryReader.ReadByte();
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndices = new NodeIndices[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndices[i] = new NodeIndices(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[3];
+            for (int i = 0; i < 3; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.lodMipmapMagicNumber = binaryReader.ReadSingle();
+            this.skip = binaryReader.ReadBytes(24);
+        }
         public enum Type : short
         {
             NotDrawn = 0,
@@ -215,6 +614,7 @@ namespace Moonfish.Tags
             Transparent = 4,
             LightmapOnly = 5,
         }
+        [Flags]
         public enum Flags : short
         {
             Decalable = 1,
@@ -223,224 +623,581 @@ namespace Moonfish.Tags
             OverrideTriangleList = 8,
             IgnoredByLightmapper = 16,
         }
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class GlobalSubpartsBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class GlobalSubpartsBlock
     {
-        short indicesStartIndex;
-        short indicesLength;
-        short visibilityBoundsIndex;
-        short partIndex;
-    };
+        public short indicesStartIndex;
+        public short indicesLength;
+        public short visibilityBoundsIndex;
+        public short partIndex;
+        public GlobalSubpartsBlock()
+        {
+        }
+        public GlobalSubpartsBlock(BinaryReader binaryReader)
+        {
+            this.indicesStartIndex = binaryReader.ReadInt16();
+            this.indicesLength = binaryReader.ReadInt16();
+            this.visibilityBoundsIndex = binaryReader.ReadInt16();
+            this.partIndex = binaryReader.ReadInt16();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 20, Pack = 0)]
-    public class GlobalVisibilityBoundsBlock
+    [StructLayout(LayoutKind.Sequential, Size = 20, Pack = 4)]
+    public partial class GlobalVisibilityBoundsBlock
     {
-        float positionX;
-        float positionY;
-        float positionZ;
-        float radius;
-        byte node0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        byte[] paddinginvalidName_;
-    };
+        public float positionX;
+        public float positionY;
+        public float positionZ;
+        public float radius;
+        public byte node0;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        private byte[] padding;
+        #endregion
+        public GlobalVisibilityBoundsBlock()
+        {
+        }
+        public GlobalVisibilityBoundsBlock(BinaryReader binaryReader)
+        {
+            this.positionX = binaryReader.ReadSingle();
+            this.positionY = binaryReader.ReadSingle();
+            this.positionZ = binaryReader.ReadSingle();
+            this.radius = binaryReader.ReadSingle();
+            this.node0 = binaryReader.ReadByte();
+            this.padding = binaryReader.ReadBytes(3);
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 172, Pack = 0)]
-    public class GlobalGeometrySectionRawVertexBlock
+    [StructLayout(LayoutKind.Sequential, Size = 196, Pack = 4)]
+    public partial class GlobalGeometrySectionRawVertexBlock
     {
-        Vector3 position;
-
-        struct NodeIndicesOLD
+        public Vector3 position;
+        public struct NodeIndicesOLD
         {
-            int nodeIndexOLD;
+            public int nodeIndexOLD;
+            public NodeIndicesOLD(BinaryReader binaryReader)
+            {
+                this.nodeIndexOLD = binaryReader.ReadInt32();
+            }
         }
-        NodeIndicesOLD nodeIndicesOLD;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndicesOLD0;
-
-        struct NodeWeights
+        public NodeIndicesOLD[] nodeIndicesOLD;
+        public struct NodeWeights
         {
-            float nodeWeight;
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
         }
-        NodeWeights nodeWeights;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeWeights0;
-
-        struct NodeIndicesNEW
+        public NodeWeights[] nodeWeights;
+        public struct NodeIndicesNEW
         {
-            int nodeIndexNEW;
+            public int nodeIndexNEW;
+            public NodeIndicesNEW(BinaryReader binaryReader)
+            {
+                this.nodeIndexNEW = binaryReader.ReadInt32();
+            }
         }
-        NodeIndicesNEW nodeIndicesNEW;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndicesNEW0;
-        int useNewNodeIndices;
-        int adjustedCompoundNodeIndex;
-        Vector2 texcoord;
-        Vector3 normal;
-        Vector3 binormal;
-        Vector3 tangent;
-        Vector3 anisotropicBinormal;
-        Vector2 secondaryTexcoord;
-        ColorR8G8B8 primaryLightmapColor;
-        Vector2 primaryLightmapTexcoord;
-        Vector3 primaryLightmapIncidentDirection;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
-        byte[] paddinginvalidName_;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        byte[] paddinginvalidName_0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
-        byte[] paddinginvalidName_1;
-    };
+        public NodeIndicesNEW[] nodeIndicesNEW;
+        public int useNewNodeIndices;
+        public int adjustedCompoundNodeIndex;
+        public Vector2 texcoord;
+        public Vector3 normal;
+        public Vector3 binormal;
+        public Vector3 tangent;
+        public Vector3 anisotropicBinormal;
+        public Vector2 secondaryTexcoord;
+        public ColorR8G8B8 primaryLightmapColor;
+        public Vector2 primaryLightmapTexcoord;
+        public Vector3 primaryLightmapIncidentDirection;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        private byte[] padding;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        private byte[] padding0;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        private byte[] padding1;
+        #endregion
+        public GlobalGeometrySectionRawVertexBlock()
+        {
+        }
+        public GlobalGeometrySectionRawVertexBlock(BinaryReader binaryReader)
+        {
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndicesOLD = new NodeIndicesOLD[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndicesOLD[i] = new NodeIndicesOLD(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.nodeIndicesNEW = new NodeIndicesNEW[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndicesNEW[i] = new NodeIndicesNEW(binaryReader);
+            }
+            this.useNewNodeIndices = binaryReader.ReadInt32();
+            this.adjustedCompoundNodeIndex = binaryReader.ReadInt32();
+            this.texcoord = binaryReader.ReadVector2();
+            this.normal = binaryReader.ReadVector3();
+            this.binormal = binaryReader.ReadVector3();
+            this.tangent = binaryReader.ReadVector3();
+            this.anisotropicBinormal = binaryReader.ReadVector3();
+            this.secondaryTexcoord = binaryReader.ReadVector2();
+            this.primaryLightmapColor = binaryReader.ReadColorR8G8B8();
+            this.primaryLightmapTexcoord = binaryReader.ReadVector2();
+            this.primaryLightmapIncidentDirection = binaryReader.ReadVector3();
+            this.padding = binaryReader.ReadBytes(12);
+            this.padding0 = binaryReader.ReadBytes(8);
+            this.padding1 = binaryReader.ReadBytes(12);
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 2, Pack = 0)]
-    public struct GlobalGeometrySectionStripIndexBlock
+    [StructLayout(LayoutKind.Sequential, Size = 2, Pack = 4)]
+    public partial class GlobalGeometrySectionStripIndexBlock
     {
         public short index;
-
-        public override string ToString()
+        public GlobalGeometrySectionStripIndexBlock()
         {
-            return index.ToString();
         }
-    };
+        public GlobalGeometrySectionStripIndexBlock(BinaryReader binaryReader)
+        {
+            this.index = binaryReader.ReadInt16();
+        }
+    }
 
-
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class GlobalGeometrySectionVertexBufferBlock
+    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 4)]
+    public partial class GlobalGeometrySectionVertexBufferBlock
     {
         public VertexBuffer vertexBuffer;
-    };
+        public GlobalGeometrySectionVertexBufferBlock()
+        {
+        }
+        public GlobalGeometrySectionVertexBufferBlock(BinaryReader binaryReader)
+        {
+            this.vertexBuffer = binaryReader.ReadVertexBuffer();
+        }
+    }
 
-
-    [StructLayout(LayoutKind.Sequential, Size = 68, Pack = 0)]
-    public class GlobalGeometrySectionStruct
+    [StructLayout(LayoutKind.Sequential, Size = 68, Pack = 4)]
+    public partial class GlobalGeometrySectionStruct
     {
         [TagBlockField]
         public GlobalGeometryPartBlockNew[] parts;
-
         [TagBlockField]
         public GlobalSubpartsBlock[] subparts;
-
         [TagBlockField]
         public GlobalVisibilityBoundsBlock[] visibilityBounds;
-
         [TagBlockField]
         public GlobalGeometrySectionRawVertexBlock[] rawVertices;
-
         [TagBlockField]
         public GlobalGeometrySectionStripIndexBlock[] stripIndices;
-
-        [TagBlockField]
-        byte[] paddingvisibilityMoppCode;
-
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        private byte[] paddingvisibilityMoppCode;
+        #endregion
         [TagBlockField]
         public GlobalGeometrySectionStripIndexBlock[] moppReorderTable;
-
         [TagBlockField]
         public GlobalGeometrySectionVertexBufferBlock[] vertexBuffers;
-
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 44, Pack = 0)]
-    public class GlobalGeometryRawPointBlock
-    {
-        Vector3 position;
-
+        #region padding
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        int[] nodeIndicesOLD;
+        private byte[] padding;
+        #endregion
+        public GlobalGeometrySectionStruct()
+        {
+        }
+        public GlobalGeometrySectionStruct(BinaryReader binaryReader)
+        {
+            {
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPartBlockNew));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.parts = new GlobalGeometryPartBlockNew[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.parts[i] = new GlobalGeometryPartBlockNew(binaryReader);
+                    }
+                }
+            }
+            {
 
+                var elementSize = Marshal.SizeOf(typeof(GlobalSubpartsBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.subparts = new GlobalSubpartsBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.subparts[i] = new GlobalSubpartsBlock(binaryReader);
+                    }
+                }
+            }
+            {
+
+                var elementSize = Marshal.SizeOf(typeof(GlobalVisibilityBoundsBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.visibilityBounds = new GlobalVisibilityBoundsBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.visibilityBounds[i] = new GlobalVisibilityBoundsBlock(binaryReader);
+                    }
+                }
+            }
+            {
+
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionRawVertexBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.rawVertices = new GlobalGeometrySectionRawVertexBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.rawVertices[i] = new GlobalGeometrySectionRawVertexBlock(binaryReader);
+                    }
+                }
+            }
+            {
+
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.stripIndices = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.stripIndices[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
+                    }
+                }
+            }
+            this.paddingvisibilityMoppCode = binaryReader.ReadBytes(8);
+            {
+
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.moppReorderTable = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.moppReorderTable[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.vertexBuffers = new GlobalGeometrySectionVertexBufferBlock[blamPointer.Count];
+                List<BlamPointer> vertexBufferPointers = null;
+                if (binaryReader.BaseStream is ResourceStream)
+                {
+                    var stream = binaryReader.BaseStream as ResourceStream;
+                    vertexBufferPointers = stream.Resources.Where(x => x.type == GlobalGeometryBlockResourceBlock.Type.VertexBuffer)
+                    .Select(x=>
+                    {                        
+                        var count = x.resourceDataSize;
+                        var address = x.resourceDataOffset + stream.HeaderSize;
+                        var size = 1;
+                        return new BlamPointer(count, address, size);                        
+                    }).ToList();
+                }
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.vertexBuffers[i] = new GlobalGeometrySectionVertexBufferBlock(binaryReader);
+                        if (vertexBufferPointers != null)
+                        {
+                            binaryReader.BaseStream.Position = vertexBufferPointers[i].Address;
+                            this.vertexBuffers[i].vertexBuffer.Data = binaryReader.ReadBytes(vertexBufferPointers[i].Count);
+                        }
+                    }
+                }
+            }
+            this.padding = binaryReader.ReadBytes(4);
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 68, Pack = 4)]
+    public partial class GlobalGeometryRawPointBlock
+    {
+        public Vector3 position;
+        public struct NodeIndicesOLD
+        {
+            public int nodeIndexOLD;
+            public NodeIndicesOLD(BinaryReader binaryReader)
+            {
+                this.nodeIndexOLD = binaryReader.ReadInt32();
+            }
+        }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        float[] nodeWeights;
-
+        public NodeIndicesOLD[] nodeIndicesOLD;
+        public struct NodeWeights
+        {
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
+        }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        int[] nodeIndicesNEW;
-        int useNewNodeIndices;
-        int adjustedCompoundNodeIndex;
-    };
+        public NodeWeights[] nodeWeights;
+        public struct NodeIndicesNEW
+        {
+            public int nodeIndexNEW;
+            public NodeIndicesNEW(BinaryReader binaryReader)
+            {
+                this.nodeIndexNEW = binaryReader.ReadInt32();
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public NodeIndicesNEW[] nodeIndicesNEW;
+        public int useNewNodeIndices;
+        public int adjustedCompoundNodeIndex;
+        public GlobalGeometryRawPointBlock()
+        {
+        }
+        public GlobalGeometryRawPointBlock(BinaryReader binaryReader)
+        {
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndicesOLD = new NodeIndicesOLD[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndicesOLD[i] = new NodeIndicesOLD(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.nodeIndicesNEW = new NodeIndicesNEW[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndicesNEW[i] = new NodeIndicesNEW(binaryReader);
+            }
+            this.useNewNodeIndices = binaryReader.ReadInt32();
+            this.adjustedCompoundNodeIndex = binaryReader.ReadInt32();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 0)]
-    public class GlobalGeometryRigidPointGroupBlock
+    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 4)]
+    public partial class GlobalGeometryRigidPointGroupBlock
     {
-        byte rigidNodeIndex;
-        byte nodesPoint;
-        short pointCount;
-    };
+        public byte rigidNodeIndex;
+        public byte nodesPoint;
+        public short pointCount;
+        public GlobalGeometryRigidPointGroupBlock()
+        {
+        }
+        public GlobalGeometryRigidPointGroupBlock(BinaryReader binaryReader)
+        {
+            this.rigidNodeIndex = binaryReader.ReadByte();
+            this.nodesPoint = binaryReader.ReadByte();
+            this.pointCount = binaryReader.ReadInt16();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 2, Pack = 0)]
-    public class GlobalGeometryPointDataIndexBlock
+    [StructLayout(LayoutKind.Sequential, Size = 2, Pack = 4)]
+    public partial class GlobalGeometryPointDataIndexBlock
     {
-        short index;
-    };
+        public short index;
+        public GlobalGeometryPointDataIndexBlock()
+        {
+        }
+        public GlobalGeometryPointDataIndexBlock(BinaryReader binaryReader)
+        {
+            this.index = binaryReader.ReadInt16();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class GlobalGeometryPointDataStruct
+    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 4)]
+    public partial class GlobalGeometryPointDataStruct
     {
         [TagBlockField]
-        GlobalGeometryRawPointBlock[] rawPoints;
+        public GlobalGeometryRawPointBlock[] rawPoints;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        private byte[] paddingruntimePointData;
+        #endregion
         [TagBlockField]
-        byte[] paddingruntimePointData;
+        public GlobalGeometryRigidPointGroupBlock[] rigidPointGroups;
         [TagBlockField]
-        GlobalGeometryRigidPointGroupBlock[] rigidPointGroups;
-        [TagBlockField]
-        GlobalGeometryPointDataIndexBlock[] vertexPointIndices;
-    };
+        public GlobalGeometryPointDataIndexBlock[] vertexPointIndices;
+        public GlobalGeometryPointDataStruct()
+        {
+        }
+        public GlobalGeometryPointDataStruct(BinaryReader binaryReader)
+        {
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRawPointBlock));
+                this.rawPoints = new GlobalGeometryRawPointBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.rawPoints[i] = new GlobalGeometryRawPointBlock(binaryReader);
+                    }
+                }
+            }
+            this.paddingruntimePointData = binaryReader.ReadBytes(8);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRigidPointGroupBlock));
+                this.rigidPointGroups = new GlobalGeometryRigidPointGroupBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.rigidPointGroups[i] = new GlobalGeometryRigidPointGroupBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPointDataIndexBlock));
+                this.vertexPointIndices = new GlobalGeometryPointDataIndexBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.vertexPointIndices[i] = new GlobalGeometryPointDataIndexBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 1, Pack = 0)]
-    public class RenderModelNodeMapBlock
+    [StructLayout(LayoutKind.Sequential, Size = 1, Pack = 4)]
+    public partial class RenderModelNodeMapBlock
     {
-        byte nodeIndex;
-    };
+        public byte nodeIndex;
+        public RenderModelNodeMapBlock()
+        {
+        }
+        public RenderModelNodeMapBlock(BinaryReader binaryReader)
+        {
+            this.nodeIndex = binaryReader.ReadByte();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 112, Pack = 0)]
-    public class RenderModelSectionDataBlock
+    [StructLayout(LayoutKind.Sequential, Size = 112, Pack = 4)]
+    public partial class RenderModelSectionDataBlock
     {
         [TagStructField]
         public GlobalGeometrySectionStruct section;
         [TagStructField]
         public GlobalGeometryPointDataStruct pointData;
-        //[TagBlockField]
-        //RenderModelNodeMapBlock[] nodeMap;
-        //[TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        //byte[] paddingnodeMap0;
-        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        //byte[] paddinginvalidName_;
-    };
-
-    public partial class GlobalGeometryBlockInfoStruct
-    {
-        public int BlockAddress { get { return (int)(this.blockOffset & ~0xC0000000); } }
-        public bool IsInternal
+        [TagBlockField]
+        public RenderModelNodeMapBlock[] nodeMap;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        private byte[] padding;
+        #endregion
+        public RenderModelSectionDataBlock()
         {
-            get
-            {
-                return (blockOffset & 0xC0000000) == 0;
-            }
         }
-    };
+        public RenderModelSectionDataBlock(BinaryReader binaryReader)
+        {
+            this.section = new GlobalGeometrySectionStruct(binaryReader);
+            this.pointData = new GlobalGeometryPointDataStruct(binaryReader);
+            {
+                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlock));
+                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+                this.nodeMap = new RenderModelNodeMapBlock[blamPointer.Count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < blamPointer.Count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = blamPointer[i];
+                        this.nodeMap[i] = new RenderModelNodeMapBlock(binaryReader);
+                    }
+                }
+            }
+            this.padding = binaryReader.ReadBytes(4);
+        }
+    }
 
-
-    [StructLayout(LayoutKind.Sequential, Size = 92, Pack = 0)]
+    [StructLayout(LayoutKind.Sequential, Size = 92, Pack = 4)]
     public partial class RenderModelSectionBlock
     {
         public GlobalGeometryClassificationEnumDefinition globalGeometryClassificationEnumDefinition;
-        [TagStructField(Offset = 4)]
-        public GlobalGeometrySectionInfoStruct sectionInfo; //44
-        public ShortBlockIndex1 rigidNode; //   &render_model_node_block},
-        public Flags flags;//48
-        [TagBlockField(UsesCustomFunction = true)]
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding;
+        #endregion
+        [TagStructField]
+        public GlobalGeometrySectionInfoStruct sectionInfo;
+        public ShortBlockIndex1 rigidNode;
+        public Flags flags;
+        [TagBlockField]
         public RenderModelSectionDataBlock[] sectionData;
         [TagStructField]
         public GlobalGeometryBlockInfoStruct geometryBlockInfo;
+        public RenderModelSectionBlock()
+        {
+        }
+        public RenderModelSectionBlock(BinaryReader binaryReader)
+        {
+            this.globalGeometryClassificationEnumDefinition = (GlobalGeometryClassificationEnumDefinition)binaryReader.ReadInt16();
+            this.padding = binaryReader.ReadBytes(2);
+            this.sectionInfo = new GlobalGeometrySectionInfoStruct(binaryReader);
+            this.rigidNode = binaryReader.ReadShortBlockIndex1();
+            this.flags = (Flags)binaryReader.ReadInt16();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionDataBlock));
+                this.sectionData = new RenderModelSectionDataBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.sectionData[i] = new RenderModelSectionDataBlock(binaryReader);
+                    }
+                }
+            }
+            this.geometryBlockInfo = new GlobalGeometryBlockInfoStruct(binaryReader);
+        }
         public enum GlobalGeometryClassificationEnumDefinition : short
         {
             Worldspace = 0,
@@ -449,73 +1206,122 @@ namespace Moonfish.Tags
             Skinned = 3,
             UnsupportedReimport = 4,
         }
+        [Flags]
         public enum Flags : short
         {
-            GeometryPostprocessed = 0,
+            GeometryPostprocessed = 1,
         }
-        
-        
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 0)]
-    public class RenderModelInvalidSectionPairsBlock
+    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 4)]
+    public partial class RenderModelInvalidSectionPairsBlock
     {
-        int bits;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 0)]
-    public class RenderModelCompoundNodeBlock
-    {
-
-        struct NodeIndices
+        public int bits;
+        public RenderModelInvalidSectionPairsBlock()
         {
-            byte nodeIndex;
         }
-        NodeIndices nodeIndices;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndices0;
-
-        struct NodeWeights
+        public RenderModelInvalidSectionPairsBlock(BinaryReader binaryReader)
         {
-            float nodeWeight;
+            this.bits = binaryReader.ReadInt32();
         }
-        NodeWeights nodeWeights;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeWeights0;
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 0)]
-    public class RenderModelSectionGroupBlock
+    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 4)]
+    public partial class RenderModelCompoundNodeBlock
     {
-        DetailLevels detailLevels;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        byte[] paddinginvalidName_;
+        public struct NodeIndices
+        {
+            public byte nodeIndex;
+            public NodeIndices(BinaryReader binaryReader)
+            {
+                this.nodeIndex = binaryReader.ReadByte();
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public NodeIndices[] nodeIndices;
+        public struct NodeWeights
+        {
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public NodeWeights[] nodeWeights;
+        public RenderModelCompoundNodeBlock()
+        {
+        }
+        public RenderModelCompoundNodeBlock(BinaryReader binaryReader)
+        {
+            this.nodeIndices = new NodeIndices[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndices[i] = new NodeIndices(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[3];
+            for (int i = 0; i < 3; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 4)]
+    public partial class RenderModelSectionGroupBlock
+    {
+        public DetailLevels detailLevels;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding;
+        #endregion
         [TagBlockField]
-        RenderModelCompoundNodeBlock[] compoundNodes;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingcompoundNodes0;
-        enum DetailLevels : short
+        public RenderModelCompoundNodeBlock[] compoundNodes;
+        public RenderModelSectionGroupBlock()
         {
-            L1SuperLow = 0,
-            L2Low = 0,
-            L3Medium = 0,
-            L4High = 0,
-            L5SuperHigh = 0,
-            L6Hollywood = 0,
         }
-    };
+        public RenderModelSectionGroupBlock(BinaryReader binaryReader)
+        {
+            this.detailLevels = (DetailLevels)binaryReader.ReadInt16();
+            this.padding = binaryReader.ReadBytes(2);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelCompoundNodeBlock));
+                this.compoundNodes = new RenderModelCompoundNodeBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.compoundNodes[i] = new RenderModelCompoundNodeBlock(binaryReader);
+                    }
+                }
+            }
+        }
+        [Flags]
+        public enum DetailLevels : short
+        {
+            L1SuperLow = 1,
+            L2Low = 2,
+            L3Medium = 4,
+            L4High = 8,
+            L5SuperHigh = 16,
+            L6Hollywood = 32,
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 96, Pack = 0)]
+    [StructLayout(LayoutKind.Sequential, Size = 96, Pack = 4)]
     public partial class RenderModelNodeBlock
     {
         public StringID name;
-        public ShortBlockIndex1 parentNode; //   &render_model_node_block},
-        public ShortBlockIndex1 firstChildNode; //   &render_model_node_block},
-        public ShortBlockIndex1 nextSiblingNode; //   &render_model_node_block},
+        public ShortBlockIndex1 parentNode;
+        public ShortBlockIndex1 firstChildNode;
+        public ShortBlockIndex1 nextSiblingNode;
         public short importNodeIndex;
         public Vector3 defaultTranslation;
         public Quaternion defaultRotation;
@@ -525,453 +1331,1014 @@ namespace Moonfish.Tags
         public Vector3 inversePosition;
         public float inverseScale;
         public float distanceFromParent;
-    };
+        public RenderModelNodeBlock()
+        {
+        }
+        public RenderModelNodeBlock(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadStringID();
+            this.parentNode = binaryReader.ReadShortBlockIndex1();
+            this.firstChildNode = binaryReader.ReadShortBlockIndex1();
+            this.nextSiblingNode = binaryReader.ReadShortBlockIndex1();
+            this.importNodeIndex = binaryReader.ReadInt16();
+            this.defaultTranslation = binaryReader.ReadVector3();
+            this.defaultRotation = binaryReader.ReadQuaternion();
+            this.inverseForward = binaryReader.ReadVector3();
+            this.inverseLeft = binaryReader.ReadVector3();
+            this.inverseUp = binaryReader.ReadVector3();
+            this.inversePosition = binaryReader.ReadVector3();
+            this.inverseScale = binaryReader.ReadSingle();
+            this.distanceFromParent = binaryReader.ReadSingle();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 1, Pack = 0)]
-    public class RenderModelNodeMapBlockOLD
+    [StructLayout(LayoutKind.Sequential, Size = 1, Pack = 4)]
+    public partial class RenderModelNodeMapBlockOLD
     {
-        byte nodeIndex;
-    };
+        public byte nodeIndex;
+        public RenderModelNodeMapBlockOLD()
+        {
+        }
+        public RenderModelNodeMapBlockOLD(BinaryReader binaryReader)
+        {
+            this.nodeIndex = binaryReader.ReadByte();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 36, Pack = 0)]
-    [TagBlockLayout(Size = 36)]
+    [StructLayout(LayoutKind.Sequential, Size = 36, Pack = 4)]
     public partial class RenderModelMarkerBlock
     {
         public byte regionIndex;
         public byte permutationIndex;
         public byte nodeIndex;
         #region padding
-        byte padding; 
+        private byte padding;
         #endregion
         public Vector3 translation;
         public Quaternion rotation;
         public float scale;
-    };
+        public RenderModelMarkerBlock()
+        {
+        }
+        public RenderModelMarkerBlock(BinaryReader binaryReader)
+        {
+            this.regionIndex = binaryReader.ReadByte();
+            this.permutationIndex = binaryReader.ReadByte();
+            this.nodeIndex = binaryReader.ReadByte();
+            this.padding = binaryReader.ReadByte();
+            this.translation = binaryReader.ReadVector3();
+            this.rotation = binaryReader.ReadQuaternion();
+            this.scale = binaryReader.ReadSingle();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 0)]
+    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 4)]
     public partial class RenderModelMarkerGroupBlock
     {
         public StringID name;
         [TagBlockField]
         public RenderModelMarkerBlock[] markers;
-    };
+        public RenderModelMarkerGroupBlock()
+        {
+        }
+        public RenderModelMarkerGroupBlock(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadStringID();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerBlock));
+                this.markers = new RenderModelMarkerBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.markers[i] = new RenderModelMarkerBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class GlobalGeometryMaterialPropertyBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class GlobalGeometryMaterialPropertyBlock
     {
-        Type type;
-        short intValue;
-        float realValue;
-        enum Type : short
+        public Type type;
+        public short intValue;
+        public float realValue;
+        public GlobalGeometryMaterialPropertyBlock()
+        {
+        }
+        public GlobalGeometryMaterialPropertyBlock(BinaryReader binaryReader)
+        {
+            this.type = (Type)binaryReader.ReadInt16();
+            this.intValue = binaryReader.ReadInt16();
+            this.realValue = binaryReader.ReadSingle();
+        }
+        public enum Type : short
         {
             LightmapResolution = 0,
             LightmapPower = 1,
             LightmapHalfLife = 2,
             LightmapDiffuseScale = 3,
         }
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class GlobalGeometryMaterialBlock
+    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 4)]
+    public partial class GlobalGeometryMaterialBlock
     {
         [TagReference("shad")]
-        TagReference oldShader;
+        public TagReference oldShader;
         [TagReference("shad")]
-        TagReference shader;
+        public TagReference shader;
         [TagBlockField]
-        GlobalGeometryMaterialPropertyBlock[] properties;
+        public GlobalGeometryMaterialPropertyBlock[] properties;
+        #region padding
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingproperties0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddinginvalidName_;
-        byte breakableSurfaceIndex;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        byte[] paddinginvalidName_0;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 48, Pack = 0)]
-    public class ErrorReportVerticesBlock
-    {
-        Vector3 position;
-
-        struct NodeIndices
+        private byte[] padding;
+        #endregion
+        public byte breakableSurfaceIndex;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        private byte[] padding0;
+        #endregion
+        public GlobalGeometryMaterialBlock()
         {
-            byte nodeIndex;
         }
-        NodeIndices nodeIndices;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndices0;
-
-        struct NodeWeights
+        public GlobalGeometryMaterialBlock(BinaryReader binaryReader)
         {
-            float nodeWeight;
-        }
-        NodeWeights nodeWeights;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeWeights0;
-        Vector4 color;
-        float screenSize;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 60, Pack = 0)]
-    public class ErrorReportVectorsBlock
-    {
-        Vector3 position;
-
-        struct NodeIndices
-        {
-            byte nodeIndex;
-        }
-        NodeIndices nodeIndices;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndices0;
-
-        struct NodeWeights
-        {
-            float nodeWeight;
-        }
-        NodeWeights nodeWeights;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeWeights0;
-        Vector4 color;
-        Vector3 normal;
-        float screenLength;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class ErrorReportLinesBlock
-    {
-
-        struct Points
-        {
-            Vector3 position;
-
-            struct NodeIndices
+            this.oldShader = binaryReader.ReadTagReference();
+            this.shader = binaryReader.ReadTagReference();
             {
-                byte nodeIndex;
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialPropertyBlock));
+                this.properties = new GlobalGeometryMaterialPropertyBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.properties[i] = new GlobalGeometryMaterialPropertyBlock(binaryReader);
+                    }
+                }
             }
-            NodeIndices nodeIndices;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeIndices0;
-
-            struct NodeWeights
-            {
-                float nodeWeight;
-            }
-            NodeWeights nodeWeights;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeWeights0;
+            this.padding = binaryReader.ReadBytes(4);
+            this.breakableSurfaceIndex = binaryReader.ReadByte();
+            this.padding0 = binaryReader.ReadBytes(3);
         }
-        Points points;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skippoints0;
-        Vector4 color;
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class ErrorReportTrianglesBlock
+    [StructLayout(LayoutKind.Sequential, Size = 52, Pack = 4)]
+    public partial class ErrorReportVerticesBlock
     {
-
-        struct Points
+        public Vector3 position;
+        public struct NodeIndices
         {
-            Vector3 position;
-
-            struct NodeIndices
+            public byte nodeIndex;
+            public NodeIndices(BinaryReader binaryReader)
             {
-                byte nodeIndex;
+                this.nodeIndex = binaryReader.ReadByte();
             }
-            NodeIndices nodeIndices;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeIndices0;
-
-            struct NodeWeights
-            {
-                float nodeWeight;
-            }
-            NodeWeights nodeWeights;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeWeights0;
         }
-        Points points;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skippoints0;
-        Vector4 color;
-    };
-
-
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class ErrorReportQuadsBlock
-    {
-
-        struct Points
+        public NodeIndices[] nodeIndices;
+        public struct NodeWeights
         {
-            Vector3 position;
-
-            struct NodeIndices
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
             {
-                byte nodeIndex;
+                this.nodeWeight = binaryReader.ReadSingle();
             }
-            NodeIndices nodeIndices;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeIndices0;
-
-            struct NodeWeights
-            {
-                float nodeWeight;
-            }
-            NodeWeights nodeWeights;
-            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            byte[] skipnodeWeights0;
         }
-        Points points;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skippoints0;
-        Vector4 color;
-    };
+        public NodeWeights[] nodeWeights;
+        public Vector4 color;
+        public float screenSize;
+        public ErrorReportVerticesBlock()
+        {
+        }
+        public ErrorReportVerticesBlock(BinaryReader binaryReader)
+        {
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndices = new NodeIndices[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndices[i] = new NodeIndices(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+            this.screenSize = binaryReader.ReadSingle();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 52, Pack = 0)]
-    public class ErrorReportCommentsBlock
+    [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 4)]
+    public partial class ErrorReportVectorsBlock
     {
+        public Vector3 position;
+        public struct NodeIndices
+        {
+            public byte nodeIndex;
+            public NodeIndices(BinaryReader binaryReader)
+            {
+                this.nodeIndex = binaryReader.ReadByte();
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public NodeIndices[] nodeIndices;
+        public struct NodeWeights
+        {
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public NodeWeights[] nodeWeights;
+        public Vector4 color;
+        public Vector3 normal;
+        public float screenLength;
+        public ErrorReportVectorsBlock()
+        {
+        }
+        public ErrorReportVectorsBlock(BinaryReader binaryReader)
+        {
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndices = new NodeIndices[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndices[i] = new NodeIndices(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+            this.normal = binaryReader.ReadVector3();
+            this.screenLength = binaryReader.ReadSingle();
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 58, Pack = 4)]
+    public partial class ErrorReportLinesBlock
+    {
+        public struct Points
+        {
+            public Vector3 position;
+            public struct NodeIndices
+            {
+                public byte nodeIndex;
+                public NodeIndices(BinaryReader binaryReader)
+                {
+                    this.nodeIndex = binaryReader.ReadByte();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeIndices[] nodeIndices;
+            public struct NodeWeights
+            {
+                public float nodeWeight;
+                public NodeWeights(BinaryReader binaryReader)
+                {
+                    this.nodeWeight = binaryReader.ReadSingle();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeWeights[] nodeWeights;
+            public Points(BinaryReader binaryReader)
+            {
+                this.position = binaryReader.ReadVector3();
+                this.nodeIndices = new NodeIndices[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeIndices[i] = new NodeIndices(binaryReader);
+                }
+                this.nodeWeights = new NodeWeights[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeWeights[i] = new NodeWeights(binaryReader);
+                }
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public Points[] points;
+        public Vector4 color;
+        public ErrorReportLinesBlock()
+        {
+        }
+        public ErrorReportLinesBlock(BinaryReader binaryReader)
+        {
+            this.points = new Points[2];
+            for (int i = 0; i < 2; ++i)
+            {
+                this.points[i] = new Points(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 71, Pack = 4)]
+    public partial class ErrorReportTrianglesBlock
+    {
+        public struct Points
+        {
+            public Vector3 position;
+            public struct NodeIndices
+            {
+                public byte nodeIndex;
+                public NodeIndices(BinaryReader binaryReader)
+                {
+                    this.nodeIndex = binaryReader.ReadByte();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeIndices[] nodeIndices;
+            public struct NodeWeights
+            {
+                public float nodeWeight;
+                public NodeWeights(BinaryReader binaryReader)
+                {
+                    this.nodeWeight = binaryReader.ReadSingle();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeWeights[] nodeWeights;
+            public Points(BinaryReader binaryReader)
+            {
+                this.position = binaryReader.ReadVector3();
+                this.nodeIndices = new NodeIndices[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeIndices[i] = new NodeIndices(binaryReader);
+                }
+                this.nodeWeights = new NodeWeights[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeWeights[i] = new NodeWeights(binaryReader);
+                }
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public Points[] points;
+        public Vector4 color;
+        public ErrorReportTrianglesBlock()
+        {
+        }
+        public ErrorReportTrianglesBlock(BinaryReader binaryReader)
+        {
+            this.points = new Points[3];
+            for (int i = 0; i < 3; ++i)
+            {
+                this.points[i] = new Points(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 84, Pack = 4)]
+    public partial class ErrorReportQuadsBlock
+    {
+        public struct Points
+        {
+            public Vector3 position;
+            public struct NodeIndices
+            {
+                public byte nodeIndex;
+                public NodeIndices(BinaryReader binaryReader)
+                {
+                    this.nodeIndex = binaryReader.ReadByte();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeIndices[] nodeIndices;
+            public struct NodeWeights
+            {
+                public float nodeWeight;
+                public NodeWeights(BinaryReader binaryReader)
+                {
+                    this.nodeWeight = binaryReader.ReadSingle();
+                }
+            }
+            [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public NodeWeights[] nodeWeights;
+            public Points(BinaryReader binaryReader)
+            {
+                this.position = binaryReader.ReadVector3();
+                this.nodeIndices = new NodeIndices[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeIndices[i] = new NodeIndices(binaryReader);
+                }
+                this.nodeWeights = new NodeWeights[4];
+                for (int i = 0; i < 4; ++i)
+                {
+                    this.nodeWeights[i] = new NodeWeights(binaryReader);
+                }
+            }
+        }
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Points[] points;
+        public Vector4 color;
+        public ErrorReportQuadsBlock()
+        {
+        }
+        public ErrorReportQuadsBlock(BinaryReader binaryReader)
+        {
+            this.points = new Points[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.points[i] = new Points(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential, Size = 56, Pack = 4)]
+    public partial class ErrorReportCommentsBlock
+    {
+        #region padding
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        byte[] paddingtext;
-        Vector3 position;
-
-        struct NodeIndices
+        private byte[] paddingtext;
+        #endregion
+        public Vector3 position;
+        public struct NodeIndices
         {
-            byte nodeIndex;
+            public byte nodeIndex;
+            public NodeIndices(BinaryReader binaryReader)
+            {
+                this.nodeIndex = binaryReader.ReadByte();
+            }
         }
-        NodeIndices nodeIndices;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeIndices0;
-
-        struct NodeWeights
+        public NodeIndices[] nodeIndices;
+        public struct NodeWeights
         {
-            float nodeWeight;
+            public float nodeWeight;
+            public NodeWeights(BinaryReader binaryReader)
+            {
+                this.nodeWeight = binaryReader.ReadSingle();
+            }
         }
-        NodeWeights nodeWeights;
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] skipnodeWeights0;
-        Vector4 color;
-    };
+        public NodeWeights[] nodeWeights;
+        public Vector4 color;
+        public ErrorReportCommentsBlock()
+        {
+        }
+        public ErrorReportCommentsBlock(BinaryReader binaryReader)
+        {
+            this.paddingtext = binaryReader.ReadBytes(8);
+            this.position = binaryReader.ReadVector3();
+            this.nodeIndices = new NodeIndices[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeIndices[i] = new NodeIndices(binaryReader);
+            }
+            this.nodeWeights = new NodeWeights[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+            this.color = binaryReader.ReadVector4();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 608, Pack = 0)]
-    public class ErrorReportsBlock
+    [StructLayout(LayoutKind.Sequential, Size = 608, Pack = 4)]
+    public partial class ErrorReportsBlock
     {
-        Type type;
-        Flags flags;
+        public Type type;
+        public Flags flags;
+        #region padding
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        byte[] paddingtext;
-        String32 sourceFilename;
-        int sourceLineNumber;
+        private byte[] paddingtext;
+        #endregion
+        public String32 sourceFilename;
+        public int sourceLineNumber;
         [TagBlockField]
-        ErrorReportVerticesBlock[] vertices;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingvertices0;
+        public ErrorReportVerticesBlock[] vertices;
         [TagBlockField]
-        ErrorReportVectorsBlock[] vectors;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingvectors0;
+        public ErrorReportVectorsBlock[] vectors;
         [TagBlockField]
-        ErrorReportLinesBlock[] lines;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddinglines0;
+        public ErrorReportLinesBlock[] lines;
         [TagBlockField]
-        ErrorReportTrianglesBlock[] triangles;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingtriangles0;
+        public ErrorReportTrianglesBlock[] triangles;
         [TagBlockField]
-        ErrorReportQuadsBlock[] quads;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingquads0;
+        public ErrorReportQuadsBlock[] quads;
         [TagBlockField]
-        ErrorReportCommentsBlock[] comments;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingcomments0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 380)]
-        byte[] paddinginvalidName_;
-        int reportKey;
-        int nodeIndex;
-        Range boundsX;
-        Range boundsY;
-        Range boundsZ;
-        Vector4 color;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 84)]
-        byte[] paddinginvalidName_0;
-        enum Type : short
+        public ErrorReportCommentsBlock[] comments;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 380)]
+        private byte[] padding;
+        #endregion
+        public int reportKey;
+        public int nodeIndex;
+        public Range boundsX;
+        public Range boundsY;
+        public Range boundsZ;
+        public Vector4 color;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 84)]
+        private byte[] padding0;
+        #endregion
+        public ErrorReportsBlock()
+        {
+        }
+        public ErrorReportsBlock(BinaryReader binaryReader)
+        {
+            this.type = (Type)binaryReader.ReadInt16();
+            this.flags = (Flags)binaryReader.ReadInt16();
+            this.paddingtext = binaryReader.ReadBytes(8);
+            this.sourceFilename = binaryReader.ReadString32();
+            this.sourceLineNumber = binaryReader.ReadInt32();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportVerticesBlock));
+                this.vertices = new ErrorReportVerticesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.vertices[i] = new ErrorReportVerticesBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportVectorsBlock));
+                this.vectors = new ErrorReportVectorsBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.vectors[i] = new ErrorReportVectorsBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportLinesBlock));
+                this.lines = new ErrorReportLinesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.lines[i] = new ErrorReportLinesBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportTrianglesBlock));
+                this.triangles = new ErrorReportTrianglesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.triangles[i] = new ErrorReportTrianglesBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportQuadsBlock));
+                this.quads = new ErrorReportQuadsBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.quads[i] = new ErrorReportQuadsBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportCommentsBlock));
+                this.comments = new ErrorReportCommentsBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.comments[i] = new ErrorReportCommentsBlock(binaryReader);
+                    }
+                }
+            }
+            this.padding = binaryReader.ReadBytes(380);
+            this.reportKey = binaryReader.ReadInt32();
+            this.nodeIndex = binaryReader.ReadInt32();
+            this.boundsX = binaryReader.ReadRange();
+            this.boundsY = binaryReader.ReadRange();
+            this.boundsZ = binaryReader.ReadRange();
+            this.color = binaryReader.ReadVector4();
+            this.padding0 = binaryReader.ReadBytes(84);
+        }
+        public enum Type : short
         {
             Silent = 0,
             Comment = 1,
             Warning = 2,
             Error = 3,
         }
-        enum Flags : short
+        [Flags]
+        public enum Flags : short
         {
-            Rendered = 0,
-            TangentSpace = 0,
-            Noncritical = 0,
-            LightmapLight = 0,
-            ReportKeyIsValid = 0,
+            Rendered = 1,
+            TangentSpace = 2,
+            Noncritical = 4,
+            LightmapLight = 8,
+            ReportKeyIsValid = 16,
         }
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 676, Pack = 0)]
-    public class GlobalErrorReportCategoriesBlock
+    [StructLayout(LayoutKind.Sequential, Size = 676, Pack = 4)]
+    public partial class GlobalErrorReportCategoriesBlock
     {
-        String256 name;
-        ReportType reportType;
-        Flags flags;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        byte[] paddinginvalidName_;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        byte[] paddinginvalidName_0;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 404)]
-        byte[] paddinginvalidName_1;
+        public String256 name;
+        public ReportType reportType;
+        public Flags flags;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding0;
+        #endregion
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 404)]
+        private byte[] padding1;
+        #endregion
         [TagBlockField]
-        ErrorReportsBlock[] reports;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingreports0;
-        enum ReportType : short
+        public ErrorReportsBlock[] reports;
+        public GlobalErrorReportCategoriesBlock()
+        {
+        }
+        public GlobalErrorReportCategoriesBlock(BinaryReader binaryReader)
+        {
+            this.name = binaryReader.ReadString256();
+            this.reportType = (ReportType)binaryReader.ReadInt16();
+            this.flags = (Flags)binaryReader.ReadInt16();
+            this.padding = binaryReader.ReadBytes(2);
+            this.padding0 = binaryReader.ReadBytes(2);
+            this.padding1 = binaryReader.ReadBytes(404);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(ErrorReportsBlock));
+                this.reports = new ErrorReportsBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.reports[i] = new ErrorReportsBlock(binaryReader);
+                    }
+                }
+            }
+        }
+        public enum ReportType : short
         {
             Silent = 0,
             Comment = 1,
             Warning = 2,
             Error = 3,
         }
-        enum Flags : short
+        [Flags]
+        public enum Flags : short
         {
-            Rendered = 0,
-            TangentSpace = 0,
-            Noncritical = 0,
-            LightmapLight = 0,
-            ReportKeyIsValid = 0,
+            Rendered = 1,
+            TangentSpace = 2,
+            Noncritical = 4,
+            LightmapLight = 8,
+            ReportKeyIsValid = 16,
         }
-    };
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class PrtSectionInfoBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class PrtSectionInfoBlock
     {
-        int sectionIndex;
-        int pcaDataOffset;
-    };
+        public int sectionIndex;
+        public int pcaDataOffset;
+        public PrtSectionInfoBlock()
+        {
+        }
+        public PrtSectionInfoBlock(BinaryReader binaryReader)
+        {
+            this.sectionIndex = binaryReader.ReadInt32();
+            this.pcaDataOffset = binaryReader.ReadInt32();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 0)]
-    public class PrtLodInfoBlock
+    [StructLayout(LayoutKind.Sequential, Size = 12, Pack = 4)]
+    public partial class PrtLodInfoBlock
     {
-        int clusterOffset;
+        public int clusterOffset;
         [TagBlockField]
-        PrtSectionInfoBlock[] sectionInfo;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingsectionInfo0;
-    };
+        public PrtSectionInfoBlock[] sectionInfo;
+        public PrtLodInfoBlock()
+        {
+        }
+        public PrtLodInfoBlock(BinaryReader binaryReader)
+        {
+            this.clusterOffset = binaryReader.ReadInt32();
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtSectionInfoBlock));
+                this.sectionInfo = new PrtSectionInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.sectionInfo[i] = new PrtSectionInfoBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 0)]
-    public class PrtClusterBasisBlock
+    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 4)]
+    public partial class PrtClusterBasisBlock
     {
-        float basisData;
-    };
+        public float basisData;
+        public PrtClusterBasisBlock()
+        {
+        }
+        public PrtClusterBasisBlock(BinaryReader binaryReader)
+        {
+            this.basisData = binaryReader.ReadSingle();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 0)]
-    public class PrtRawPcaDataBlock
+    [StructLayout(LayoutKind.Sequential, Size = 4, Pack = 4)]
+    public partial class PrtRawPcaDataBlock
     {
-        float rawPcaData;
-    };
+        public float rawPcaData;
+        public PrtRawPcaDataBlock()
+        {
+        }
+        public PrtRawPcaDataBlock(BinaryReader binaryReader)
+        {
+            this.rawPcaData = binaryReader.ReadSingle();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 0)]
-    public class PrtVertexBuffersBlock
+    [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 4)]
+    public partial class PrtVertexBuffersBlock
     {
-        VertexBuffer vertexBuffer;
-    };
+        public VertexBuffer vertexBuffer;
+        public PrtVertexBuffersBlock()
+        {
+        }
+        public PrtVertexBuffersBlock(BinaryReader binaryReader)
+        {
+            this.vertexBuffer = binaryReader.ReadVertexBuffer();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 88, Pack = 0)]
-    public class PrtInfoBlock
+    [StructLayout(LayoutKind.Sequential, Size = 88, Pack = 4)]
+    public partial class PrtInfoBlock
     {
-        short sHOrder;
-        short numOfClusters;
-        short pcaVectorsPerCluster;
-        short numberOfRays;
-        short numberOfBounces;
-        short matIndexForSbsfcScattering;
-        float lengthScale;
-        short numberOfLodsInModel;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        byte[] paddinginvalidName_;
+        public short sHOrder;
+        public short numOfClusters;
+        public short pcaVectorsPerCluster;
+        public short numberOfRays;
+        public short numberOfBounces;
+        public short matIndexForSbsfcScattering;
+        public float lengthScale;
+        public short numberOfLodsInModel;
+        #region padding
+        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        private byte[] padding;
+        #endregion
         [TagBlockField]
-        PrtLodInfoBlock[] lodInfo;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddinglodInfo0;
+        public PrtLodInfoBlock[] lodInfo;
         [TagBlockField]
-        PrtClusterBasisBlock[] clusterBasis;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingclusterBasis0;
+        public PrtClusterBasisBlock[] clusterBasis;
         [TagBlockField]
-        PrtRawPcaDataBlock[] rawPcaData;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingrawPcaData0;
+        public PrtRawPcaDataBlock[] rawPcaData;
         [TagBlockField]
-        PrtVertexBuffersBlock[] vertexBuffers;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingvertexBuffers0;
+        public PrtVertexBuffersBlock[] vertexBuffers;
         [TagStructField]
-        GlobalGeometryBlockInfoStruct geometryBlockInfo;
-    };
+        public GlobalGeometryBlockInfoStruct geometryBlockInfo;
+        public PrtInfoBlock()
+        {
+        }
+        public PrtInfoBlock(BinaryReader binaryReader)
+        {
+            this.sHOrder = binaryReader.ReadInt16();
+            this.numOfClusters = binaryReader.ReadInt16();
+            this.pcaVectorsPerCluster = binaryReader.ReadInt16();
+            this.numberOfRays = binaryReader.ReadInt16();
+            this.numberOfBounces = binaryReader.ReadInt16();
+            this.matIndexForSbsfcScattering = binaryReader.ReadInt16();
+            this.lengthScale = binaryReader.ReadSingle();
+            this.numberOfLodsInModel = binaryReader.ReadInt16();
+            this.padding = binaryReader.ReadBytes(2);
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtLodInfoBlock));
+                this.lodInfo = new PrtLodInfoBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.lodInfo[i] = new PrtLodInfoBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtClusterBasisBlock));
+                this.clusterBasis = new PrtClusterBasisBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.clusterBasis[i] = new PrtClusterBasisBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtRawPcaDataBlock));
+                this.rawPcaData = new PrtRawPcaDataBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.rawPcaData[i] = new PrtRawPcaDataBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(PrtVertexBuffersBlock));
+                this.vertexBuffers = new PrtVertexBuffersBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.vertexBuffers[i] = new PrtVertexBuffersBlock(binaryReader);
+                    }
+                }
+            }
+            this.geometryBlockInfo = new GlobalGeometryBlockInfoStruct(binaryReader);
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class BspLeafBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class BspLeafBlock
     {
-        short cluster;
-        short surfaceReferenceCount;
-        int firstSurfaceReferenceIndex;
-    };
+        public short cluster;
+        public short surfaceReferenceCount;
+        public int firstSurfaceReferenceIndex;
+        public BspLeafBlock()
+        {
+        }
+        public BspLeafBlock(BinaryReader binaryReader)
+        {
+            this.cluster = binaryReader.ReadInt16();
+            this.surfaceReferenceCount = binaryReader.ReadInt16();
+            this.firstSurfaceReferenceIndex = binaryReader.ReadInt32();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class BspSurfaceReferenceBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class BspSurfaceReferenceBlock
     {
-        short stripIndex;
-        short lightmapTriangleIndex;
-        int bspNodeIndex;
-    };
+        public short stripIndex;
+        public short lightmapTriangleIndex;
+        public int bspNodeIndex;
+        public BspSurfaceReferenceBlock()
+        {
+        }
+        public BspSurfaceReferenceBlock(BinaryReader binaryReader)
+        {
+            this.stripIndex = binaryReader.ReadInt16();
+            this.lightmapTriangleIndex = binaryReader.ReadInt16();
+            this.bspNodeIndex = binaryReader.ReadInt32();
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 0)]
-    public class NodeRenderLeavesBlock
+    [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 4)]
+    public partial class NodeRenderLeavesBlock
     {
         [TagBlockField]
-        BspLeafBlock[] collisionLeaves;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingcollisionLeaves0;
+        public BspLeafBlock[] collisionLeaves;
         [TagBlockField]
-        BspSurfaceReferenceBlock[] surfaceReferences;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingsurfaceReferences0;
-    };
+        public BspSurfaceReferenceBlock[] surfaceReferences;
+        public NodeRenderLeavesBlock()
+        {
+        }
+        public NodeRenderLeavesBlock(BinaryReader binaryReader)
+        {
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(BspLeafBlock));
+                this.collisionLeaves = new BspLeafBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.collisionLeaves[i] = new BspLeafBlock(binaryReader);
+                    }
+                }
+            }
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(BspSurfaceReferenceBlock));
+                this.surfaceReferences = new BspSurfaceReferenceBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.surfaceReferences[i] = new BspSurfaceReferenceBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 0)]
-    public class SectionRenderLeavesBlock
+    [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 4)]
+    public partial class SectionRenderLeavesBlock
     {
         [TagBlockField]
-        NodeRenderLeavesBlock[] nodeRenderLeaves;
-        [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] paddingnodeRenderLeaves0;
-    };
+        public NodeRenderLeavesBlock[] nodeRenderLeaves;
+        public SectionRenderLeavesBlock()
+        {
+        }
+        public SectionRenderLeavesBlock(BinaryReader binaryReader)
+        {
+            {
+                var count = binaryReader.ReadInt32();
+                var address = binaryReader.ReadInt32();
+                var elementSize = Marshal.SizeOf(typeof(NodeRenderLeavesBlock));
+                this.nodeRenderLeaves = new NodeRenderLeavesBlock[count];
+                using (binaryReader.BaseStream.Pin())
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        binaryReader.BaseStream.Position = address + i * elementSize;
+                        this.nodeRenderLeaves[i] = new NodeRenderLeavesBlock(binaryReader);
+                    }
+                }
+            }
+        }
+    }
 }
+

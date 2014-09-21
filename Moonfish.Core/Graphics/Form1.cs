@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +31,7 @@ namespace Moonfish.Graphics
         private MeshManager manager;
         private MapStream map;
         public BulletSharp.CollisionWorld collisionWorld;
+        List<BulletSharp.CollisionObject> selectableObjects = new List<BulletSharp.CollisionObject>();
 
         TagIdent? activeObject;
         Object selectedObject;
@@ -38,6 +40,7 @@ namespace Moonfish.Graphics
 
         Scenario Scenario;
         bool gl_loaded = false;
+        UniformBuffer globalUniformBuffer;
 
         public static Camera ActiveCamera { get; private set; }
         public static Program ScreenProgram { get; private set; }
@@ -94,32 +97,17 @@ namespace Moonfish.Graphics
         private void RenderFrame()
         {
             if (!gl_loaded) return;
-            var errorState = GL.GetError();
 
-
-            //manager.Draw();
-
-            if (activeObject != null)
+            if (activeObject.HasValue)
             {
                 manager.Draw(activeObject.Value);
             }
 
             using (system_program.Use())
             {
-                system_program["object_matrix"] = Matrix4.Identity;
-                errorState = GL.GetError();
+                globalUniformBuffer.UseDefault(UniformBuffer.Uniform.WorldMatrix);
+                globalUniformBuffer.UseDefault(UniformBuffer.Uniform.ExtentsMatrix);
                 grid.Draw();
-                errorState = GL.GetError();
-                //pole.Draw();
-                //gizmo.Render(new[] { system_program });
-
-                //slider.Render(new[] { system_program });
-
-            }
-            using (system_program.Use())
-            using (Grid grid = new Grid(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector2(1, 1), 8, 8))
-            {
-                //grid.Draw();
             }
             using (OpenGL.Disable(EnableCap.DepthTest))
             {
@@ -130,17 +118,7 @@ namespace Moonfish.Graphics
                 }
             }
             glControl1.SwapBuffers();
-            errorState = GL.GetError();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        }
-
-        private void LoadMeshes()
-        {
-            var errorState = GL.GetError();
-        }
-
-        private void LoadScenerio()
-        {
         }
 
         private void LoadModels()
@@ -157,53 +135,51 @@ namespace Moonfish.Graphics
             manager.LoadHierarchyModels(map);
         }
 
-        private void glControl1_Load(object sender, EventArgs e)
+        private void Initialization(object sender, EventArgs e)
         {
-            // camera 
-            camera = new Camera();
-            camera.ViewProjectionMatrixChanged += viewport_ProjectionChanged;
-            camera.ViewMatrixChanged += camera_ViewMatrixChanged;
+            DebugDrawer.debugProgram = system_program;
+
+            this.camera = new Camera();
+            this.timer = new Stopwatch();
+            this.grid = new CoordinateGrid();
+            this.mousePole = new MousePole2D(camera);
+
+            this.BackColor = Colours.ClearColour;
+            ActiveCamera = camera;
+
+            this.camera.ViewProjectionMatrixChanged += viewport_ProjectionChanged;
+            this.camera.ViewMatrixChanged += camera_ViewMatrixChanged;
+            this.camera.CameraUpdated += mousePole.OnCameraUpdate;
+
             this.glControl1.MouseMove += camera.OnMouseMove;
             this.glControl1.MouseDown += camera.OnMouseDown;
             this.glControl1.MouseUp += camera.OnMouseUp;
             this.glControl1.MouseCaptureChanged += camera.OnMouseCaptureChanged;
 
-            Form1.ActiveCamera = camera;
+            InitializeOpenGL();
 
+            this.manager = new MeshManager(program, system_program);
 
-            // start timer
-            timer = new Stopwatch();
             timer.Start();
+            //  firing this method is meant to load the view-projection matrix values into 
+            //  the shader uniforms, and initalizes the camera
+            glControl1_Resize(this, new EventArgs());
+        }
 
-            //setup our default program
-            LoadPrograms();
-
-            // initialize OpenGL
-
+        private void InitializeOpenGL()
+        {
             GL.ClearColor(Colours.ClearColour);
-            this.BackColor = Color.FromArgb(0xFF, 0x39, 0x39, 0x39);
+            GL.PrimitiveRestartIndex((ushort)(0xFFFF));
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.PolygonMode(MaterialFace.Back, PolygonMode.Fill);
-            GL.PrimitiveRestartIndex((ushort)(0xFFFF));
-            GL.Disable(EnableCap.PrimitiveRestart);
-            GL.Disable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
+            GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
 
-            // initialize manager
-            manager = new MeshManager(program, system_program);
-            mousePole = new MousePole2D(ActiveCamera);
-            camera.CameraUpdated += mousePole.OnCameraUpdate;
+            LoadPrograms();
             LoadPhysics();
 
-            grid = new CoordinateGrid();
-            LoadModels();
-
-            DebugDrawer.debugProgram = system_program;
-
             gl_loaded = true;
-
-            glControl1_Resize(this, new EventArgs());
         }
 
         private void LoadPhysics()
@@ -212,25 +188,20 @@ namespace Moonfish.Graphics
             var collisionDispatcher = new BulletSharp.CollisionDispatcher();
             var worldAabbMin = new Vector3(-1000, -1000, -1000);
             var worldAabbMax = new Vector3(1000, 1000, 1000);
-            BulletSharp.AxisSweep3 broadphase = new BulletSharp.AxisSweep3(worldAabbMin, worldAabbMax);
+            var broadphase = new BulletSharp.AxisSweep3(worldAabbMin, worldAabbMax);
             this.collisionWorld = new BulletSharp.CollisionWorld(collisionDispatcher, broadphase, defaultCollisionConfiguration);
             this.collisionWorld.DebugDrawer = new BulletDebugDrawer(this.viewscreenProgram);
 
-            foreach (BulletSharp.CollisionObject collisionObject in mousePole.GetContactObjects)
+            foreach (var collisionObject in mousePole.ContactObjects)
             {
                 collisionWorld.AddCollisionObject(collisionObject);
             }
         }
 
-        void camera_ViewMatrixChanged(object sender, MatrixChangedEventArgs e)
-        {
-            if (!gl_loaded) return;
-            program.Use();
-            program["normal_view_matrix"] = new Matrix3(e.Matrix);
-        }
-
         private void LoadPrograms()
         {
+            this.globalUniformBuffer = new UniformBuffer();
+
             var vertex_shader = new Shader("data/vertex.vert", ShaderType.VertexShader);
             var fragment_shader = new Shader("data/fragment.frag", ShaderType.FragmentShader);
             this.program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "shaded");
@@ -239,33 +210,30 @@ namespace Moonfish.Graphics
             fragment_shader = new Shader("data/sys_fragment.frag", ShaderType.FragmentShader);
             this.viewscreenProgram = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "viewscreen");
 
-            Form1.ScreenProgram = viewscreenProgram;
-
-            program.Use();
-            program["object_matrix"] = Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, 0.0f));
-            program["object_extents"] = Matrix4.CreateScale(1.0f, 1.0f, 1.0f);
-            program["direction_to_light"] = new Vector3(2, 2, 0);
-            program["light_intensity"] = 0.666f;
-
             vertex_shader = new Shader("data/sys_vertex.vert", ShaderType.VertexShader);
             fragment_shader = new Shader("data/sys_fragment.frag", ShaderType.FragmentShader);
-            this.system_program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "system");
+            this.system_program = new Program(new List<Shader>(2) { vertex_shader, fragment_shader }, "system");            
+            
+            this.program.BindUniformBuffer(buffer:this.globalUniformBuffer, bindingIndex: 0);
+            this.viewscreenProgram.BindUniformBuffer(buffer: this.globalUniformBuffer, bindingIndex: 0);
+            this.system_program.BindUniformBuffer(buffer: this.globalUniformBuffer, bindingIndex: 0);
 
+            globalUniformBuffer.BindBufferRange(bindingIndex: 0);
 
-            system_program.Use();
-            system_program["object_matrix"] = Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, 0.0f));
+            OpenGL.ReportError();
+        }
+
+        private void camera_ViewMatrixChanged(object sender, MatrixChangedEventArgs e)
+        {
+            if (!gl_loaded) return;
+            //  TODO: code handling when view matrix changes
         }
 
         private void viewport_ProjectionChanged(object sender, MatrixChangedEventArgs e)
         {
             if (!gl_loaded) return;
-            program.Use();
-            program["view_projection_matrix"] = e.Matrix;
-            program["normal_view_matrix"] = new Matrix3(e.Matrix);
-            system_program.Use();
-            system_program["view_projection_matrix"] = e.Matrix;
-            viewscreenProgram.Use();
-            viewscreenProgram["view_projection_matrix"] = e.Matrix;
+
+            this.globalUniformBuffer.BufferUniformData(UniformBuffer.Uniform.ViewProjectionMatrix, ref e.Matrix);
         }
 
         private void glControl1_Resize(object sender, EventArgs e)
@@ -277,11 +245,8 @@ namespace Moonfish.Graphics
 
         private void ChangeViewport(int width, int height)
         {
-            var errorState = GL.GetError();
             camera.Viewport.Size = new Size(width, height);
-            errorState = GL.GetError();
             GL.Viewport(0, 0, width, height);
-            errorState = GL.GetError();
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -289,7 +254,6 @@ namespace Moonfish.Graphics
             RenderFrame();
         }
 
-        List<BulletSharp.CollisionObject> selectableObjects = new List<BulletSharp.CollisionObject>();
         private async void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (!e.IsSelected) return;
@@ -318,7 +282,7 @@ namespace Moonfish.Graphics
             }
         }
 
-        void userObject_OnMouseClick(object sender, MouseEventArgs e)
+        private void userObject_OnMouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {

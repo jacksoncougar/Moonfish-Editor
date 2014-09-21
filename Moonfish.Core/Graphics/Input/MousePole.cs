@@ -305,8 +305,7 @@ namespace Moonfish.Graphics.Input
             using (shaderProgram.Use())
             using (OpenGL.Enable(EnableCap.PrimitiveRestartFixedIndex))
             {
-
-                shaderProgram["object_matrix"] = Matrix4.Identity;
+                shaderProgram.UniformBuffer.UseDefault(UniformBuffer.Uniform.WorldMatrix);
                 GL.BindVertexArray(glBuffers[0]);
                 GL.DrawElements(BeginMode.Lines, 6, DrawElementsType.UnsignedShort, 0);
                 GL.DrawElements(BeginMode.TriangleFan, elementCount - 6, DrawElementsType.UnsignedShort, 12);
@@ -479,7 +478,7 @@ namespace Moonfish.Graphics.Input
             }
         }
 
-        public IEnumerable<BulletSharp.CollisionObject> GetContactObjects
+        public IEnumerable<BulletSharp.CollisionObject> ContactObjects
         {
             get
             {

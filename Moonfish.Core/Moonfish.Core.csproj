@@ -120,6 +120,7 @@
     <Compile Include="Graphics\Section.cs" />
     <Compile Include="Graphics\shader.cs" />
     <Compile Include="Graphics\Track.cs" />
+    <Compile Include="Graphics\UniformBuffer.cs" />
     <Compile Include="Guerilla\GuerillaAttributes.cs" />
     <Compile Include="Guerilla\GuerillaBase.cs" />
     <Compile Include="Guerilla\GuerillaExtensions.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="main.cs" />
     <Compile Include="Debug\Memory.cs" />
     <Compile Include="PropertyGridExtensions.cs" />
+    <Compile Include="ResourceStream.cs" />
     <Compile Include="Structures\EntConverter.cs" />
     <Compile Include="Definitions\model_definitions.cs" />
     <Compile Include="Extensions.cs" />

@@ -111,7 +111,7 @@
             this.glControl1.Size = new System.Drawing.Size(613, 546);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = true;
-            this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+            this.glControl1.Load += new System.EventHandler(this.Initialization);
             this.glControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseClick_1);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);

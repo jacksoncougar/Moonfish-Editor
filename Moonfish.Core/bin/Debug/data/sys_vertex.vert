@@ -3,14 +3,17 @@
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 diffuse_color;
 
-uniform mat4 object_matrix;
-uniform mat4 view_projection_matrix;
+layout(std140) uniform GlobalMatrices
+{
+	uniform mat4 objectExtents;
+	uniform mat4 objectWorldMatrix;
+	uniform mat4 viewProjectionMatrix;
+};
 
 smooth out vec4 frag_diffuse_color;
 
 void main()
 {
-	vec4 normalized_position = position;
-    gl_Position = view_projection_matrix * object_matrix * normalized_position;
+    gl_Position = viewProjectionMatrix  * objectWorldMatrix * position;
 	frag_diffuse_color = diffuse_color;
 }

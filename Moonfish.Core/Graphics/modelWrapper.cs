@@ -71,7 +71,7 @@ namespace Moonfish.Graphics
             : this()
         {
             this.model = model;
-            foreach (var section in model.RenderModel.Sections)
+            foreach (var section in model.RenderModel.sections)
             {
                 sectionBuffers.Add(new Mesh(section));
             }
@@ -90,23 +90,23 @@ namespace Moonfish.Graphics
 
         void Render(IEnumerable<Program> shaderPasses)
         {
-            var objectMatrix = model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+            var anyProgram = shaderPasses.First();
+            anyProgram.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, Matrix4.Identity);
+            anyProgram.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, model.RenderModel.compressionInfo[0].ToExtentsMatrix());
+
             foreach (var program in shaderPasses)
             {
-                RenderPass(objectMatrix, program);
+                RenderPass(program);
             }
 
         }
 
-        private void RenderPass(Matrix4 objectMatrix, Program program)
+        private void RenderPass(Program program)
         {
             if (program.Name != "system")
             {
                 using (program.Use())
                 {
-                    program["object_extents"] = objectMatrix;
-                    program["object_matrix"] = Matrix4.Identity;
-
                     foreach (var region in model.RenderModel.regions)
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
@@ -138,7 +138,7 @@ namespace Moonfish.Graphics
 
                             var worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
 
-                            program["object_matrix"] = worldMatrix;
+                            program.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, ref worldMatrix);
 
                             if (selectedObjects.Contains(marker))
                             {

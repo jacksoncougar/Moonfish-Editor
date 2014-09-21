@@ -1,4 +1,5 @@
-﻿using Moonfish.Tags;
+﻿using Moonfish.ResourceManagement;
+using Moonfish.Tags;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,6 +65,17 @@ namespace Moonfish
             if (mapStream == null) return null;
 
             return mapStream[reference.TagID].Deserialize();
+        }
+
+        public static ResourceStream GetResourceBlock(GlobalGeometryBlockInfoStruct blockInfo)
+        {
+            Stream resourceStream = mapStream;
+            if (!blockInfo.IsInternal && !TryGettingResourceStream(blockInfo.blockOffset, out resourceStream))
+                return null;
+            resourceStream.Position = blockInfo.BlockAddress + 8;
+            var buffer = new byte[blockInfo.blockSize - 8];
+            resourceStream.Read(buffer, 0, blockInfo.blockSize - 8);
+            return new ResourceStream(buffer, blockInfo) { };
         }
 
         static MapStream mapStream;

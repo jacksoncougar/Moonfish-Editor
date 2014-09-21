@@ -38,6 +38,7 @@ namespace Moonfish.Graphics
 
         public Mesh(RenderModelSectionBlock sectionBlock)
         {
+            if (sectionBlock.sectionData.Length == 0) sectionBlock.LoadSectionData();
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
         }
