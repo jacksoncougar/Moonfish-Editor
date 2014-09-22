@@ -15,15 +15,36 @@ namespace Moonfish.Graphics.Input
     {
         public Vector3 Position
         {
-            get { return this.Position; }
+            get { return this.position; }
             set
             {
                 var previousWorldMatrix = Matrix4.CreateTranslation(this.position);
-                var worldMatrix = Matrix4.CreateTranslation(value);
+                var worldMatrix = CalculateWorldMatrix();
                 this.position = value;
                 if (WorldMatrixChanged != null)
                     WorldMatrixChanged(this, new MatrixChangedEventArgs(previousWorldMatrix, worldMatrix));
             }
+        }
+
+        public Quaternion Rotation
+        {
+            get { return this.rotation; }
+            set
+            {
+                var previousWorldMatrix = Matrix4.CreateFromQuaternion(this.rotation);
+                var worldMatrix = CalculateWorldMatrix();
+                this.rotation = value;
+                if (WorldMatrixChanged != null)
+                    WorldMatrixChanged(this, new MatrixChangedEventArgs(previousWorldMatrix, worldMatrix));
+            }
+        }
+
+        Matrix4 CalculateWorldMatrix()
+        {
+            var translationMatrix = Matrix4.CreateTranslation(this.Position);
+            var rotationMatrix = Matrix4.CreateFromQuaternion(this.rotation);
+            var scaleMatrix = Matrix4.CreateScale(this.scale);
+            return translationMatrix * rotationMatrix * scaleMatrix;
         }
 
         public event MatrixChangedEventHandler WorldMatrixChanged;
@@ -31,6 +52,7 @@ namespace Moonfish.Graphics.Input
         Vector3 position;
         Vector3 origin;
         Vector3 right, forward, up;
+        Quaternion rotation;
         int[] glBuffers;
         int elementCount;
 
@@ -189,10 +211,12 @@ namespace Moonfish.Graphics.Input
             this.scale = e.Camera.CreateScale(origin, 0.5f, pixelSize: 30);
             var scaleMatrix = Matrix4.CreateScale(scale, scale, scale);
 
-            this.origin = this.position + Vector3.Transform(new Vector3(0, 0, 0), scaleMatrix);
-            this.right = Vector3.Transform(new Vector3(1, 0, 0), scaleMatrix);
-            this.forward = Vector3.Transform(new Vector3(0, 1, 0), scaleMatrix);
-            this.up = Vector3.Transform(new Vector3(0, 0, 1), scaleMatrix);
+            var rotationMatrix = Matrix4.CreateFromQuaternion(this.rotation);
+
+            this.origin = this.position + Vector3.Transform(new Vector3(0, 0, 0), scaleMatrix * rotationMatrix);
+            this.right = Vector3.Transform(new Vector3(1, 0, 0), scaleMatrix * rotationMatrix);
+            this.forward = Vector3.Transform(new Vector3(0, 1, 0), scaleMatrix * rotationMatrix);
+            this.up = Vector3.Transform(new Vector3(0, 0, 1), scaleMatrix * rotationMatrix);
 
             var contactSize = 0.2f * scale;
 
@@ -264,14 +288,25 @@ namespace Moonfish.Graphics.Input
         }
 
         public MousePole2D(Camera camera)
+            : this(camera, new Vector3(0, 1, 0), new Vector3(1, 0, 0), new Vector3(0, 0, 1))
         {
-            var scale = camera.CreateScale(origin, 0.5f, pixelSize: 85);
+        }
+
+        public MousePole2D(Camera camera, Vector3 forwardAxis, Vector3 rightAxis, Vector3 upAxis)
+        {
+            this.scale = camera.CreateScale(origin, 0.5f, pixelSize: 85);
             var scaleMatrix = Matrix4.CreateScale(scale, scale, scale);
 
-            this.origin = Vector3.Transform(new Vector3(0, 0, 0), scaleMatrix);
-            this.right = Vector3.Transform(new Vector3(1, 0, 0), scaleMatrix);
-            this.forward = Vector3.Transform(new Vector3(0, 1, 0), scaleMatrix);
-            this.up = Vector3.Transform(new Vector3(0, 0, 1), scaleMatrix);
+            var rotationX = Matrix3.CreateRotationX((float)Math.Acos(Vector3.Dot(Vector3.UnitX, rightAxis)));
+            var rotationY = Matrix3.CreateRotationY((float)Math.Acos(Vector3.Dot(Vector3.UnitY, forwardAxis)));
+            var rotationZ = Matrix3.CreateRotationZ((float)Math.Acos(Vector3.Dot(Vector3.UnitZ, upAxis)));
+            this.rotation = Quaternion.FromMatrix(rotationX * rotationY * rotationZ);
+            var rotationMatrix = Matrix4.CreateFromQuaternion(this.rotation);
+
+            this.origin = Vector3.Transform(new Vector3(0, 0, 0), scaleMatrix * rotationMatrix);
+            this.right = Vector3.Transform(new Vector3(1, 0, 0), scaleMatrix * rotationMatrix);
+            this.forward = Vector3.Transform(new Vector3(0, 1, 0), scaleMatrix * rotationMatrix);
+            this.up = Vector3.Transform(new Vector3(0, 0, 1), scaleMatrix * rotationMatrix);
 
             rightContact = new BulletSharp.CollisionObject() { UserObject = this };
             forwardContact = new BulletSharp.CollisionObject() { UserObject = this };
@@ -385,7 +420,7 @@ namespace Moonfish.Graphics.Input
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, glBuffers[2]);
 
             // assign colours
-            var colourPallet = new [] 
+            var colourPallet = new[] 
             {
                 selectedAxis.HasFlag(SelectedAxis.U) ? Colours.Selection : Colours.Red,
                 selectedAxis.HasFlag(SelectedAxis.V) ? Colours.Selection : Colours.Green,

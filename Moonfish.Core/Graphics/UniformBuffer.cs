@@ -62,7 +62,9 @@ namespace Moonfish.Graphics
             var layout = Uniforms[(int)uniform];
 
             GL.BindBuffer(BufferTarget.UniformBuffer, buffer);
+            OpenGL.ReportError();
             GL.BufferSubData(BufferTarget.UniformBuffer, layout.Offset, layout.Size, ref matrix4);
+            OpenGL.ReportError();
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
             OpenGL.ReportError();
         }

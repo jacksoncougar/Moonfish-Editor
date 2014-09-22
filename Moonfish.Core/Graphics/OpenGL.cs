@@ -56,6 +56,7 @@ namespace Moonfish.Graphics
         internal static void ReportError()
         {
             var error = GL.GetError();
+            
             if (error != ErrorCode.NoError) throw new OpenTK.GraphicsException(error.ToString());
         }
     }

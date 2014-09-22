@@ -28,6 +28,11 @@ namespace Moonfish.Tags
             CacheBinaryReaderMethods();
         }
 
+        public static void Serialize(this MapStream target, RenderModel test)
+        {
+            
+        }
+
         public static dynamic Deserialize(this MapStream source, Type type)
         {
             var sourceReader = new BinaryReader(source);
@@ -37,6 +42,7 @@ namespace Moonfish.Tags
             var constructor = (from constructors in type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
                                where constructors.HasParameterSignature(new Type[]{typeof(BinaryReader)})
                                select constructors).FirstOrDefault();
+
             if (constructor != null)
             {
                 return constructor.Invoke(new[] { sourceReader });

@@ -29,6 +29,17 @@ namespace Moonfish.Tags
 
     public class MarkerWrapper : IClickable
     {
+        public Matrix4 WorldMatrix
+        {
+            get
+            {
+                var translationMatrix = Matrix4.CreateTranslation(this.marker.Translation);
+                var rotationMatrix = Matrix4.CreateFromQuaternion(this.marker.Rotation);
+                var scaleMatrix = Matrix4.CreateScale(this.marker.Scale);
+                return scaleMatrix * rotationMatrix * translationMatrix;
+            }
+        }
+
         public event EventHandler<MouseEventArgs> OnMouseClick;
 
         public RenderModelMarkerBlock marker;
@@ -44,8 +55,10 @@ namespace Moonfish.Tags
 
         internal void mousePole_WorldMatrixChanged(object sender, MatrixChangedEventArgs e)
         {
-            var translation = e.Delta.ExtractTranslation();
-            this.marker.Translation += translation;
+            var translation = e.Matrix.ExtractTranslation();
+            var rotation = Matrix4.CreateFromQuaternion(this.marker.Rotation).Inverted();
+
+            this.marker.Translation = translation;
             if (MarkerUpdated != null) MarkerUpdated(this, null);
             if (MarkerUpdatedCallback != null) MarkerUpdatedCallback(e.Matrix);
         }
@@ -91,7 +104,7 @@ namespace Moonfish.Tags
         public byte NodeIndex { get { return this.nodeIndex; } set { this.nodeIndex = value; } }
         public Vector3 Translation { get { return this.translation; } set { this.translation = value; } }
         public Quaternion Rotation { get { return this.rotation; } set { this.rotation = value; } }
-        public float Scale { get { return this.scale; } set { this.scale = value; } }
+        public float Scale { get { return this.scale == 0 ? 1 : this.scale; } set { this.scale = value; } }
     }
 
     [TypeConverter(typeof(MarkerGroupConverter))]
@@ -126,6 +139,43 @@ namespace Moonfish.Tags
             }
         }
     };
+
+    partial class GlobalGeometrySectionStruct
+    {
+        public virtual GlobalGeometrySectionVertexBufferBlock[] ReadVertexbuffers(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vertexBuffers = new GlobalGeometrySectionVertexBufferBlock[blamPointer.Count];
+            List<BlamPointer> vertexBufferPointers = null;
+            if (binaryReader.BaseStream is ResourceStream)
+            {
+                var stream = binaryReader.BaseStream as ResourceStream;
+                vertexBufferPointers = stream.Resources.Where(x => x.type == GlobalGeometryBlockResourceBlock.Type.VertexBuffer)
+                .Select(x =>
+                {
+                    var count = x.resourceDataSize;
+                    var address = x.resourceDataOffset + stream.HeaderSize;
+                    var size = 1;
+                    return new BlamPointer(count, address, size);
+                }).ToList();
+            }
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vertexBuffers[i] = new GlobalGeometrySectionVertexBufferBlock(binaryReader);
+                    if (vertexBufferPointers != null)
+                    {
+                        binaryReader.BaseStream.Position = vertexBufferPointers[i].Address;
+                        vertexBuffers[i].vertexBuffer.Data = binaryReader.ReadBytes(vertexBufferPointers[i].Count);
+                    }
+                }
+            }
+            return vertexBuffers;
+        }
+    }
 
     partial class RenderModelSectionBlock
     {
@@ -167,7 +217,7 @@ namespace Moonfish.Tags
                 field.Set(item, new RenderModelSectionDataBlock[] { returnValue });
             }
         }
-
+        
         public bool LoadSectionData()
         {
             ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
