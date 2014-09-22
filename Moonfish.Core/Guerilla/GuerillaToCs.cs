@@ -109,19 +109,14 @@ namespace Moonfish.Tags
             writer.WriteLine("{");
 
             var i = 0;
-            string constructorBody, fieldDefinitions, saveMethodBody;
-            ProcessFields(tagBlock, structDictionary, writer, tagBlock.LatestFieldSet.Fields, ref i, 
-                out fieldDefinitions, out constructorBody, out saveMethodBody);
+            string constructorBody, fieldDefinitions;
+            ProcessFields(tagBlock, structDictionary, writer, tagBlock.LatestFieldSet.Fields, ref i, out fieldDefinitions, out constructorBody);
             writer.WriteLine("public {0}()", className == string.Empty ? ToTypeName(tagBlock.Name) : className);
             writer.WriteLine("{");
             writer.WriteLine("}");
             writer.WriteLine("public {0}(BinaryReader binaryReader)", className == string.Empty ? ToTypeName(tagBlock.Name) : className);
             writer.WriteLine("{");
             writer.Write(constructorBody);
-            writer.WriteLine("}");
-            writer.WriteLine("public virtual void Write(BinaryWriter binaryWriter)");
-            writer.WriteLine("{");
-            writer.Write(saveMethodBody);
             writer.WriteLine("}");
 
             writer.Write(fieldDefinitions);
@@ -135,11 +130,10 @@ namespace Moonfish.Tags
         }
 
         private void ProcessFields(tag_block_definition tagBlock, Dictionary<string, string> structDictionary, StringWriter writer, List<tag_field> fields, ref int i,
-            out string fieldDefinitions, out string constructorBody, out string saveMethodBody)
+            out string fieldDefinitions, out string constructorBody)
         {
             StringBuilder fieldDefinitionsBuilder = new StringBuilder();
             StringBuilder constructorBodyBuilder = new StringBuilder();
-            StringBuilder saveMethodBodyBuilder = new StringBuilder();
             Dictionary<string, int> fieldNames = new Dictionary<string, int>();
             for (; i < fields.Count; ++i)
             {
@@ -155,7 +149,6 @@ namespace Moonfish.Tags
                             string fieldName, fieldType;
                             WriteField(writer, field, fieldNames, out fieldName, out fieldType, attributeString.ToString());
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1}();", fieldName, fieldType));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0});", fieldName));
 
                             break;
                         }
@@ -168,44 +161,19 @@ namespace Moonfish.Tags
                             var fieldType = ToTypeName(field.Definition.Name);
 
                             WriteField(writer, fieldType, fieldName, attributeString.ToString(), true);
-                            fieldDefinitionsBuilder.AppendLine(string.Format(
-                            @"public virtual {0}[] Read{2}(BinaryReader binaryReader)
-                            {{    
-                                var elementSize = Marshal.SizeOf(typeof({0}));
-                                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                                var {1} = new {0}[blamPointer.Count];
-                                using(binaryReader.BaseStream.Pin())
-                                {{
-                                for(int i = 0; i < blamPointer.Count; ++i)
-                                {{
-                                    binaryReader.BaseStream.Position = blamPointer[i]; 
-                                    {1}[i] = new {0}(binaryReader);
-                                }}
-                                }}
-                                return {1};
-                            }}", fieldType, fieldName, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(fieldName)));
-
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = Read{1}(binaryReader);", 
-                                fieldName, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(fieldName)));
-
-                            fieldDefinitionsBuilder.AppendLine(string.Format(
-                            @"public virtual void Write{2}(BinaryWriter binaryWriter)
-                            {{    
-                                var binaryReader = new BinaryReader(binaryWriter.BaseStream);
-                                var elementSize = Marshal.SizeOf(typeof({0}));
-                                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                                using(binaryWriter.BaseStream.Pin())
-                                {{
-                                for(int i = 0; i < this.{1}.Length && i < blamPointer.Count; ++i)
-                                {{
-                                    binaryReader.BaseStream.Position = blamPointer[i]; 
-                                    this.{1}[i].Write(binaryWriter);
-                                }}
-                                }}
-                            }}", fieldType, fieldName, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(fieldName)));
-
-                            saveMethodBodyBuilder.AppendLine(string.Format("Write{0}(binaryWriter);", 
-                                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(fieldName)));
+                            constructorBodyBuilder.AppendLine(string.Format(@"{{    
+    var elementSize = Marshal.SizeOf(typeof({0}));
+    var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+    this.{1} = new {0}[blamPointer.Count];
+    using(binaryReader.BaseStream.Pin())
+    {{
+    for(int i = 0; i < blamPointer.Count; ++i)
+    {{
+        binaryReader.BaseStream.Position = blamPointer[i]; 
+        this.{1}[i] = new {0}(binaryReader);
+    }}
+    }}
+}}", fieldType, fieldName));
 
                             if (!structDictionary.ContainsKey(field.Definition.Name))
                             {
@@ -222,7 +190,6 @@ namespace Moonfish.Tags
 
                             WriteField(writer, fieldType, fieldName, attributeString.ToString());
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = new {1}(binaryReader);", fieldName, fieldType));
-                            saveMethodBodyBuilder.AppendLine(string.Format("this.{0}.Write(binaryWriter);", fieldName));
 
                             if (!structDictionary.ContainsKey(field.Definition.name))
                             {
@@ -234,8 +201,8 @@ namespace Moonfish.Tags
                         {
                             string fieldName;
                             WritePaddingField(writer, ref field, fieldNames, out fieldName, 8);
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.ReadBytes(8);", fieldName));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0}, 0, 8);", fieldName));
+                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.ReadBytes(8);",
+                                fieldName));
                             break;
                         }
                     case field_type._field_explanation:
@@ -284,7 +251,6 @@ namespace Moonfish.Tags
 
                             }
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = ({1})binaryReader.Read{2}();", fieldName, fieldType, baseType));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(({1})this.{0});", fieldName, baseType));
                             break;
                         }
                     case field_type._field_byte_block_flags:
@@ -300,7 +266,6 @@ namespace Moonfish.Tags
                             string fieldName, fieldType;
                             WriteField(writer, field, fieldNames, out fieldName, out fieldType);
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1}();", fieldName, fieldType));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0});", fieldName, fieldType));
                             break;
                         }
                     case field_type._field_array_start:
@@ -309,23 +274,17 @@ namespace Moonfish.Tags
                             ProcessArrayFields(tagBlock, structDictionary, writer, fields, ref field, ref i, fieldNames, out fieldName, out fieldType);
                             var count = field.definition;
                             constructorBodyBuilder.AppendLine(string.Format(
-                            @"this.{0} = new {1}[{2}];
-                            for(int i = 0 ; i < {2}; ++i)
-                            {{
-                                this.{0}[i] = new {1}(binaryReader);
-                            }}", fieldName, fieldType, count));
-                            saveMethodBodyBuilder.AppendLine(string.Format(
-                            @"for(int i = 0 ; i < this.{0}.Length; ++i)
-                            {{
-                                this.{0}[i].Write(binaryWriter);
-                            }}", fieldName));
+@"this.{0} = new {1}[{2}];
+for(int i = 0 ; i < {2}; ++i)
+{{
+    this.{0}[i] = new {1}(binaryReader);
+}}", fieldName, fieldType, count));
                             break;
                         }
                     case field_type._field_array_end:
                         {
                             constructorBody = constructorBodyBuilder.ToString();
                             fieldDefinitions = fieldDefinitionsBuilder.ToString();
-                            saveMethodBody = saveMethodBodyBuilder.ToString();
                             return;
                         }
                     case field_type._field_pad:
@@ -334,7 +293,6 @@ namespace Moonfish.Tags
                             WritePaddingField(writer, ref field, fieldNames, out fieldName);
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1};",
                                 fieldName, field.definition == 1 ? "Byte()" : string.Format("Bytes({0})", field.definition)));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0});", fieldName));
                             break;
                         }
                     case field_type._field_skip:
@@ -343,7 +301,6 @@ namespace Moonfish.Tags
                             WritePaddingField(writer, ref field, fieldNames, out fieldName, true);
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1};",
                                 fieldName, field.definition == 1 ? "Byte()" : string.Format("Bytes({0})", field.definition)));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0});", fieldName));
                             break;
                         }
                     case field_type._field_useless_pad:
@@ -357,14 +314,12 @@ namespace Moonfish.Tags
                             string fieldName, fieldType;
                             WriteField(writer, field, fieldNames, out fieldName, out fieldType, attributeString.ToString());
                             constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.{1}();", fieldName, GetBinaryReaderMethod(field)));
-                            saveMethodBodyBuilder.AppendLine(string.Format("binaryWriter.Write(this.{0});", fieldName));
                             break;
                         }
                 }
             }
             fieldDefinitions = fieldDefinitionsBuilder.ToString();
             constructorBody = constructorBodyBuilder.ToString();
-            saveMethodBody = saveMethodBodyBuilder.ToString();
         }
 
         void CacheBinaryReaderMethods()
@@ -493,22 +448,17 @@ namespace Moonfish.Tags
             out string fieldName, out string fieldType)
         {
             fieldName = ToTypeName(field.Name);
-            writer.WriteLine("public class {0}", fieldName);
+            writer.WriteLine("public struct {0}", fieldName);
             writer.WriteLine("{");
 
             var name = field.Name;
             ++fieldIndex;
-            string fieldDefinitions, constructorBody, saveMethodBody;
-            ProcessFields(definition, structDictionary, writer, fields, ref fieldIndex, 
-                out fieldDefinitions, out constructorBody, out saveMethodBody);
+            string fieldDefinitions, constructorBody;
+            ProcessFields(definition, structDictionary, writer, fields, ref fieldIndex, out fieldDefinitions, out constructorBody);
 
             writer.WriteLine("public {0}(BinaryReader binaryReader)", fieldName);
             writer.WriteLine("{");
             writer.Write(constructorBody);
-            writer.WriteLine("}");
-            writer.WriteLine("public virtual void Write(BinaryWriter binaryWriter)");
-            writer.WriteLine("{");
-            writer.Write(saveMethodBody);
             writer.WriteLine("}");
             writer.WriteLine("}");
             WriteFieldValArray(writer, ref field, fieldNames, out fieldName, out fieldType, field.definition);

@@ -309,7 +309,7 @@ namespace Moonfish.Tags
     public struct String32
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public char[] value;
+        char[] value;
 
         public String32(string stringValue)
         {
@@ -324,7 +324,7 @@ namespace Moonfish.Tags
     public struct String256
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-        public char[] value;
+        char[] value;
         public String256(string stringValue)
         {
             value = new char[256];
@@ -337,7 +337,7 @@ namespace Moonfish.Tags
     [StructLayout(LayoutKind.Sequential, Size = 1)]
     public struct BlockFlags8
     {
-        public byte flags;
+        byte flags;
 
         public BlockFlags8(byte flags)
         {
@@ -349,7 +349,7 @@ namespace Moonfish.Tags
     [StructLayout(LayoutKind.Sequential, Size = 2)]
     public struct BlockFlags16
     {
-        public short flags;
+        short flags;
 
         public BlockFlags16(short flags)
         {
@@ -361,7 +361,7 @@ namespace Moonfish.Tags
     [StructLayout(LayoutKind.Sequential, Size = 4)]
     public struct BlockFlags32
     {
-        public int flags;
+        int flags;
 
         public BlockFlags32(int flags)
         {

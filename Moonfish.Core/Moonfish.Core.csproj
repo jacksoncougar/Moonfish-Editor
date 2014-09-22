@@ -97,11 +97,11 @@
     <Compile Include="GlobalStrings.cs" />
     <Compile Include="Graphics\BulletDebugDrawer.cs" />
     <Compile Include="Graphics\camera.cs" />
-    <Compile Include="Graphics\SceneForm.cs">
+    <Compile Include="Graphics\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Graphics\SceneForm.Designer.cs">
-      <DependentUpon>SceneForm.cs</DependentUpon>
+    <Compile Include="Graphics\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Graphics\GraphicsEvents.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
@@ -202,8 +202,8 @@
     <Compile Include="Tags\Bitmap.Code.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Graphics\SceneForm.resx">
-      <DependentUpon>SceneForm.cs</DependentUpon>
+    <EmbeddedResource Include="Graphics\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
