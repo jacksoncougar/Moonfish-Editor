@@ -441,6 +441,7 @@ namespace Moonfish.Graphics
             toolStripComboBox1.Items.Add(TransformMode.World);
             toolStripComboBox1.Items.Add(TransformMode.Local);
             toolStripComboBox1.SelectedIndex = 0;
+            //k?
         }
 
         private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
