@@ -9,6 +9,10 @@ namespace Moonfish.Graphics
 {
     public static class Maths
     {
+        public const int SizeOfMatrix4 = (sizeof(float) * 4 * 4);
+        public const float Phi = 1.6180339887f;
+        public const float PhiConjugate = 0.6180339887f;
+
         public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
         {
             if (val.CompareTo(min) < 0) return min;
@@ -18,15 +22,23 @@ namespace Moonfish.Graphics
 
         public enum ProjectionTarget
         {
+            NormalisedDeviceCoordinates,
             Clip,
             View,
             WorldHomogenous,
             World,
         }
+       
 
         public static Vector4 Project(Matrix4 viewMatrix, Matrix4 projectionMatrix, Vector2 viewportCoordinates, Rectangle viewport, ProjectionTarget projectionTarget = ProjectionTarget.World)
         {
             var viewportNormalisedCoordinates = new Vector3(viewportCoordinates.X, viewportCoordinates.Y, 0.99f);
+            return Project(ref viewMatrix, ref projectionMatrix, ref viewportNormalisedCoordinates, viewport, projectionTarget);
+        }
+
+        public static Vector4 Project(Matrix4 viewMatrix, Matrix4 projectionMatrix, Vector2 viewportCoordinates, float depth, Rectangle viewport, ProjectionTarget projectionTarget = ProjectionTarget.World)
+        {
+            var viewportNormalisedCoordinates = new Vector3(viewportCoordinates.X, viewportCoordinates.Y, depth);
             return Project(ref viewMatrix, ref projectionMatrix, ref viewportNormalisedCoordinates, viewport, projectionTarget);
         }
 
@@ -59,7 +71,7 @@ namespace Moonfish.Graphics
             Vector4.Transform(ref homogenousClipCoordinates, ref inverseProjectionMatrix, out viewCoordinates);
             //viewCoordinates = new Vector4(viewCoordinates.X, viewCoordinates.Y, homogenousClipCoordinates.Z, 0.0f);
 
-            if (projectionTarget == ProjectionTarget.View)       
+            if (projectionTarget == ProjectionTarget.View)
                 return viewCoordinates;
 
             // Calculate World Coordinates
@@ -78,6 +90,45 @@ namespace Moonfish.Graphics
             worldCoordinate.W *= perspectiveDivisor;
 
             return worldCoordinate;
+        }
+
+        public static Vector3 Project(this Camera camera, Vector2 viewportCoordinates, float depth, ProjectionTarget projectionTarget = ProjectionTarget.World)
+        {
+            //  map depth to -1 to 1
+            depth = Maths.Clamp<float>(depth, 0, 1) * 2 - 1;
+            return Project(camera.ViewMatrix, camera.ProjectionMatrix, new Vector3(viewportCoordinates.X, viewportCoordinates.Y, depth), (Rectangle)camera.Viewport, projectionTarget).Xyz;
+        }
+
+        public static Vector3 UnProject(Matrix4 viewProjectionMatrix, Vector3 worldCoordinates, Rectangle viewport, ProjectionTarget projectionTarget = ProjectionTarget.NormalisedDeviceCoordinates)
+        {
+            var normalisedCoordinate = new Vector4(worldCoordinates, 1);
+            var matrix = viewProjectionMatrix;
+
+            var screenCoordinates = Vector4.Transform(normalisedCoordinate, matrix);
+
+            screenCoordinates.X /= screenCoordinates.W;
+            screenCoordinates.Y /= screenCoordinates.W;
+            screenCoordinates.Z /= screenCoordinates.W;
+            screenCoordinates.W /= screenCoordinates.W;
+
+            screenCoordinates.Z = -1;
+
+            if (projectionTarget == ProjectionTarget.NormalisedDeviceCoordinates)
+                return new Vector3(screenCoordinates.X, screenCoordinates.Y, screenCoordinates.Z);
+
+            var halfWidth = viewport.Width / 2;
+            var halfHeight = viewport.Height / 2;
+
+            var x = screenCoordinates.X * halfWidth + halfWidth;
+            var y = -screenCoordinates.Y * halfHeight + halfHeight;
+            var z = screenCoordinates.Z;
+
+            return new Vector3(x, y, z);
+        }
+
+        public static Vector3 UnProject(this Camera camera, Vector3 worldCoordinates, ProjectionTarget projectionTarget = ProjectionTarget.NormalisedDeviceCoordinates)
+        {
+            return Maths.UnProject(camera.ViewProjectionMatrix, worldCoordinates, (Rectangle)camera.Viewport, projectionTarget);
         }
     }
 }

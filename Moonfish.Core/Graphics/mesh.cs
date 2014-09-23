@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Moonfish.Graphics
 {
@@ -37,6 +38,7 @@ namespace Moonfish.Graphics
 
         public Mesh(RenderModelSectionBlock sectionBlock)
         {
+            if (sectionBlock.sectionData.Length == 0) sectionBlock.LoadSectionData();
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
         }
@@ -84,12 +86,20 @@ namespace Moonfish.Graphics
                         GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
+                    case VertexAttributeType.coordinate_with_double_node:
+                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
+                        GL.VertexAttribBinding(i, i);
+                        break;
+                    case VertexAttributeType.coordinate_with_triple_node:
+                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
+                        GL.VertexAttribBinding(i, i);
+                        break;
                     case VertexAttributeType.texture_coordinate_compressed:
                         GL.VertexAttribFormat(i, 2, VertexAttribType.Short, true, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
                     case VertexAttributeType.tangent_space_unit_vectors_compressed:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Int, true, 0);
+                        GL.VertexAttribIFormat(i, 3, VertexAttribIntegerType.Int, 0);
                         GL.VertexAttribBinding(i, i);
                         break;
                     case VertexAttributeType.coordinate_float:
@@ -145,6 +155,7 @@ namespace Moonfish.Graphics
     {
         Scenario scenario;
         Program program;
+        Program systemProgram;
         Dictionary<TagIdent, ScenarioObject> objects;
 
         internal void Add(HierarchyModel model, TagIdent id)
@@ -152,10 +163,16 @@ namespace Moonfish.Graphics
             objects[id] = new ScenarioObject(model);
         }
 
-        public MeshManager(Program program)
+        public ScenarioObject this[TagIdent ident]
+        {
+            get { return this.objects.ContainsKey(ident) ? objects[ident] : null; }
+        }
+
+        public MeshManager(Program program, Program systemProgram)
         {
             objects = new Dictionary<TagIdent, ScenarioObject>();
             this.program = program;
+            this.systemProgram = systemProgram;
         }
 
         public void LoadScenario(MapStream map)
@@ -192,6 +209,29 @@ namespace Moonfish.Graphics
                 RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
+        public async Task<bool> Add(TagIdent item)
+        {
+            var success = await Task.Factory.StartNew<bool>(()=>
+            {
+                var data = Halo2.GetReferenceObject(item);
+                objects[item] = new ScenarioObject((HierarchyModel)data);
+                return data != null;
+            }, System.Threading.CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.FromCurrentSynchronizationContext());
+            return success;
+        }
+        public void Draw(TagIdent item)
+        {
+            if (objects.ContainsKey(item))
+            {
+                IRenderable @object = objects[item] as IRenderable;
+                @object.Render(new[] { program, systemProgram });
+            }
+            else
+            {
+                var data = Halo2.GetReferenceObject(item);
+                objects[item] = new ScenarioObject((HierarchyModel)data);
+            }
+        }
 
         private void RenderPalette(IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances)
         {
@@ -204,6 +244,25 @@ namespace Moonfish.Graphics
                     @object.Render(new[] { program });
                 }
             }
+        }
+
+        internal void LoadHierarchyModels(MapStream map)
+        {
+            //var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new { item = map[x.Identifier].Deserialize(), id = x.Identifier });
+            //foreach (var tag in tags)
+            //{
+            //    this.Add(tag.item, tag.id);
+            //}
+        }
+
+        internal void Remove(TagIdent item)
+        {
+            this.objects.Remove(item);
+        }
+
+        internal void Clear()
+        {
+            this.objects.Clear();
         }
     }
 

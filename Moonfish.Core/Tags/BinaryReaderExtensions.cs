@@ -7,11 +7,16 @@ using System.Text;
 
 namespace Moonfish.Tags
 {
-    public struct BlamPointer : IEnumerable<int>,  IEquatable<BlamPointer>
+    public struct BlamPointer : IEnumerable<int>, IEquatable<BlamPointer>
     {
         public readonly int Count;
         public readonly int Address;
         public readonly int ElementSize;
+
+        public int this[int index]
+        {
+            get { return Address + ElementSize * index; }
+        }
 
         public BlamPointer(int count, int address, int elementSize)
         {
@@ -71,12 +76,19 @@ namespace Moonfish.Tags
             return string.Format("{0}:{1}", Address, Count);
         }
     }
+    
+    namespace BlamExtension
+    {
+        static class BinaryReaderExtensions
+        {
+            public static BlamPointer ReadBlamPointer(this BinaryReader binaryReader, int elementSize)
+            {
+                return new BlamPointer(binaryReader.ReadInt32(), binaryReader.ReadInt32(), elementSize);
+            }
+        }
+    }
     static class BinaryReaderExtensions
     {
-        public static BlamPointer ReadBlamPointer(this BinaryReader binaryReader, int elementSize)
-        {
-            return new BlamPointer(binaryReader.ReadInt32(), binaryReader.ReadInt32(), elementSize);
-        }
         public static VertexBuffer ReadVertexBuffer(this BinaryReader binaryReader)
         {
             return new VertexBuffer() { Type = binaryReader.ReadVertexAttributeType() };

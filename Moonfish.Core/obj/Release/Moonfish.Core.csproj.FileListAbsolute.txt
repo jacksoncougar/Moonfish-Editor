@@ -20,3 +20,24 @@ C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.C
 C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.Core.csproj.GenerateResource.Cache
 C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.exe
 C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.exe
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\etc\default.png
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\Moonfish.exe
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\BulletSharp.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\Fasterflect.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\OpenTK.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\OpenTK.GLControl.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\Fasterflect.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\OpenTK.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\OpenTK.GLControl.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.Core.csprojResolveAssemblyReference.cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.Graphics.Form1.resources
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Release\Moonfish.Core.csproj.GenerateResource.Cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\Moonfish.exe.config
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\data\viewscreen.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\data\sys_fragment.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\data\sys_vertex.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\data\fragment.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Release\data\vertex.vert

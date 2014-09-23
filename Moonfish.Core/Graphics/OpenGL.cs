@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +51,12 @@ namespace Moonfish.Graphics
                 if (stateWasEnabled) GL.Enable(state);
                 else GL.Disable(state);
             }
+        }
+
+        internal static void ReportError()
+        {
+            var error = GL.GetError();
+            if (error != ErrorCode.NoError) throw new OpenTK.GraphicsException(error.ToString());
         }
     }
 }

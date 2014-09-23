@@ -1,11 +1,14 @@
-﻿using Moonfish.Tags;
+﻿using Moonfish.ResourceManagement;
+using Moonfish.Tags;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Moonfish
 {
@@ -14,6 +17,15 @@ namespace Moonfish
     /// </summary>
     public static class Halo2
     {
+        public static MapType CheckMapType(string filename)
+        {
+            using (BinaryReader reader = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 2048, FileOptions.SequentialScan | FileOptions.Asynchronous)))
+            {
+                reader.BaseStream.Seek(320, SeekOrigin.Begin);
+                return (MapType)reader.ReadInt32();
+            }
+        }
+
         public const int NullPtr = 0;
 
         /// <summary>
@@ -33,6 +45,21 @@ namespace Moonfish
 
         public static GlobalPaths Paths { get; set; }
 
+        public static Task<dynamic> GetReferenceObjectAsync(TagIdent identifier, bool reload = false)
+        {
+            if (mapStream == null) return null;
+            if (reload)
+                mapStream.Remove(identifier);
+            return Task.Run((Func<dynamic>)mapStream[identifier].Deserialize);
+        }
+
+        public static dynamic GetReferenceObject(TagIdent identifier, bool reload = false)
+        {
+            if (mapStream == null) return null;
+            if (reload)
+                mapStream.Remove(identifier);
+            return mapStream[identifier].Deserialize();
+        }
         public static dynamic GetReferenceObject(TagReference reference)
         {
             if (mapStream == null) return null;
@@ -40,7 +67,21 @@ namespace Moonfish
             return mapStream[reference.TagID].Deserialize();
         }
 
+        public static ResourceStream GetResourceBlock(GlobalGeometryBlockInfoStruct blockInfo)
+        {
+            Stream resourceStream = mapStream;
+            if (!blockInfo.IsInternal && !TryGettingResourceStream(blockInfo.blockOffset, out resourceStream))
+                return null;
+            resourceStream.Position = blockInfo.BlockAddress + 8;
+            var buffer = new byte[blockInfo.blockSize - 8];
+            resourceStream.Read(buffer, 0, blockInfo.blockSize - 8);
+            return new ResourceStream(buffer, blockInfo) { };
+        }
+
         static MapStream mapStream;
+        static MapStream resourceShared;
+        static MapStream resourceSinglePlayer;
+        static MapStream resourceMainMenu;
         static TagGroupLookup tagGroups = new TagGroupLookup();
         static GlobalStrings strings = new GlobalStrings();
         static Dictionary<TagClass, Type> definedTagGroupsDictionary;
@@ -49,7 +90,17 @@ namespace Moonfish
         {
             Paths = new GlobalPaths();
             definedTagGroupsDictionary = new Dictionary<TagClass, Type>(3);
-            var types = Assembly.GetExecutingAssembly().GetTypes();
+            var assembly = typeof(Moonfish.Tag).Assembly;
+            if (assembly == null) throw new ArgumentNullException("assembly");
+            Type[] types;
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types.Where(t => t != null).ToArray();
+            }
             foreach (var type in types)
             {
                 //if (!type.IsNested)
@@ -60,6 +111,24 @@ namespace Moonfish
                         definedTagGroupsDictionary.Add(class_of_tag, type);
                     }
                 }
+            }
+        }
+
+        public static bool LoadResource(MapStream map)
+        {
+            switch (map.Type)
+            {
+                case MapType.Shared:
+                    resourceShared = map;
+                    return true;
+                case MapType.SinglePlayerShared:
+                    resourceSinglePlayer = map;
+                    return true;
+                case MapType.MainMenu:
+                    resourceMainMenu = map;
+                    return true;
+                default:
+                    return false;
             }
         }
 
@@ -77,6 +146,46 @@ namespace Moonfish
         internal static void ActiveMap(MapStream mapstream)
         {
             mapStream = mapstream;
+        }
+
+        internal static bool ObjectChanged(TagIdent ident)
+        {
+            var newHash = mapStream.CalculateTaghash(ident);
+            var currentHash = mapStream.GetTagHash(ident);
+            if (currentHash == null) return false;
+            else
+            {
+                var equals = currentHash == newHash;
+                return !equals;
+            }
+        }
+
+        internal static bool TryGettingResourceStream(int resourceAddress, out System.IO.Stream resourceStream)
+        {
+            var resourceSource = (ResourceSource)((resourceAddress & 0xC0000000) >> 30);
+            switch (resourceSource)
+            {
+                case ResourceSource.Shared:
+                    resourceStream = Halo2.resourceShared;
+                    break;
+                case ResourceSource.SinglePlayerShared:
+                    resourceStream = Halo2.resourceSinglePlayer;
+                    break;
+                case ResourceSource.MainMenu:
+                    resourceStream = Halo2.resourceMainMenu;
+                    break;
+                default: resourceStream = null;
+                    return false;
+            }
+            var hasResource = resourceStream == null ? false : true;
+            return hasResource;
+        }
+
+        enum ResourceSource
+        {
+            MainMenu = 1,
+            Shared = 2,
+            SinglePlayerShared = 4,
         }
     }
 

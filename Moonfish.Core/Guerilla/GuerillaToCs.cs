@@ -89,7 +89,7 @@ namespace Moonfish.Tags
             valueTypeDictionary.Add(field_type._field_real_euler_angles_2d, typeof(Vector2));
             valueTypeDictionary.Add(field_type._field_real_plane_2d, typeof(Vector3));
             valueTypeDictionary.Add(field_type._field_real_plane_3d, typeof(Vector4));
-            valueTypeDictionary.Add(field_type._field_real_quaternion, typeof(Vector4));
+            valueTypeDictionary.Add(field_type._field_real_quaternion, typeof(Quaternion));
             valueTypeDictionary.Add(field_type._field_real_argb_color, typeof(Vector4));
             valueTypeDictionary.Add(field_type._field_rectangle_2d, typeof(Vector2));
 
@@ -161,16 +161,15 @@ namespace Moonfish.Tags
                             var fieldType = ToTypeName(field.Definition.Name);
 
                             WriteField(writer, fieldType, fieldName, attributeString.ToString(), true);
-                            constructorBodyBuilder.AppendLine(string.Format(@"{{
-    var count = binaryReader.ReadInt32();
-    var address = binaryReader.ReadInt32();
+                            constructorBodyBuilder.AppendLine(string.Format(@"{{    
     var elementSize = Marshal.SizeOf(typeof({0}));
-    this.{1} = new {0}[count];
+    var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+    this.{1} = new {0}[blamPointer.Count];
     using(binaryReader.BaseStream.Pin())
     {{
-    for(int i = 0; i < count; ++i)
+    for(int i = 0; i < blamPointer.Count; ++i)
     {{
-        binaryReader.BaseStream.Position = address + i * elementSize; 
+        binaryReader.BaseStream.Position = blamPointer[i]; 
         this.{1}[i] = new {0}(binaryReader);
     }}
     }}

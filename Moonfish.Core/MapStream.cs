@@ -8,9 +8,19 @@ using Moonfish.Tags;
 using System.Reflection;
 using Fasterflect;
 using Moonfish.Graphics;
+using System.Security.Cryptography;
 
 namespace Moonfish
 {
+
+    public enum MapType
+    {
+        Multiplayer = 1,
+        MainMenu = 2,
+        Shared = 3,
+        SinglePlayerShared = 4,
+    }
+
     public static class StreamExtensions
     {
         public static IDisposable Pin(this Stream stream)
@@ -36,7 +46,7 @@ namespace Moonfish
     /// <summary>
     /// A minimalist class to load essential data which can be used to parse a retail cache map.
     /// </summary>
-    public class MapStream : FileStream, IMap
+    public class MapStream : FileStream, IMap, IEnumerable<Tag>
     {
         public readonly Version BuildVersion;
         /// <summary>
@@ -56,6 +66,8 @@ namespace Moonfish
         /// </summary>
         public readonly int SecondaryMagic;
 
+        public readonly MapType Type;
+
         public readonly UnicodeValueNamePair[] Unicode;
         public readonly string[] Strings;
         public readonly Tag[] Tags;
@@ -66,9 +78,10 @@ namespace Moonfish
         public readonly VirtualMappedAddress[] MemoryBlocks;
 
         private Dictionary<TagIdent, dynamic> deserializedTags;
+        private Dictionary<TagIdent, string> hashTags;
 
         public MapStream(string filename)
-            : base(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+            : base(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1024)
         {
             this.MemoryBlocks = new VirtualMappedAddress[2];
             //HEADER
@@ -79,18 +92,22 @@ namespace Moonfish
             if (bin.ReadTagClass() != (TagClass)"head")
                 throw new InvalidDataException("Not a halo-map file");
 
-            //this.Seek(36, SeekOrigin.Begin);
-            //var version = bin.ReadInt32();
-            //switch (version)
-            //{
-            //    case 0:
-            //        BuildVersion = Version.XBOX_RETAIL;
-            //        break;
-            //    case -1:
-            //        BuildVersion = Version.PC_RETAIL;
-            //        break;
-            //    default:
-            //}
+            using (this.Pin())
+            {
+                this.Seek(42, SeekOrigin.Begin);
+                var version = bin.ReadInt32();
+                switch (version)
+                {
+                    case 0:
+                        BuildVersion = Version.XBOX_RETAIL;
+                        break;
+                    case 1:
+                        BuildVersion = Version.PC_RETAIL;
+                        return;
+                        break;
+                }
+
+            }
             BuildVersion = Version.XBOX_RETAIL;
             this.Seek(16, SeekOrigin.Begin);
 
@@ -101,6 +118,13 @@ namespace Moonfish
 
             if (BuildVersion == Version.PC_RETAIL)
                 this.Seek(12, SeekOrigin.Current);
+
+            // Read maptype
+            using (this.Pin())
+            {
+                this.Seek(320, SeekOrigin.Begin);
+                this.Type = (MapType)bin.ReadInt32();
+            }
 
             this.Seek(332, SeekOrigin.Current);
 
@@ -151,7 +175,6 @@ namespace Moonfish
              * 
              *  */
             this.Seek(indexAddress, SeekOrigin.Begin);
-
             int tagClassTableVirtualAddress = bin.ReadInt32();
             this.IndexVirtualAddress = tagClassTableVirtualAddress - 32;
 
@@ -233,37 +256,40 @@ namespace Moonfish
                     }
                 }
 
-                //UNICODE
-                this.Seek(Tags[GlobalsID.Index].VirtualAddress - SecondaryMagic + 400, SeekOrigin.Begin);
-                int unicodeCount = bin.ReadInt32();
-                int unicodeTableLength = bin.ReadInt32();
-                int unicodeIndexAddress = bin.ReadInt32();
-                int unicodeTableAddress = bin.ReadInt32();
+                ////UNICODE
+                //this.Seek(Tags[GlobalsID.Index].VirtualAddress - SecondaryMagic + 400, SeekOrigin.Begin);
+                //int unicodeCount = bin.ReadInt32();
+                //int unicodeTableLength = bin.ReadInt32();
+                //int unicodeIndexAddress = bin.ReadInt32();
+                //int unicodeTableAddress = bin.ReadInt32();
 
-                Unicode = new UnicodeValueNamePair[unicodeCount];
+                //Unicode = new UnicodeValueNamePair[unicodeCount];
 
-                StringID[] strRefs = new StringID[unicodeCount];
-                int[] strOffsets = new int[unicodeCount];
+                //StringID[] strRefs = new StringID[unicodeCount];
+                //int[] strOffsets = new int[unicodeCount];
 
-                this.Seek(unicodeIndexAddress, SeekOrigin.Begin);
-                for (int i = 0; i < unicodeCount; i++)
-                {
-                    strRefs[i] = (StringID)bin.ReadInt32();
-                    strOffsets[i] = bin.ReadInt32();
-                }
-                for (int i = 0; i < unicodeCount; i++)
-                {
-                    this.Seek(unicodeTableAddress + strOffsets[i], SeekOrigin.Begin);
-                    StringBuilder unicodeString = new StringBuilder(byte.MaxValue);
-                    while (bin.PeekChar() != char.MinValue)
-                        unicodeString.Append(bin.ReadChar());
-                    Unicode[i] = new UnicodeValueNamePair { Name = strRefs[i], Value = unicodeString.ToString() };
-                }
+                //this.Seek(unicodeIndexAddress, SeekOrigin.Begin);
+                //for (int i = 0; i < unicodeCount; i++)
+                //{
+                //    strRefs[i] = (StringID)bin.ReadInt32();
+                //    strOffsets[i] = bin.ReadInt32();
+                //}
+                //for (int i = 0; i < unicodeCount; i++)
+                //{
+                //    this.Seek(unicodeTableAddress + strOffsets[i], SeekOrigin.Begin);
+                //    StringBuilder unicodeString = new StringBuilder(byte.MaxValue);
+                //    while (bin.PeekChar() != char.MinValue)
+                //        unicodeString.Append(bin.ReadChar());
+                //    Unicode[i] = new UnicodeValueNamePair { Name = strRefs[i], Value = unicodeString.ToString() };
+                //}
             }
 
             this.deserializedTags = new Dictionary<TagIdent, dynamic>(this.Tags.Length);
+            this.hashTags = new Dictionary<TagIdent, string>(this.Tags.Length);
             Halo2.ActiveMap(this);
         }
+
+
 
         Tag current_tag = new Tag();
         public IMap this[string tag_class, string tag_name]
@@ -279,6 +305,7 @@ namespace Moonfish
                 return this;
             }
         }
+
         public IMap this[TagIdent tag_id]
         {
             get
@@ -295,6 +322,15 @@ namespace Moonfish
             this.Seek(this.current_tag.VirtualAddress, SeekOrigin.Begin);
         }
 
+        public void Remove(TagIdent ident)
+        {
+            deserializedTags.Remove(ident);
+        }
+
+
+
+
+
         dynamic IMap.Deserialize()
         {
             var tagQuery = (from tag in deserializedTags
@@ -310,8 +346,25 @@ namespace Moonfish
                              select types).FirstOrDefault();
 
             var ident = (this as IMap).Meta.Identifier;
+            
             deserializedTags[ident] = Moonfish.Tags.Deserializer.Deserialize(this, typeQuery);
+            this.hashTags[ident] = CalculateTaghash(ident);
             return deserializedTags[ident];
+        }
+
+        public string CalculateTaghash(TagIdent ident)
+        {
+            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+            {
+                var hash = Convert.ToBase64String(sha1.ComputeHash(this[ident].TagData));
+                //Console.WriteLine(hash);
+                return hash;
+            }
+        }
+
+        public string GetTagHash(TagIdent ident)
+        {
+            return this.hashTags.ContainsKey(ident) ? this.hashTags[ident] : null;
         }
 
         Tag IMap.Meta
@@ -439,6 +492,32 @@ namespace Moonfish
             }
             return checksum;
         }
+
+        IEnumerator<Tag> IEnumerable<Tag>.GetEnumerator()
+        {
+            foreach (var tag in this.Tags)
+            {
+                yield return tag;
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        byte[] IMap.TagData
+        {
+            get
+            {
+
+                this.Position = this.current_tag.VirtualAddress;
+                var buffer = new byte[this.current_tag.Length];
+                this.Read(buffer, 0, buffer.Length);
+                return buffer;
+            }
+        }
     }
 
     public enum Version
@@ -549,6 +628,8 @@ namespace Moonfish
         /// Access meta information about the tag
         /// </summary>
         Tag Meta { get; set; }
+
+        byte[] TagData { get; }
 
         void Seek();
     }

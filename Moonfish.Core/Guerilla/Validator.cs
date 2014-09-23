@@ -1,4 +1,5 @@
 ﻿using Moonfish.Tags;
+using Moonfish.Tags.BlamExtension;
 using System;
 using System.Collections.Generic;
 using System.IO;
