@@ -11,8 +11,14 @@ using System.Windows.Forms;
 
 namespace Moonfish.Graphics.Input
 {
+    public enum TransformMode
+    {
+        World,
+        Local,
+    }
     public class MousePole2D : IDisposable
     {
+        public TransformMode Mode { get; set; }
         public Vector3 Position
         {
             get { return this.Position; }
@@ -211,7 +217,7 @@ namespace Moonfish.Graphics.Input
             this.scale = e.Camera.CreateScale(origin, 0.5f, pixelSize: 30);
             var scaleMatrix = Matrix4.CreateScale(scale, scale, scale);
 
-            var rotationMatrix = Matrix4.CreateFromQuaternion(this.rotation);
+            var rotationMatrix = Mode == TransformMode.Local ? Matrix4.CreateFromQuaternion(this.rotation) : Matrix4.Identity;
 
             this.origin = this.position + Vector3.Transform(new Vector3(0, 0, 0), scaleMatrix * rotationMatrix);
             this.right = Vector3.Transform(new Vector3(1, 0, 0), scaleMatrix * rotationMatrix);

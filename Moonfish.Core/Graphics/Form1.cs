@@ -434,5 +434,18 @@ namespace Moonfish.Graphics
                 }
             }
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            toolStripComboBox1.Items.Clear();
+            toolStripComboBox1.Items.Add(TransformMode.World);
+            toolStripComboBox1.Items.Add(TransformMode.Local);
+            toolStripComboBox1.SelectedIndex = 0;
+        }
+
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.mousePole.Mode = (TransformMode)toolStripComboBox1.SelectedItem;
+        }
     }
 }

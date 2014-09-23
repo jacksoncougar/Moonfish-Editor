@@ -36,6 +36,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -50,7 +51,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 27);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -60,7 +61,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.glControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(928, 546);
+            this.splitContainer1.Size = new System.Drawing.Size(928, 543);
             this.splitContainer1.SplitterDistance = 311;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -78,8 +79,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(311, 546);
-            this.splitContainer2.SplitterDistance = 245;
+            this.splitContainer2.Size = new System.Drawing.Size(311, 543);
+            this.splitContainer2.SplitterDistance = 243;
             this.splitContainer2.TabIndex = 0;
             // 
             // listView1
@@ -87,7 +88,7 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(311, 245);
+            this.listView1.Size = new System.Drawing.Size(311, 243);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -98,7 +99,7 @@
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(311, 297);
+            this.propertyGrid1.Size = new System.Drawing.Size(311, 296);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propertyGrid1_SelectedGridItemChanged);
             // 
@@ -108,7 +109,7 @@
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl1.Location = new System.Drawing.Point(0, 0);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(613, 546);
+            this.glControl1.Size = new System.Drawing.Size(613, 543);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = true;
             this.glControl1.Load += new System.EventHandler(this.Initialization);
@@ -121,10 +122,11 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.toolStripComboBox1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(928, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(928, 27);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -133,7 +135,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMapToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 23);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // openMapToolStripMenuItem
@@ -142,6 +144,16 @@
             this.openMapToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.openMapToolStripMenuItem.Text = "&Open Map";
             this.openMapToolStripMenuItem.Click += new System.EventHandler(this.openMapToolStripMenuItem_Click);
+            // 
+            // toolStripComboBox1
+            // 
+            this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBox1.Items.AddRange(new object[] {
+            "World",
+            "Local"});
+            this.toolStripComboBox1.Name = "toolStripComboBox1";
+            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -156,6 +168,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Moonfish Marker Viewer 2014 for Remnantmods";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -181,6 +194,7 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ToolStripMenuItem openMapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
 
     }
 }
