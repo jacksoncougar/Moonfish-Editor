@@ -448,5 +448,10 @@ namespace Moonfish.Graphics
         {
             this.mousePole.Mode = (TransformMode)toolStripComboBox1.SelectedItem;
         }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

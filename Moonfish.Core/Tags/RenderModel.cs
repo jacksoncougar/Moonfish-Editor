@@ -1,11 +1,9 @@
 ﻿using Moonfish.Model;
+using Moonfish.ResourceManagement;
 using OpenTK;
 using System;
 using System.Runtime.InteropServices;
 using System.IO;
-using Moonfish.ResourceManagement;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Moonfish.Tags
 {
@@ -70,90 +68,12 @@ namespace Moonfish.Tags
             this.flags = (Flags)binaryReader.ReadInt16();
             this.padding = binaryReader.ReadBytes(2);
             this.padding0 = binaryReader.ReadBytes(4);
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalTagImportInfoBlock));
-                this.importInfo = new GlobalTagImportInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.importInfo[i] = new GlobalTagImportInfoBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
-                this.compressionInfo = new GlobalGeometryCompressionInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.compressionInfo[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelRegionBlock));
-                this.regions = new RenderModelRegionBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.regions[i] = new RenderModelRegionBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionBlock));
-                this.sections = new RenderModelSectionBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.sections[i] = new RenderModelSectionBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelInvalidSectionPairsBlock));
-                this.invalidSectionPairBits = new RenderModelInvalidSectionPairsBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.invalidSectionPairBits[i] = new RenderModelInvalidSectionPairsBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionGroupBlock));
-                this.sectionGroups = new RenderModelSectionGroupBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.sectionGroups[i] = new RenderModelSectionGroupBlock(binaryReader);
-                    }
-                }
-            }
+            this.importInfo = ReadImportinfo(binaryReader);
+            this.compressionInfo = ReadCompressioninfo(binaryReader);
+            this.regions = ReadRegions(binaryReader);
+            this.sections = ReadSections(binaryReader);
+            this.invalidSectionPairBits = ReadInvalidsectionpairbits(binaryReader);
+            this.sectionGroups = ReadSectiongroups(binaryReader);
             this.l1SectionGroupIndexSuperLow = binaryReader.ReadByte();
             this.l2SectionGroupIndexLow = binaryReader.ReadByte();
             this.l3SectionGroupIndexMedium = binaryReader.ReadByte();
@@ -162,105 +82,43 @@ namespace Moonfish.Tags
             this.l6SectionGroupIndexHollywood = binaryReader.ReadByte();
             this.padding1 = binaryReader.ReadBytes(2);
             this.nodeListChecksum = binaryReader.ReadInt32();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeBlock));
-                this.nodes = new RenderModelNodeBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.nodes[i] = new RenderModelNodeBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlockOLD));
-                this.nodeMapOLD = new RenderModelNodeMapBlockOLD[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.nodeMapOLD[i] = new RenderModelNodeMapBlockOLD(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerGroupBlock));
-                this.markerGroups = new RenderModelMarkerGroupBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.markerGroups[i] = new RenderModelMarkerGroupBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialBlock));
-                this.materials = new GlobalGeometryMaterialBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.materials[i] = new GlobalGeometryMaterialBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalErrorReportCategoriesBlock));
-                this.errors = new GlobalErrorReportCategoriesBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.errors[i] = new GlobalErrorReportCategoriesBlock(binaryReader);
-                    }
-                }
-            }
+            this.nodes = ReadNodes(binaryReader);
+            this.nodeMapOLD = ReadNodemapold(binaryReader);
+            this.markerGroups = ReadMarkergroups(binaryReader);
+            this.materials = ReadMaterials(binaryReader);
+            this.errors = ReadErrors(binaryReader);
             this.dontDrawOverCameraCosineAngleDontDrawFpModelWhenCameraThisAngleCosine11Sugg020Disables = binaryReader.ReadSingle();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtInfoBlock));
-                this.pRTInfo = new PrtInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.pRTInfo[i] = new PrtInfoBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(SectionRenderLeavesBlock));
-                this.sectionRenderLeaves = new SectionRenderLeavesBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.sectionRenderLeaves[i] = new SectionRenderLeavesBlock(binaryReader);
-                    }
-                }
-            }
+            this.pRTInfo = ReadPrtinfo(binaryReader);
+            this.sectionRenderLeaves = ReadSectionrenderleaves(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            binaryWriter.Write((Int16)this.flags);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.padding0);
+            WriteImportinfo(binaryWriter);
+            WriteCompressioninfo(binaryWriter);
+            WriteRegions(binaryWriter);
+            WriteSections(binaryWriter);
+            WriteInvalidsectionpairbits(binaryWriter);
+            WriteSectiongroups(binaryWriter);
+            binaryWriter.Write(this.l1SectionGroupIndexSuperLow);
+            binaryWriter.Write(this.l2SectionGroupIndexLow);
+            binaryWriter.Write(this.l3SectionGroupIndexMedium);
+            binaryWriter.Write(this.l4SectionGroupIndexHigh);
+            binaryWriter.Write(this.l5SectionGroupIndexSuperHigh);
+            binaryWriter.Write(this.l6SectionGroupIndexHollywood);
+            binaryWriter.Write(this.padding1);
+            binaryWriter.Write(this.nodeListChecksum);
+            WriteNodes(binaryWriter);
+            WriteNodemapold(binaryWriter);
+            WriteMarkergroups(binaryWriter);
+            WriteMaterials(binaryWriter);
+            WriteErrors(binaryWriter);
+            binaryWriter.Write(this.dontDrawOverCameraCosineAngleDontDrawFpModelWhenCameraThisAngleCosine11Sugg020Disables);
+            WritePrtinfo(binaryWriter);
+            WriteSectionrenderleaves(binaryWriter);
         }
         [Flags]
         public enum Flags : short
@@ -269,6 +127,383 @@ namespace Moonfish.Tags
             ForceCarmackReverse = 2,
             ForceNodeMaps = 4,
             GeometryPostprocessed = 8,
+        }
+        public virtual GlobalTagImportInfoBlock[] ReadImportinfo(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalTagImportInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var importInfo = new GlobalTagImportInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    importInfo[i] = new GlobalTagImportInfoBlock(binaryReader);
+                }
+            }
+            return importInfo;
+        }
+        public virtual void WriteImportinfo(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalTagImportInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.importInfo.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.importInfo[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometryCompressionInfoBlock[] ReadCompressioninfo(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var compressionInfo = new GlobalGeometryCompressionInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    compressionInfo[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
+                }
+            }
+            return compressionInfo;
+        }
+        public virtual void WriteCompressioninfo(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.compressionInfo.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.compressionInfo[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelRegionBlock[] ReadRegions(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelRegionBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var regions = new RenderModelRegionBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    regions[i] = new RenderModelRegionBlock(binaryReader);
+                }
+            }
+            return regions;
+        }
+        public virtual void WriteRegions(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelRegionBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.regions.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.regions[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelSectionBlock[] ReadSections(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var sections = new RenderModelSectionBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    sections[i] = new RenderModelSectionBlock(binaryReader);
+                }
+            }
+            return sections;
+        }
+        public virtual void WriteSections(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.sections.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.sections[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelInvalidSectionPairsBlock[] ReadInvalidsectionpairbits(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelInvalidSectionPairsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var invalidSectionPairBits = new RenderModelInvalidSectionPairsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    invalidSectionPairBits[i] = new RenderModelInvalidSectionPairsBlock(binaryReader);
+                }
+            }
+            return invalidSectionPairBits;
+        }
+        public virtual void WriteInvalidsectionpairbits(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelInvalidSectionPairsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.invalidSectionPairBits.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.invalidSectionPairBits[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelSectionGroupBlock[] ReadSectiongroups(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var sectionGroups = new RenderModelSectionGroupBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    sectionGroups[i] = new RenderModelSectionGroupBlock(binaryReader);
+                }
+            }
+            return sectionGroups;
+        }
+        public virtual void WriteSectiongroups(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.sectionGroups.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.sectionGroups[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelNodeBlock[] ReadNodes(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var nodes = new RenderModelNodeBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    nodes[i] = new RenderModelNodeBlock(binaryReader);
+                }
+            }
+            return nodes;
+        }
+        public virtual void WriteNodes(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.nodes.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.nodes[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelNodeMapBlockOLD[] ReadNodemapold(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlockOLD));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var nodeMapOLD = new RenderModelNodeMapBlockOLD[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    nodeMapOLD[i] = new RenderModelNodeMapBlockOLD(binaryReader);
+                }
+            }
+            return nodeMapOLD;
+        }
+        public virtual void WriteNodemapold(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlockOLD));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.nodeMapOLD.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.nodeMapOLD[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual RenderModelMarkerGroupBlock[] ReadMarkergroups(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var markerGroups = new RenderModelMarkerGroupBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    markerGroups[i] = new RenderModelMarkerGroupBlock(binaryReader);
+                }
+            }
+            return markerGroups;
+        }
+        public virtual void WriteMarkergroups(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.markerGroups.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.markerGroups[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometryMaterialBlock[] ReadMaterials(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var materials = new GlobalGeometryMaterialBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    materials[i] = new GlobalGeometryMaterialBlock(binaryReader);
+                }
+            }
+            return materials;
+        }
+        public virtual void WriteMaterials(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.materials.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.materials[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalErrorReportCategoriesBlock[] ReadErrors(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalErrorReportCategoriesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var errors = new GlobalErrorReportCategoriesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    errors[i] = new GlobalErrorReportCategoriesBlock(binaryReader);
+                }
+            }
+            return errors;
+        }
+        public virtual void WriteErrors(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalErrorReportCategoriesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.errors.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.errors[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual PrtInfoBlock[] ReadPrtinfo(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var pRTInfo = new PrtInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    pRTInfo[i] = new PrtInfoBlock(binaryReader);
+                }
+            }
+            return pRTInfo;
+        }
+        public virtual void WritePrtinfo(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.pRTInfo.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.pRTInfo[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual SectionRenderLeavesBlock[] ReadSectionrenderleaves(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(SectionRenderLeavesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var sectionRenderLeaves = new SectionRenderLeavesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    sectionRenderLeaves[i] = new SectionRenderLeavesBlock(binaryReader);
+                }
+            }
+            return sectionRenderLeaves;
+        }
+        public virtual void WriteSectionrenderleaves(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(SectionRenderLeavesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.sectionRenderLeaves.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.sectionRenderLeaves[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -310,6 +545,17 @@ namespace Moonfish.Tags
             this.paddingzippedData = binaryReader.ReadBytes(8);
             this.padding1 = binaryReader.ReadBytes(128);
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.path);
+            binaryWriter.Write(this.modificationDate);
+            binaryWriter.Write(this.skip);
+            binaryWriter.Write(this.padding0);
+            binaryWriter.Write(this.checksumCrc32);
+            binaryWriter.Write(this.sizeBytes);
+            binaryWriter.Write(this.paddingzippedData, 0, 8);
+            binaryWriter.Write(this.padding1);
+        }
     }
 
 
@@ -347,21 +593,49 @@ namespace Moonfish.Tags
             this.padding = binaryReader.ReadBytes(96);
             this.importTime = binaryReader.ReadString32();
             this.padding0 = binaryReader.ReadBytes(4);
+            this.files = ReadFiles(binaryReader);
+            this.padding1 = binaryReader.ReadBytes(128);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.build);
+            binaryWriter.Write(this.version);
+            binaryWriter.Write(this.importDate);
+            binaryWriter.Write(this.culprit);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.importTime);
+            binaryWriter.Write(this.padding0);
+            WriteFiles(binaryWriter);
+            binaryWriter.Write(this.padding1);
+        }
+        public virtual TagImportFileBlock[] ReadFiles(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(TagImportFileBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var files = new TagImportFileBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(TagImportFileBlock));
-                this.files = new TagImportFileBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.files[i] = new TagImportFileBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    files[i] = new TagImportFileBlock(binaryReader);
                 }
             }
-            this.padding1 = binaryReader.ReadBytes(128);
+            return files;
+        }
+        public virtual void WriteFiles(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(TagImportFileBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.files.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.files[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -389,6 +663,16 @@ namespace Moonfish.Tags
             this.secondaryTexcoordBoundsX = binaryReader.ReadRange();
             this.secondaryTexcoordBoundsY = binaryReader.ReadRange();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.positionBoundsX);
+            binaryWriter.Write(this.positionBoundsY);
+            binaryWriter.Write(this.positionBoundsZ);
+            binaryWriter.Write(this.texcoordBoundsX);
+            binaryWriter.Write(this.texcoordBoundsY);
+            binaryWriter.Write(this.secondaryTexcoordBoundsX);
+            binaryWriter.Write(this.secondaryTexcoordBoundsY);
+        }
     }
 
 
@@ -415,6 +699,16 @@ namespace Moonfish.Tags
             this.l5SectionIndexSuperHigh = binaryReader.ReadInt16();
             this.l6SectionIndexHollywood = binaryReader.ReadInt16();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            binaryWriter.Write(this.l1SectionIndexSuperLow);
+            binaryWriter.Write(this.l2SectionIndexLow);
+            binaryWriter.Write(this.l3SectionIndexMedium);
+            binaryWriter.Write(this.l4SectionIndexHigh);
+            binaryWriter.Write(this.l5SectionIndexSuperHigh);
+            binaryWriter.Write(this.l6SectionIndexHollywood);
+        }
     }
 
 
@@ -434,18 +728,41 @@ namespace Moonfish.Tags
             this.name = binaryReader.ReadStringID();
             this.nodeMapOffsetOLD = binaryReader.ReadInt16();
             this.nodeMapSizeOLD = binaryReader.ReadInt16();
+            this.permutations = ReadPermutations(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            binaryWriter.Write(this.nodeMapOffsetOLD);
+            binaryWriter.Write(this.nodeMapSizeOLD);
+            WritePermutations(binaryWriter);
+        }
+        public virtual RenderModelPermutationBlock[] ReadPermutations(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelPermutationBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var permutations = new RenderModelPermutationBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelPermutationBlock));
-                this.permutations = new RenderModelPermutationBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.permutations[i] = new RenderModelPermutationBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    permutations[i] = new RenderModelPermutationBlock(binaryReader);
+                }
+            }
+            return permutations;
+        }
+        public virtual void WritePermutations(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelPermutationBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.permutations.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.permutations[i].Write(binaryWriter);
                 }
             }
         }
@@ -493,25 +810,34 @@ namespace Moonfish.Tags
             this.shadowCastingRigidTriangleCount = binaryReader.ReadInt16();
             this.geometryClassification = (GeometryClassification)binaryReader.ReadInt16();
             this.geometryCompressionFlags = (GeometryCompressionFlags)binaryReader.ReadInt16();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
-                this.eMPTYSTRING = new GlobalGeometryCompressionInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.eMPTYSTRING[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
-                    }
-                }
-            }
+            this.eMPTYSTRING = ReadEmptystring(binaryReader);
             this.hardwareNodeCount = binaryReader.ReadByte();
             this.nodeMapSize = binaryReader.ReadByte();
             this.softwarePlaneCount = binaryReader.ReadInt16();
             this.totalSubpartCont = binaryReader.ReadInt16();
             this.sectionLightingFlags = (SectionLightingFlags)binaryReader.ReadInt16();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.totalVertexCount);
+            binaryWriter.Write(this.totalTriangleCount);
+            binaryWriter.Write(this.totalPartCount);
+            binaryWriter.Write(this.shadowCastingTriangleCount);
+            binaryWriter.Write(this.shadowCastingPartCount);
+            binaryWriter.Write(this.opaquePointCount);
+            binaryWriter.Write(this.opaqueVertexCount);
+            binaryWriter.Write(this.opaquePartCount);
+            binaryWriter.Write(this.opaqueMaxNodesVertex);
+            binaryWriter.Write(this.transparentMaxNodesVertex);
+            binaryWriter.Write(this.shadowCastingRigidTriangleCount);
+            binaryWriter.Write((Int16)this.geometryClassification);
+            binaryWriter.Write((Int16)this.geometryCompressionFlags);
+            WriteEmptystring(binaryWriter);
+            binaryWriter.Write(this.hardwareNodeCount);
+            binaryWriter.Write(this.nodeMapSize);
+            binaryWriter.Write(this.softwarePlaneCount);
+            binaryWriter.Write(this.totalSubpartCont);
+            binaryWriter.Write((Int16)this.sectionLightingFlags);
         }
         public enum GeometryClassification : short
         {
@@ -528,6 +854,35 @@ namespace Moonfish.Tags
             CompressedTexcoord = 2,
             CompressedSecondaryTexcoord = 4,
         }
+        public virtual GlobalGeometryCompressionInfoBlock[] ReadEmptystring(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var eMPTYSTRING = new GlobalGeometryCompressionInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    eMPTYSTRING[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
+                }
+            }
+            return eMPTYSTRING;
+        }
+        public virtual void WriteEmptystring(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.eMPTYSTRING.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.eMPTYSTRING[i].Write(binaryWriter);
+                }
+            }
+        }
         [Flags]
         public enum SectionLightingFlags : short
         {
@@ -539,7 +894,7 @@ namespace Moonfish.Tags
     }
 
 
-    [StructLayout(LayoutKind.Sequential, Size = 72, Pack = 4)]
+    [TagBlockLayout(Size = 72)]
     public partial class GlobalGeometryPartBlockNew
     {
         public Type type;
@@ -552,22 +907,30 @@ namespace Moonfish.Tags
         public byte maxNodesVertex;
         public byte contributingCompoundNodeCount;
         public Vector3 position;
-        public struct NodeIndices
+        public class NodeIndices
         {
             public byte nodeIndex;
             public NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndex);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndices[] nodeIndices;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -604,6 +967,29 @@ namespace Moonfish.Tags
             }
             this.lodMipmapMagicNumber = binaryReader.ReadSingle();
             this.skip = binaryReader.ReadBytes(24);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)this.type);
+            binaryWriter.Write((Int16)this.flags);
+            binaryWriter.Write(this.material);
+            binaryWriter.Write(this.stripStartIndex);
+            binaryWriter.Write(this.stripLength);
+            binaryWriter.Write(this.firstSubpartIndex);
+            binaryWriter.Write(this.subpartCount);
+            binaryWriter.Write(this.maxNodesVertex);
+            binaryWriter.Write(this.contributingCompoundNodeCount);
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndices.Length; ++i)
+            {
+                this.nodeIndices[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.lodMipmapMagicNumber);
+            binaryWriter.Write(this.skip);
         }
         public enum Type : short
         {
@@ -643,6 +1029,13 @@ namespace Moonfish.Tags
             this.visibilityBoundsIndex = binaryReader.ReadInt16();
             this.partIndex = binaryReader.ReadInt16();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.indicesStartIndex);
+            binaryWriter.Write(this.indicesLength);
+            binaryWriter.Write(this.visibilityBoundsIndex);
+            binaryWriter.Write(this.partIndex);
+        }
     }
 
 
@@ -670,6 +1063,15 @@ namespace Moonfish.Tags
             this.node0 = binaryReader.ReadByte();
             this.padding = binaryReader.ReadBytes(3);
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.positionX);
+            binaryWriter.Write(this.positionY);
+            binaryWriter.Write(this.positionZ);
+            binaryWriter.Write(this.radius);
+            binaryWriter.Write(this.node0);
+            binaryWriter.Write(this.padding);
+        }
     }
 
 
@@ -677,32 +1079,44 @@ namespace Moonfish.Tags
     public partial class GlobalGeometrySectionRawVertexBlock
     {
         public Vector3 position;
-        public struct NodeIndicesOLD
+        public class NodeIndicesOLD
         {
             public int nodeIndexOLD;
             public NodeIndicesOLD(BinaryReader binaryReader)
             {
                 this.nodeIndexOLD = binaryReader.ReadInt32();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndexOLD);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndicesOLD[] nodeIndicesOLD;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeWeights[] nodeWeights;
-        public struct NodeIndicesNEW
+        public class NodeIndicesNEW
         {
             public int nodeIndexNEW;
             public NodeIndicesNEW(BinaryReader binaryReader)
             {
                 this.nodeIndexNEW = binaryReader.ReadInt32();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndexNEW);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -766,6 +1180,36 @@ namespace Moonfish.Tags
             this.padding0 = binaryReader.ReadBytes(8);
             this.padding1 = binaryReader.ReadBytes(12);
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndicesOLD.Length; ++i)
+            {
+                this.nodeIndicesOLD[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeIndicesNEW.Length; ++i)
+            {
+                this.nodeIndicesNEW[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.useNewNodeIndices);
+            binaryWriter.Write(this.adjustedCompoundNodeIndex);
+            binaryWriter.Write(this.texcoord);
+            binaryWriter.Write(this.normal);
+            binaryWriter.Write(this.binormal);
+            binaryWriter.Write(this.tangent);
+            binaryWriter.Write(this.anisotropicBinormal);
+            binaryWriter.Write(this.secondaryTexcoord);
+            binaryWriter.Write(this.primaryLightmapColor);
+            binaryWriter.Write(this.primaryLightmapTexcoord);
+            binaryWriter.Write(this.primaryLightmapIncidentDirection);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.padding0);
+            binaryWriter.Write(this.padding1);
+        }
     }
 
 
@@ -780,7 +1224,12 @@ namespace Moonfish.Tags
         {
             this.index = binaryReader.ReadInt16();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.index);
+        }
     }
+
 
     [StructLayout(LayoutKind.Sequential, Size = 32, Pack = 4)]
     public partial class GlobalGeometrySectionVertexBufferBlock
@@ -793,7 +1242,12 @@ namespace Moonfish.Tags
         {
             this.vertexBuffer = binaryReader.ReadVertexBuffer();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.vertexBuffer);
+        }
     }
+
 
     [StructLayout(LayoutKind.Sequential, Size = 68, Pack = 4)]
     public partial class GlobalGeometrySectionStruct
@@ -825,122 +1279,215 @@ namespace Moonfish.Tags
         }
         public GlobalGeometrySectionStruct(BinaryReader binaryReader)
         {
-            {
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPartBlockNew));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.parts = new GlobalGeometryPartBlockNew[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.parts[i] = new GlobalGeometryPartBlockNew(binaryReader);
-                    }
-                }
-            }
-            {
-
-                var elementSize = Marshal.SizeOf(typeof(GlobalSubpartsBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.subparts = new GlobalSubpartsBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.subparts[i] = new GlobalSubpartsBlock(binaryReader);
-                    }
-                }
-            }
-            {
-
-                var elementSize = Marshal.SizeOf(typeof(GlobalVisibilityBoundsBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.visibilityBounds = new GlobalVisibilityBoundsBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.visibilityBounds[i] = new GlobalVisibilityBoundsBlock(binaryReader);
-                    }
-                }
-            }
-            {
-
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionRawVertexBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.rawVertices = new GlobalGeometrySectionRawVertexBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.rawVertices[i] = new GlobalGeometrySectionRawVertexBlock(binaryReader);
-                    }
-                }
-            }
-            {
-
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.stripIndices = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.stripIndices[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
-                    }
-                }
-            }
+            this.parts = ReadParts(binaryReader);
+            this.subparts = ReadSubparts(binaryReader);
+            this.visibilityBounds = ReadVisibilitybounds(binaryReader);
+            this.rawVertices = ReadRawvertices(binaryReader);
+            this.stripIndices = ReadStripindices(binaryReader);
             this.paddingvisibilityMoppCode = binaryReader.ReadBytes(8);
-            {
-
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.moppReorderTable = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.moppReorderTable[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.vertexBuffers = new GlobalGeometrySectionVertexBufferBlock[blamPointer.Count];
-                List<BlamPointer> vertexBufferPointers = null;
-                if (binaryReader.BaseStream is ResourceStream)
-                {
-                    var stream = binaryReader.BaseStream as ResourceStream;
-                    vertexBufferPointers = stream.Resources.Where(x => x.type == GlobalGeometryBlockResourceBlock.Type.VertexBuffer)
-                    .Select(x=>
-                    {                        
-                        var count = x.resourceDataSize;
-                        var address = x.resourceDataOffset + stream.HeaderSize;
-                        var size = 1;
-                        return new BlamPointer(count, address, size);                        
-                    }).ToList();
-                }
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.vertexBuffers[i] = new GlobalGeometrySectionVertexBufferBlock(binaryReader);
-                        if (vertexBufferPointers != null)
-                        {
-                            binaryReader.BaseStream.Position = vertexBufferPointers[i].Address;
-                            this.vertexBuffers[i].vertexBuffer.Data = binaryReader.ReadBytes(vertexBufferPointers[i].Count);
-                        }
-                    }
-                }
-            }
+            this.moppReorderTable = ReadMoppreordertable(binaryReader);
+            this.vertexBuffers = ReadVertexbuffers(binaryReader);
             this.padding = binaryReader.ReadBytes(4);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            WriteParts(binaryWriter);
+            WriteSubparts(binaryWriter);
+            WriteVisibilitybounds(binaryWriter);
+            WriteRawvertices(binaryWriter);
+            WriteStripindices(binaryWriter);
+            binaryWriter.Write(this.paddingvisibilityMoppCode, 0, 8);
+            WriteMoppreordertable(binaryWriter);
+            WriteVertexbuffers(binaryWriter);
+            binaryWriter.Write(this.padding);
+        }
+        public virtual GlobalGeometryPartBlockNew[] ReadParts(BinaryReader binaryReader)
+        {
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometryPartBlockNew));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var parts = new GlobalGeometryPartBlockNew[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    parts[i] = new GlobalGeometryPartBlockNew(binaryReader);
+                }
+            }
+            return parts;
+        }
+        public virtual void WriteParts(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPartBlockNew));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.parts.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.parts[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalSubpartsBlock[] ReadSubparts(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalSubpartsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var subparts = new GlobalSubpartsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    subparts[i] = new GlobalSubpartsBlock(binaryReader);
+                }
+            }
+            return subparts;
+        }
+        public virtual void WriteSubparts(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalSubpartsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.subparts.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.subparts[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalVisibilityBoundsBlock[] ReadVisibilitybounds(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalVisibilityBoundsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var visibilityBounds = new GlobalVisibilityBoundsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    visibilityBounds[i] = new GlobalVisibilityBoundsBlock(binaryReader);
+                }
+            }
+            return visibilityBounds;
+        }
+        public virtual void WriteVisibilitybounds(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalVisibilityBoundsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.visibilityBounds.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.visibilityBounds[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometrySectionRawVertexBlock[] ReadRawvertices(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionRawVertexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var rawVertices = new GlobalGeometrySectionRawVertexBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    rawVertices[i] = new GlobalGeometrySectionRawVertexBlock(binaryReader);
+                }
+            }
+            return rawVertices;
+        }
+        public virtual void WriteRawvertices(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionRawVertexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.rawVertices.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.rawVertices[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometrySectionStripIndexBlock[] ReadStripindices(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var stripIndices = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    stripIndices[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
+                }
+            }
+            return stripIndices;
+        }
+        public virtual void WriteStripindices(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.stripIndices.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.stripIndices[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometrySectionStripIndexBlock[] ReadMoppreordertable(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var moppReorderTable = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    moppReorderTable[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
+                }
+            }
+            return moppReorderTable;
+        }
+        public virtual void WriteMoppreordertable(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.moppReorderTable.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.moppReorderTable[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual void WriteVertexbuffers(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.vertexBuffers.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.vertexBuffers[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -949,32 +1496,44 @@ namespace Moonfish.Tags
     public partial class GlobalGeometryRawPointBlock
     {
         public Vector3 position;
-        public struct NodeIndicesOLD
+        public class NodeIndicesOLD
         {
             public int nodeIndexOLD;
             public NodeIndicesOLD(BinaryReader binaryReader)
             {
                 this.nodeIndexOLD = binaryReader.ReadInt32();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndexOLD);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndicesOLD[] nodeIndicesOLD;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeWeights[] nodeWeights;
-        public struct NodeIndicesNEW
+        public class NodeIndicesNEW
         {
             public int nodeIndexNEW;
             public NodeIndicesNEW(BinaryReader binaryReader)
             {
                 this.nodeIndexNEW = binaryReader.ReadInt32();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndexNEW);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1005,6 +1564,24 @@ namespace Moonfish.Tags
             this.useNewNodeIndices = binaryReader.ReadInt32();
             this.adjustedCompoundNodeIndex = binaryReader.ReadInt32();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndicesOLD.Length; ++i)
+            {
+                this.nodeIndicesOLD[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeIndicesNEW.Length; ++i)
+            {
+                this.nodeIndicesNEW[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.useNewNodeIndices);
+            binaryWriter.Write(this.adjustedCompoundNodeIndex);
+        }
     }
 
 
@@ -1023,6 +1600,12 @@ namespace Moonfish.Tags
             this.nodesPoint = binaryReader.ReadByte();
             this.pointCount = binaryReader.ReadInt16();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.rigidNodeIndex);
+            binaryWriter.Write(this.nodesPoint);
+            binaryWriter.Write(this.pointCount);
+        }
     }
 
 
@@ -1036,6 +1619,10 @@ namespace Moonfish.Tags
         public GlobalGeometryPointDataIndexBlock(BinaryReader binaryReader)
         {
             this.index = binaryReader.ReadInt16();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.index);
         }
     }
 
@@ -1058,47 +1645,102 @@ namespace Moonfish.Tags
         }
         public GlobalGeometryPointDataStruct(BinaryReader binaryReader)
         {
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRawPointBlock));
-                this.rawPoints = new GlobalGeometryRawPointBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.rawPoints[i] = new GlobalGeometryRawPointBlock(binaryReader);
-                    }
-                }
-            }
+            this.rawPoints = ReadRawpoints(binaryReader);
             this.paddingruntimePointData = binaryReader.ReadBytes(8);
+            this.rigidPointGroups = ReadRigidpointgroups(binaryReader);
+            this.vertexPointIndices = ReadVertexpointindices(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            WriteRawpoints(binaryWriter);
+            binaryWriter.Write(this.paddingruntimePointData, 0, 8);
+            WriteRigidpointgroups(binaryWriter);
+            WriteVertexpointindices(binaryWriter);
+        }
+        public virtual GlobalGeometryRawPointBlock[] ReadRawpoints(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRawPointBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var rawPoints = new GlobalGeometryRawPointBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRigidPointGroupBlock));
-                this.rigidPointGroups = new GlobalGeometryRigidPointGroupBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.rigidPointGroups[i] = new GlobalGeometryRigidPointGroupBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    rawPoints[i] = new GlobalGeometryRawPointBlock(binaryReader);
                 }
             }
+            return rawPoints;
+        }
+        public virtual void WriteRawpoints(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRawPointBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPointDataIndexBlock));
-                this.vertexPointIndices = new GlobalGeometryPointDataIndexBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < this.rawPoints.Length && i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.vertexPointIndices[i] = new GlobalGeometryPointDataIndexBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.rawPoints[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometryRigidPointGroupBlock[] ReadRigidpointgroups(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRigidPointGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var rigidPointGroups = new GlobalGeometryRigidPointGroupBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    rigidPointGroups[i] = new GlobalGeometryRigidPointGroupBlock(binaryReader);
+                }
+            }
+            return rigidPointGroups;
+        }
+        public virtual void WriteRigidpointgroups(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryRigidPointGroupBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.rigidPointGroups.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.rigidPointGroups[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual GlobalGeometryPointDataIndexBlock[] ReadVertexpointindices(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPointDataIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vertexPointIndices = new GlobalGeometryPointDataIndexBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vertexPointIndices[i] = new GlobalGeometryPointDataIndexBlock(binaryReader);
+                }
+            }
+            return vertexPointIndices;
+        }
+        public virtual void WriteVertexpointindices(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryPointDataIndexBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.vertexPointIndices.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.vertexPointIndices[i].Write(binaryWriter);
                 }
             }
         }
@@ -1115,6 +1757,10 @@ namespace Moonfish.Tags
         public RenderModelNodeMapBlock(BinaryReader binaryReader)
         {
             this.nodeIndex = binaryReader.ReadByte();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.nodeIndex);
         }
     }
 
@@ -1139,22 +1785,93 @@ namespace Moonfish.Tags
         {
             this.section = new GlobalGeometrySectionStruct(binaryReader);
             this.pointData = new GlobalGeometryPointDataStruct(binaryReader);
-            {
-                var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlock));
-                var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-                this.nodeMap = new RenderModelNodeMapBlock[blamPointer.Count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < blamPointer.Count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = blamPointer[i];
-                        this.nodeMap[i] = new RenderModelNodeMapBlock(binaryReader);
-                    }
-                }
-            }
+            this.nodeMap = ReadNodemap(binaryReader);
             this.padding = binaryReader.ReadBytes(4);
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            this.section.Write(binaryWriter);
+            this.pointData.Write(binaryWriter);
+            WriteNodemap(binaryWriter);
+            binaryWriter.Write(this.padding);
+        }
+        public virtual RenderModelNodeMapBlock[] ReadNodemap(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var nodeMap = new RenderModelNodeMapBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    nodeMap[i] = new RenderModelNodeMapBlock(binaryReader);
+                }
+            }
+            return nodeMap;
+        }
+        public virtual void WriteNodemap(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelNodeMapBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.nodeMap.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.nodeMap[i].Write(binaryWriter);
+                }
+            }
+        }
     }
+
+
+    public partial class GlobalGeometryBlockResourceBlock
+    {
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Byte)this.type);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.primaryLocator);
+            binaryWriter.Write(this.secondaryLocator);
+            binaryWriter.Write(this.resourceDataSize);
+            binaryWriter.Write(this.resourceDataOffset);
+        }
+    }
+
+
+    public partial class GlobalGeometryBlockInfoStruct
+    {
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.blockOffset);
+            binaryWriter.Write(this.blockSize);
+            binaryWriter.Write(this.sectionDataSize);
+            binaryWriter.Write(this.resourceDataSize);
+            WriteResources(binaryWriter);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.ownerTagSectionOffset);
+            binaryWriter.Write(this.padding0);
+            binaryWriter.Write(this.padding1);
+        }
+
+        public virtual void WriteResources(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryBlockResourceBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.resources.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.resources[i].Write(binaryWriter);
+                }
+            }
+        }
+    }
+
 
     [StructLayout(LayoutKind.Sequential, Size = 92, Pack = 4)]
     public partial class RenderModelSectionBlock
@@ -1182,21 +1899,18 @@ namespace Moonfish.Tags
             this.sectionInfo = new GlobalGeometrySectionInfoStruct(binaryReader);
             this.rigidNode = binaryReader.ReadShortBlockIndex1();
             this.flags = (Flags)binaryReader.ReadInt16();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelSectionDataBlock));
-                this.sectionData = new RenderModelSectionDataBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.sectionData[i] = new RenderModelSectionDataBlock(binaryReader);
-                    }
-                }
-            }
+            this.sectionData = ReadSectiondata(binaryReader);
             this.geometryBlockInfo = new GlobalGeometryBlockInfoStruct(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)this.globalGeometryClassificationEnumDefinition);
+            binaryWriter.Write(this.padding);
+            this.sectionInfo.Write(binaryWriter);
+            binaryWriter.Write(this.rigidNode);
+            binaryWriter.Write((Int16)this.flags);
+            WriteSectiondata(binaryWriter);
+            this.geometryBlockInfo.Write(binaryWriter);
         }
         public enum GlobalGeometryClassificationEnumDefinition : short
         {
@@ -1210,6 +1924,35 @@ namespace Moonfish.Tags
         public enum Flags : short
         {
             GeometryPostprocessed = 1,
+        }
+        public virtual RenderModelSectionDataBlock[] ReadSectiondata(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionDataBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var sectionData = new RenderModelSectionDataBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    sectionData[i] = new RenderModelSectionDataBlock(binaryReader);
+                }
+            }
+            return sectionData;
+        }
+        public virtual void WriteSectiondata(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelSectionDataBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.sectionData.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.sectionData[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -1225,28 +1968,40 @@ namespace Moonfish.Tags
         {
             this.bits = binaryReader.ReadInt32();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.bits);
+        }
     }
 
 
     [StructLayout(LayoutKind.Sequential, Size = 16, Pack = 4)]
     public partial class RenderModelCompoundNodeBlock
     {
-        public struct NodeIndices
+        public class NodeIndices
         {
             public byte nodeIndex;
             public NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndex);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndices[] nodeIndices;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -1265,6 +2020,17 @@ namespace Moonfish.Tags
             for (int i = 0; i < 3; ++i)
             {
                 this.nodeWeights[i] = new NodeWeights(binaryReader);
+            }
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            for (int i = 0; i < this.nodeIndices.Length; ++i)
+            {
+                this.nodeIndices[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
             }
         }
     }
@@ -1287,20 +2053,13 @@ namespace Moonfish.Tags
         {
             this.detailLevels = (DetailLevels)binaryReader.ReadInt16();
             this.padding = binaryReader.ReadBytes(2);
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelCompoundNodeBlock));
-                this.compoundNodes = new RenderModelCompoundNodeBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.compoundNodes[i] = new RenderModelCompoundNodeBlock(binaryReader);
-                    }
-                }
-            }
+            this.compoundNodes = ReadCompoundnodes(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)this.detailLevels);
+            binaryWriter.Write(this.padding);
+            WriteCompoundnodes(binaryWriter);
         }
         [Flags]
         public enum DetailLevels : short
@@ -1311,6 +2070,35 @@ namespace Moonfish.Tags
             L4High = 8,
             L5SuperHigh = 16,
             L6Hollywood = 32,
+        }
+        public virtual RenderModelCompoundNodeBlock[] ReadCompoundnodes(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelCompoundNodeBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var compoundNodes = new RenderModelCompoundNodeBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    compoundNodes[i] = new RenderModelCompoundNodeBlock(binaryReader);
+                }
+            }
+            return compoundNodes;
+        }
+        public virtual void WriteCompoundnodes(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelCompoundNodeBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.compoundNodes.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.compoundNodes[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -1350,6 +2138,22 @@ namespace Moonfish.Tags
             this.inverseScale = binaryReader.ReadSingle();
             this.distanceFromParent = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            binaryWriter.Write(this.parentNode);
+            binaryWriter.Write(this.firstChildNode);
+            binaryWriter.Write(this.nextSiblingNode);
+            binaryWriter.Write(this.importNodeIndex);
+            binaryWriter.Write(this.defaultTranslation);
+            binaryWriter.Write(this.defaultRotation);
+            binaryWriter.Write(this.inverseForward);
+            binaryWriter.Write(this.inverseLeft);
+            binaryWriter.Write(this.inverseUp);
+            binaryWriter.Write(this.inversePosition);
+            binaryWriter.Write(this.inverseScale);
+            binaryWriter.Write(this.distanceFromParent);
+        }
     }
 
 
@@ -1363,6 +2167,10 @@ namespace Moonfish.Tags
         public RenderModelNodeMapBlockOLD(BinaryReader binaryReader)
         {
             this.nodeIndex = binaryReader.ReadByte();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.nodeIndex);
         }
     }
 
@@ -1392,6 +2200,16 @@ namespace Moonfish.Tags
             this.rotation = binaryReader.ReadQuaternion();
             this.scale = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.regionIndex);
+            binaryWriter.Write(this.permutationIndex);
+            binaryWriter.Write(this.nodeIndex);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.translation);
+            binaryWriter.Write(this.rotation);
+            binaryWriter.Write(this.scale);
+        }
     }
 
 
@@ -1407,18 +2225,39 @@ namespace Moonfish.Tags
         public RenderModelMarkerGroupBlock(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadStringID();
+            this.markers = ReadMarkers(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            WriteMarkers(binaryWriter);
+        }
+        public virtual RenderModelMarkerBlock[] ReadMarkers(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var markers = new RenderModelMarkerBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerBlock));
-                this.markers = new RenderModelMarkerBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.markers[i] = new RenderModelMarkerBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    markers[i] = new RenderModelMarkerBlock(binaryReader);
+                }
+            }
+            return markers;
+        }
+        public virtual void WriteMarkers(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(RenderModelMarkerBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.markers.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.markers[i].Write(binaryWriter);
                 }
             }
         }
@@ -1439,6 +2278,12 @@ namespace Moonfish.Tags
             this.type = (Type)binaryReader.ReadInt16();
             this.intValue = binaryReader.ReadInt16();
             this.realValue = binaryReader.ReadSingle();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)this.type);
+            binaryWriter.Write(this.intValue);
+            binaryWriter.Write(this.realValue);
         }
         public enum Type : short
         {
@@ -1475,23 +2320,48 @@ namespace Moonfish.Tags
         {
             this.oldShader = binaryReader.ReadTagReference();
             this.shader = binaryReader.ReadTagReference();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialPropertyBlock));
-                this.properties = new GlobalGeometryMaterialPropertyBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.properties[i] = new GlobalGeometryMaterialPropertyBlock(binaryReader);
-                    }
-                }
-            }
+            this.properties = ReadProperties(binaryReader);
             this.padding = binaryReader.ReadBytes(4);
             this.breakableSurfaceIndex = binaryReader.ReadByte();
             this.padding0 = binaryReader.ReadBytes(3);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.oldShader);
+            binaryWriter.Write(this.shader);
+            WriteProperties(binaryWriter);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.breakableSurfaceIndex);
+            binaryWriter.Write(this.padding0);
+        }
+        public virtual GlobalGeometryMaterialPropertyBlock[] ReadProperties(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialPropertyBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var properties = new GlobalGeometryMaterialPropertyBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    properties[i] = new GlobalGeometryMaterialPropertyBlock(binaryReader);
+                }
+            }
+            return properties;
+        }
+        public virtual void WriteProperties(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometryMaterialPropertyBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.properties.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.properties[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -1500,22 +2370,30 @@ namespace Moonfish.Tags
     public partial class ErrorReportVerticesBlock
     {
         public Vector3 position;
-        public struct NodeIndices
+        public class NodeIndices
         {
             public byte nodeIndex;
             public NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndex);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndices[] nodeIndices;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1541,6 +2419,20 @@ namespace Moonfish.Tags
             this.color = binaryReader.ReadVector4();
             this.screenSize = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndices.Length; ++i)
+            {
+                this.nodeIndices[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
+            binaryWriter.Write(this.screenSize);
+        }
     }
 
 
@@ -1548,22 +2440,30 @@ namespace Moonfish.Tags
     public partial class ErrorReportVectorsBlock
     {
         public Vector3 position;
-        public struct NodeIndices
+        public class NodeIndices
         {
             public byte nodeIndex;
             public NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndex);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndices[] nodeIndices;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1591,31 +2491,54 @@ namespace Moonfish.Tags
             this.normal = binaryReader.ReadVector3();
             this.screenLength = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndices.Length; ++i)
+            {
+                this.nodeIndices[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
+            binaryWriter.Write(this.normal);
+            binaryWriter.Write(this.screenLength);
+        }
     }
 
 
     [StructLayout(LayoutKind.Sequential, Size = 58, Pack = 4)]
     public partial class ErrorReportLinesBlock
     {
-        public struct Points
+        public class Points
         {
             public Vector3 position;
-            public struct NodeIndices
+            public class NodeIndices
             {
                 public byte nodeIndex;
                 public NodeIndices(BinaryReader binaryReader)
                 {
                     this.nodeIndex = binaryReader.ReadByte();
                 }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeIndex);
+                }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public NodeIndices[] nodeIndices;
-            public struct NodeWeights
+            public class NodeWeights
             {
                 public float nodeWeight;
                 public NodeWeights(BinaryReader binaryReader)
                 {
                     this.nodeWeight = binaryReader.ReadSingle();
+                }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeWeight);
                 }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1632,6 +2555,18 @@ namespace Moonfish.Tags
                 for (int i = 0; i < 4; ++i)
                 {
                     this.nodeWeights[i] = new NodeWeights(binaryReader);
+                }
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.position);
+                for (int i = 0; i < this.nodeIndices.Length; ++i)
+                {
+                    this.nodeIndices[i].Write(binaryWriter);
+                }
+                for (int i = 0; i < this.nodeWeights.Length; ++i)
+                {
+                    this.nodeWeights[i].Write(binaryWriter);
                 }
             }
         }
@@ -1650,31 +2585,47 @@ namespace Moonfish.Tags
             }
             this.color = binaryReader.ReadVector4();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            for (int i = 0; i < this.points.Length; ++i)
+            {
+                this.points[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
+        }
     }
 
 
     [StructLayout(LayoutKind.Sequential, Size = 71, Pack = 4)]
     public partial class ErrorReportTrianglesBlock
     {
-        public struct Points
+        public class Points
         {
             public Vector3 position;
-            public struct NodeIndices
+            public class NodeIndices
             {
                 public byte nodeIndex;
                 public NodeIndices(BinaryReader binaryReader)
                 {
                     this.nodeIndex = binaryReader.ReadByte();
                 }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeIndex);
+                }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public NodeIndices[] nodeIndices;
-            public struct NodeWeights
+            public class NodeWeights
             {
                 public float nodeWeight;
                 public NodeWeights(BinaryReader binaryReader)
                 {
                     this.nodeWeight = binaryReader.ReadSingle();
+                }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeWeight);
                 }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1691,6 +2642,18 @@ namespace Moonfish.Tags
                 for (int i = 0; i < 4; ++i)
                 {
                     this.nodeWeights[i] = new NodeWeights(binaryReader);
+                }
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.position);
+                for (int i = 0; i < this.nodeIndices.Length; ++i)
+                {
+                    this.nodeIndices[i].Write(binaryWriter);
+                }
+                for (int i = 0; i < this.nodeWeights.Length; ++i)
+                {
+                    this.nodeWeights[i].Write(binaryWriter);
                 }
             }
         }
@@ -1709,31 +2672,47 @@ namespace Moonfish.Tags
             }
             this.color = binaryReader.ReadVector4();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            for (int i = 0; i < this.points.Length; ++i)
+            {
+                this.points[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
+        }
     }
 
 
     [StructLayout(LayoutKind.Sequential, Size = 84, Pack = 4)]
     public partial class ErrorReportQuadsBlock
     {
-        public struct Points
+        public class Points
         {
             public Vector3 position;
-            public struct NodeIndices
+            public class NodeIndices
             {
                 public byte nodeIndex;
                 public NodeIndices(BinaryReader binaryReader)
                 {
                     this.nodeIndex = binaryReader.ReadByte();
                 }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeIndex);
+                }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public NodeIndices[] nodeIndices;
-            public struct NodeWeights
+            public class NodeWeights
             {
                 public float nodeWeight;
                 public NodeWeights(BinaryReader binaryReader)
                 {
                     this.nodeWeight = binaryReader.ReadSingle();
+                }
+                public virtual void Write(BinaryWriter binaryWriter)
+                {
+                    binaryWriter.Write(this.nodeWeight);
                 }
             }
             [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1752,6 +2731,18 @@ namespace Moonfish.Tags
                     this.nodeWeights[i] = new NodeWeights(binaryReader);
                 }
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.position);
+                for (int i = 0; i < this.nodeIndices.Length; ++i)
+                {
+                    this.nodeIndices[i].Write(binaryWriter);
+                }
+                for (int i = 0; i < this.nodeWeights.Length; ++i)
+                {
+                    this.nodeWeights[i].Write(binaryWriter);
+                }
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public Points[] points;
@@ -1768,6 +2759,14 @@ namespace Moonfish.Tags
             }
             this.color = binaryReader.ReadVector4();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            for (int i = 0; i < this.points.Length; ++i)
+            {
+                this.points[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
+        }
     }
 
 
@@ -1779,22 +2778,30 @@ namespace Moonfish.Tags
         private byte[] paddingtext;
         #endregion
         public Vector3 position;
-        public struct NodeIndices
+        public class NodeIndices
         {
             public byte nodeIndex;
             public NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeIndex);
+            }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public NodeIndices[] nodeIndices;
-        public struct NodeWeights
+        public class NodeWeights
         {
             public float nodeWeight;
             public NodeWeights(BinaryReader binaryReader)
             {
                 this.nodeWeight = binaryReader.ReadSingle();
+            }
+            public virtual void Write(BinaryWriter binaryWriter)
+            {
+                binaryWriter.Write(this.nodeWeight);
             }
         }
         [TagField, MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
@@ -1818,6 +2825,20 @@ namespace Moonfish.Tags
                 this.nodeWeights[i] = new NodeWeights(binaryReader);
             }
             this.color = binaryReader.ReadVector4();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.paddingtext, 0, 8);
+            binaryWriter.Write(this.position);
+            for (int i = 0; i < this.nodeIndices.Length; ++i)
+            {
+                this.nodeIndices[i].Write(binaryWriter);
+            }
+            for (int i = 0; i < this.nodeWeights.Length; ++i)
+            {
+                this.nodeWeights[i].Write(binaryWriter);
+            }
+            binaryWriter.Write(this.color);
         }
     }
 
@@ -1869,90 +2890,12 @@ namespace Moonfish.Tags
             this.paddingtext = binaryReader.ReadBytes(8);
             this.sourceFilename = binaryReader.ReadString32();
             this.sourceLineNumber = binaryReader.ReadInt32();
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportVerticesBlock));
-                this.vertices = new ErrorReportVerticesBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.vertices[i] = new ErrorReportVerticesBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportVectorsBlock));
-                this.vectors = new ErrorReportVectorsBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.vectors[i] = new ErrorReportVectorsBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportLinesBlock));
-                this.lines = new ErrorReportLinesBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.lines[i] = new ErrorReportLinesBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportTrianglesBlock));
-                this.triangles = new ErrorReportTrianglesBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.triangles[i] = new ErrorReportTrianglesBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportQuadsBlock));
-                this.quads = new ErrorReportQuadsBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.quads[i] = new ErrorReportQuadsBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportCommentsBlock));
-                this.comments = new ErrorReportCommentsBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.comments[i] = new ErrorReportCommentsBlock(binaryReader);
-                    }
-                }
-            }
+            this.vertices = ReadVertices(binaryReader);
+            this.vectors = ReadVectors(binaryReader);
+            this.lines = ReadLines(binaryReader);
+            this.triangles = ReadTriangles(binaryReader);
+            this.quads = ReadQuads(binaryReader);
+            this.comments = ReadComments(binaryReader);
             this.padding = binaryReader.ReadBytes(380);
             this.reportKey = binaryReader.ReadInt32();
             this.nodeIndex = binaryReader.ReadInt32();
@@ -1961,6 +2904,28 @@ namespace Moonfish.Tags
             this.boundsZ = binaryReader.ReadRange();
             this.color = binaryReader.ReadVector4();
             this.padding0 = binaryReader.ReadBytes(84);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((Int16)this.type);
+            binaryWriter.Write((Int16)this.flags);
+            binaryWriter.Write(this.paddingtext, 0, 8);
+            binaryWriter.Write(this.sourceFilename);
+            binaryWriter.Write(this.sourceLineNumber);
+            WriteVertices(binaryWriter);
+            WriteVectors(binaryWriter);
+            WriteLines(binaryWriter);
+            WriteTriangles(binaryWriter);
+            WriteQuads(binaryWriter);
+            WriteComments(binaryWriter);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.reportKey);
+            binaryWriter.Write(this.nodeIndex);
+            binaryWriter.Write(this.boundsX);
+            binaryWriter.Write(this.boundsY);
+            binaryWriter.Write(this.boundsZ);
+            binaryWriter.Write(this.color);
+            binaryWriter.Write(this.padding0);
         }
         public enum Type : short
         {
@@ -1977,6 +2942,180 @@ namespace Moonfish.Tags
             Noncritical = 4,
             LightmapLight = 8,
             ReportKeyIsValid = 16,
+        }
+        public virtual ErrorReportVerticesBlock[] ReadVertices(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportVerticesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vertices = new ErrorReportVerticesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vertices[i] = new ErrorReportVerticesBlock(binaryReader);
+                }
+            }
+            return vertices;
+        }
+        public virtual void WriteVertices(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportVerticesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.vertices.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.vertices[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual ErrorReportVectorsBlock[] ReadVectors(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportVectorsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vectors = new ErrorReportVectorsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vectors[i] = new ErrorReportVectorsBlock(binaryReader);
+                }
+            }
+            return vectors;
+        }
+        public virtual void WriteVectors(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportVectorsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.vectors.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.vectors[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual ErrorReportLinesBlock[] ReadLines(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportLinesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var lines = new ErrorReportLinesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    lines[i] = new ErrorReportLinesBlock(binaryReader);
+                }
+            }
+            return lines;
+        }
+        public virtual void WriteLines(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportLinesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.lines.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.lines[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual ErrorReportTrianglesBlock[] ReadTriangles(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportTrianglesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var triangles = new ErrorReportTrianglesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    triangles[i] = new ErrorReportTrianglesBlock(binaryReader);
+                }
+            }
+            return triangles;
+        }
+        public virtual void WriteTriangles(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportTrianglesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.triangles.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.triangles[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual ErrorReportQuadsBlock[] ReadQuads(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportQuadsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var quads = new ErrorReportQuadsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    quads[i] = new ErrorReportQuadsBlock(binaryReader);
+                }
+            }
+            return quads;
+        }
+        public virtual void WriteQuads(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportQuadsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.quads.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.quads[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual ErrorReportCommentsBlock[] ReadComments(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportCommentsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var comments = new ErrorReportCommentsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    comments[i] = new ErrorReportCommentsBlock(binaryReader);
+                }
+            }
+            return comments;
+        }
+        public virtual void WriteComments(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportCommentsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.comments.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.comments[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -2012,20 +3151,17 @@ namespace Moonfish.Tags
             this.padding = binaryReader.ReadBytes(2);
             this.padding0 = binaryReader.ReadBytes(2);
             this.padding1 = binaryReader.ReadBytes(404);
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(ErrorReportsBlock));
-                this.reports = new ErrorReportsBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.reports[i] = new ErrorReportsBlock(binaryReader);
-                    }
-                }
-            }
+            this.reports = ReadReports(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.name);
+            binaryWriter.Write((Int16)this.reportType);
+            binaryWriter.Write((Int16)this.flags);
+            binaryWriter.Write(this.padding);
+            binaryWriter.Write(this.padding0);
+            binaryWriter.Write(this.padding1);
+            WriteReports(binaryWriter);
         }
         public enum ReportType : short
         {
@@ -2043,6 +3179,35 @@ namespace Moonfish.Tags
             LightmapLight = 8,
             ReportKeyIsValid = 16,
         }
+        public virtual ErrorReportsBlock[] ReadReports(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var reports = new ErrorReportsBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    reports[i] = new ErrorReportsBlock(binaryReader);
+                }
+            }
+            return reports;
+        }
+        public virtual void WriteReports(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(ErrorReportsBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.reports.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.reports[i].Write(binaryWriter);
+                }
+            }
+        }
     }
 
 
@@ -2059,6 +3224,11 @@ namespace Moonfish.Tags
             this.sectionIndex = binaryReader.ReadInt32();
             this.pcaDataOffset = binaryReader.ReadInt32();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.sectionIndex);
+            binaryWriter.Write(this.pcaDataOffset);
+        }
     }
 
 
@@ -2074,18 +3244,39 @@ namespace Moonfish.Tags
         public PrtLodInfoBlock(BinaryReader binaryReader)
         {
             this.clusterOffset = binaryReader.ReadInt32();
+            this.sectionInfo = ReadSectioninfo(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.clusterOffset);
+            WriteSectioninfo(binaryWriter);
+        }
+        public virtual PrtSectionInfoBlock[] ReadSectioninfo(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtSectionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var sectionInfo = new PrtSectionInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtSectionInfoBlock));
-                this.sectionInfo = new PrtSectionInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.sectionInfo[i] = new PrtSectionInfoBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    sectionInfo[i] = new PrtSectionInfoBlock(binaryReader);
+                }
+            }
+            return sectionInfo;
+        }
+        public virtual void WriteSectioninfo(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtSectionInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.sectionInfo.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.sectionInfo[i].Write(binaryWriter);
                 }
             }
         }
@@ -2103,6 +3294,10 @@ namespace Moonfish.Tags
         {
             this.basisData = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.basisData);
+        }
     }
 
 
@@ -2117,6 +3312,10 @@ namespace Moonfish.Tags
         {
             this.rawPcaData = binaryReader.ReadSingle();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.rawPcaData);
+        }
     }
 
 
@@ -2130,6 +3329,10 @@ namespace Moonfish.Tags
         public PrtVertexBuffersBlock(BinaryReader binaryReader)
         {
             this.vertexBuffer = binaryReader.ReadVertexBuffer();
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.vertexBuffer);
         }
     }
 
@@ -2173,63 +3376,144 @@ namespace Moonfish.Tags
             this.lengthScale = binaryReader.ReadSingle();
             this.numberOfLodsInModel = binaryReader.ReadInt16();
             this.padding = binaryReader.ReadBytes(2);
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtLodInfoBlock));
-                this.lodInfo = new PrtLodInfoBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.lodInfo[i] = new PrtLodInfoBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtClusterBasisBlock));
-                this.clusterBasis = new PrtClusterBasisBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.clusterBasis[i] = new PrtClusterBasisBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtRawPcaDataBlock));
-                this.rawPcaData = new PrtRawPcaDataBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.rawPcaData[i] = new PrtRawPcaDataBlock(binaryReader);
-                    }
-                }
-            }
-            {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(PrtVertexBuffersBlock));
-                this.vertexBuffers = new PrtVertexBuffersBlock[count];
-                using (binaryReader.BaseStream.Pin())
-                {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.vertexBuffers[i] = new PrtVertexBuffersBlock(binaryReader);
-                    }
-                }
-            }
+            this.lodInfo = ReadLodinfo(binaryReader);
+            this.clusterBasis = ReadClusterbasis(binaryReader);
+            this.rawPcaData = ReadRawpcadata(binaryReader);
+            this.vertexBuffers = ReadVertexbuffers(binaryReader);
             this.geometryBlockInfo = new GlobalGeometryBlockInfoStruct(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.sHOrder);
+            binaryWriter.Write(this.numOfClusters);
+            binaryWriter.Write(this.pcaVectorsPerCluster);
+            binaryWriter.Write(this.numberOfRays);
+            binaryWriter.Write(this.numberOfBounces);
+            binaryWriter.Write(this.matIndexForSbsfcScattering);
+            binaryWriter.Write(this.lengthScale);
+            binaryWriter.Write(this.numberOfLodsInModel);
+            binaryWriter.Write(this.padding);
+            WriteLodinfo(binaryWriter);
+            WriteClusterbasis(binaryWriter);
+            WriteRawpcadata(binaryWriter);
+            WriteVertexbuffers(binaryWriter);
+            this.geometryBlockInfo.Write(binaryWriter);
+        }
+        public virtual PrtLodInfoBlock[] ReadLodinfo(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtLodInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var lodInfo = new PrtLodInfoBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    lodInfo[i] = new PrtLodInfoBlock(binaryReader);
+                }
+            }
+            return lodInfo;
+        }
+        public virtual void WriteLodinfo(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtLodInfoBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.lodInfo.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.lodInfo[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual PrtClusterBasisBlock[] ReadClusterbasis(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtClusterBasisBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var clusterBasis = new PrtClusterBasisBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    clusterBasis[i] = new PrtClusterBasisBlock(binaryReader);
+                }
+            }
+            return clusterBasis;
+        }
+        public virtual void WriteClusterbasis(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtClusterBasisBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.clusterBasis.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.clusterBasis[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual PrtRawPcaDataBlock[] ReadRawpcadata(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtRawPcaDataBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var rawPcaData = new PrtRawPcaDataBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    rawPcaData[i] = new PrtRawPcaDataBlock(binaryReader);
+                }
+            }
+            return rawPcaData;
+        }
+        public virtual void WriteRawpcadata(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtRawPcaDataBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.rawPcaData.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.rawPcaData[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual PrtVertexBuffersBlock[] ReadVertexbuffers(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(PrtVertexBuffersBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vertexBuffers = new PrtVertexBuffersBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vertexBuffers[i] = new PrtVertexBuffersBlock(binaryReader);
+                }
+            }
+            return vertexBuffers;
+        }
+        public virtual void WriteVertexbuffers(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(PrtVertexBuffersBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.vertexBuffers.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.vertexBuffers[i].Write(binaryWriter);
+                }
+            }
         }
     }
 
@@ -2249,6 +3533,12 @@ namespace Moonfish.Tags
             this.surfaceReferenceCount = binaryReader.ReadInt16();
             this.firstSurfaceReferenceIndex = binaryReader.ReadInt32();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.cluster);
+            binaryWriter.Write(this.surfaceReferenceCount);
+            binaryWriter.Write(this.firstSurfaceReferenceIndex);
+        }
     }
 
 
@@ -2267,6 +3557,12 @@ namespace Moonfish.Tags
             this.lightmapTriangleIndex = binaryReader.ReadInt16();
             this.bspNodeIndex = binaryReader.ReadInt32();
         }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(this.stripIndex);
+            binaryWriter.Write(this.lightmapTriangleIndex);
+            binaryWriter.Write(this.bspNodeIndex);
+        }
     }
 
 
@@ -2282,32 +3578,69 @@ namespace Moonfish.Tags
         }
         public NodeRenderLeavesBlock(BinaryReader binaryReader)
         {
+            this.collisionLeaves = ReadCollisionleaves(binaryReader);
+            this.surfaceReferences = ReadSurfacereferences(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            WriteCollisionleaves(binaryWriter);
+            WriteSurfacereferences(binaryWriter);
+        }
+        public virtual BspLeafBlock[] ReadCollisionleaves(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(BspLeafBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var collisionLeaves = new BspLeafBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(BspLeafBlock));
-                this.collisionLeaves = new BspLeafBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.collisionLeaves[i] = new BspLeafBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    collisionLeaves[i] = new BspLeafBlock(binaryReader);
                 }
             }
+            return collisionLeaves;
+        }
+        public virtual void WriteCollisionleaves(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(BspLeafBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(BspSurfaceReferenceBlock));
-                this.surfaceReferences = new BspSurfaceReferenceBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < this.collisionLeaves.Length && i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.surfaceReferences[i] = new BspSurfaceReferenceBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.collisionLeaves[i].Write(binaryWriter);
+                }
+            }
+        }
+        public virtual BspSurfaceReferenceBlock[] ReadSurfacereferences(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(BspSurfaceReferenceBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var surfaceReferences = new BspSurfaceReferenceBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    surfaceReferences[i] = new BspSurfaceReferenceBlock(binaryReader);
+                }
+            }
+            return surfaceReferences;
+        }
+        public virtual void WriteSurfacereferences(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(BspSurfaceReferenceBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.surfaceReferences.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.surfaceReferences[i].Write(binaryWriter);
                 }
             }
         }
@@ -2324,21 +3657,40 @@ namespace Moonfish.Tags
         }
         public SectionRenderLeavesBlock(BinaryReader binaryReader)
         {
+            this.nodeRenderLeaves = ReadNoderenderleaves(binaryReader);
+        }
+        public virtual void Write(BinaryWriter binaryWriter)
+        {
+            WriteNoderenderleaves(binaryWriter);
+        }
+        public virtual NodeRenderLeavesBlock[] ReadNoderenderleaves(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(NodeRenderLeavesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var nodeRenderLeaves = new NodeRenderLeavesBlock[blamPointer.Count];
+            using (binaryReader.BaseStream.Pin())
             {
-                var count = binaryReader.ReadInt32();
-                var address = binaryReader.ReadInt32();
-                var elementSize = Marshal.SizeOf(typeof(NodeRenderLeavesBlock));
-                this.nodeRenderLeaves = new NodeRenderLeavesBlock[count];
-                using (binaryReader.BaseStream.Pin())
+                for (int i = 0; i < blamPointer.Count; ++i)
                 {
-                    for (int i = 0; i < count; ++i)
-                    {
-                        binaryReader.BaseStream.Position = address + i * elementSize;
-                        this.nodeRenderLeaves[i] = new NodeRenderLeavesBlock(binaryReader);
-                    }
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    nodeRenderLeaves[i] = new NodeRenderLeavesBlock(binaryReader);
+                }
+            }
+            return nodeRenderLeaves;
+        }
+        public virtual void WriteNoderenderleaves(BinaryWriter binaryWriter)
+        {
+            var binaryReader = new BinaryReader(binaryWriter.BaseStream);
+            var elementSize = Marshal.SizeOf(typeof(NodeRenderLeavesBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            using (binaryWriter.BaseStream.Pin())
+            {
+                for (int i = 0; i < this.nodeRenderLeaves.Length && i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    this.nodeRenderLeaves[i].Write(binaryWriter);
                 }
             }
         }
     }
 }
-

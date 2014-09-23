@@ -86,6 +86,42 @@ namespace Moonfish.Tags
             }
         }
     };
+    partial class GlobalGeometrySectionStruct
+    {
+        public virtual GlobalGeometrySectionVertexBufferBlock[] ReadVertexbuffers(BinaryReader binaryReader)
+        {
+            var elementSize = Marshal.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
+            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var vertexBuffers = new GlobalGeometrySectionVertexBufferBlock[blamPointer.Count];
+            List<BlamPointer> vertexBufferPointers = null;
+            if (binaryReader.BaseStream is ResourceStream)
+            {
+                var stream = binaryReader.BaseStream as ResourceStream;
+                vertexBufferPointers = stream.Resources.Where(x => x.type == GlobalGeometryBlockResourceBlock.Type.VertexBuffer)
+                .Select(x =>
+                {
+                    var count = x.resourceDataSize;
+                    var address = x.resourceDataOffset + stream.HeaderSize;
+                    var size = 1;
+                    return new BlamPointer(count, address, size);
+                }).ToList();
+            }
+            using (binaryReader.BaseStream.Pin())
+            {
+                for (int i = 0; i < blamPointer.Count; ++i)
+                {
+                    binaryReader.BaseStream.Position = blamPointer[i];
+                    vertexBuffers[i] = new GlobalGeometrySectionVertexBufferBlock(binaryReader);
+                    if (vertexBufferPointers != null)
+                    {
+                        binaryReader.BaseStream.Position = vertexBufferPointers[i].Address;
+                        vertexBuffers[i].vertexBuffer.Data = binaryReader.ReadBytes(vertexBufferPointers[i].Count);
+                    }
+                }
+            }
+            return vertexBuffers;
+        }
+    }
 
     partial class RenderModelSectionBlock
     {

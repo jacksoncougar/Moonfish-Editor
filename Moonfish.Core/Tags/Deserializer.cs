@@ -267,7 +267,7 @@ namespace Moonfish.Tags
             field.Set(item, array);
         }
 
-        private static int SizeOf(Type elementType)
+        public static int SizeOf(Type elementType)
         {
             var elementSize = 0;
             var layoutAttribute = elementType.Attribute(typeof(TagBlockLayoutAttribute)) as TagBlockLayoutAttribute;

@@ -1,4 +1,5 @@
 ﻿using Moonfish.Graphics;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,6 +88,133 @@ namespace Moonfish.Tags
             }
         }
     }
+
+    static class BinaryWriterExtensions
+    {
+        public static void Write(this BinaryWriter binaryWriter, VertexBuffer value)
+        {
+            binaryWriter.Write((int)value.Type);
+            binaryWriter.Write(new byte[28]);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, String32 value)
+        {
+            var bytes = Encoding.UTF8.GetBytes(value.value);
+            var padding = bytes.Length >= 32 ? 32 : 32 - bytes.Length;
+            binaryWriter.Write(bytes);
+            if (padding > 0)
+                binaryWriter.Write(new byte[padding]);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, String256 value)
+        {
+            var bytes = Encoding.UTF8.GetBytes(value.value);
+            var padding = bytes.Length >= 256 ? 256 : 256 - bytes.Length;
+            binaryWriter.Write(bytes);
+            if (padding > 0)
+                binaryWriter.Write(new byte[padding]);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, StringID value)
+        {
+            binaryWriter.Write((int)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, RGBColor value)
+        {
+            binaryWriter.Write(value.Red);
+            binaryWriter.Write(value.Green);
+            binaryWriter.Write(value.Blue);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, TagReference value)
+        {
+            binaryWriter.Write((int)value.TagClass);
+            binaryWriter.Write((int)value.TagID);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, BlockFlags8 value)
+        {
+            binaryWriter.Write(value.flags);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, BlockFlags16 value)
+        {
+            binaryWriter.Write(value.flags);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, BlockFlags32 value)
+        {
+            binaryWriter.Write(value.flags);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, ByteBlockIndex1 value)
+        {
+            binaryWriter.Write((byte)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, ShortBlockIndex1 value)
+        {
+            binaryWriter.Write((short)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, LongBlockIndex1 value)
+        {
+            binaryWriter.Write((int)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, ByteBlockIndex2 value)
+        {
+            binaryWriter.Write((byte)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, ShortBlockIndex2 value)
+        {
+            binaryWriter.Write((short)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, LongBlockIndex2 value)
+        {
+            binaryWriter.Write((int)value);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, Quaternion value)
+        {
+            binaryWriter.Write(value.X);
+            binaryWriter.Write(value.Y);
+            binaryWriter.Write(value.Z);
+            binaryWriter.Write(value.W);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, Vector4 value)
+        {
+            binaryWriter.Write(value.X);
+            binaryWriter.Write(value.Y);
+            binaryWriter.Write(value.Z);
+            binaryWriter.Write(value.W);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, Vector3 value)
+        {
+            binaryWriter.Write(value.X);
+            binaryWriter.Write(value.Y);
+            binaryWriter.Write(value.Z);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, Vector2 value)
+        {
+            binaryWriter.Write(value.X);
+            binaryWriter.Write(value.Y);
+        }
+
+        public static void Write(this BinaryWriter binaryWriter, ColorR8G8B8 value)
+        {
+            binaryWriter.Write(value.R);
+            binaryWriter.Write(value.G);
+            binaryWriter.Write(value.B);
+        }
+    }
+
     static class BinaryReaderExtensions
     {
         public static VertexBuffer ReadVertexBuffer(this BinaryReader binaryReader)
