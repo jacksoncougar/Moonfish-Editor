@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -214,6 +215,13 @@ namespace Moonfish.Graphics
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return null;
+        }
+
+        internal void Save(MapStream map)
+        {
+            BinaryWriter binaryWriter = new BinaryWriter(map);
+            map[model.renderModel.TagID].Seek();
+            this.model.RenderModel.Write(binaryWriter);
         }
     }
 

@@ -451,7 +451,7 @@ namespace Moonfish.Graphics
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            manager[activeObject.Value].Save(map);
         }
     }
 }
