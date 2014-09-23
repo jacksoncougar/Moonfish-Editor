@@ -42,9 +42,9 @@ namespace Moonfish.Graphics
         public override void DrawBox(ref OpenTK.Vector3 bbMin, ref OpenTK.Vector3 bbMax, ref OpenTK.Matrix4 trans, OpenTK.Graphics.Color4 color)
         {
             using (debugProgram.Use())
-            using (debugProgram.Using("object_matrix", trans))
             using (Box box = new Box(bbMin, bbMax))
             {
+                debugProgram.UniformBuffer[UniformBuffer.Uniform.WorldMatrix] = trans;
                 GL.VertexAttrib3(1, new[] { 1f, 1f, 1f });
                 box.Render(new[] { debugProgram });
             }

@@ -114,7 +114,7 @@ namespace Moonfish.Graphics
                 mousePole.Render(viewscreenProgram);
                 using (system_program.Use())
                 {
-                    //collisionWorld.DebugDrawWorld();
+                    collisionWorld.DebugDrawWorld();
                 }
             }
             glControl1.SwapBuffers();
@@ -286,9 +286,11 @@ namespace Moonfish.Graphics
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
+                var marker = sender as MarkerWrapper;
+                mousePole.DropHandlers();
                 mousePole.Show();
                 mousePole.Position = e.WorldCoordinates;
-                var marker = sender as MarkerWrapper;
+                mousePole.Rotation = manager[activeObject.Value].nodes.GetWorldMatrix(marker.marker.NodeIndex).ExtractRotation();
                 if (marker != null)
                 {
                     var query = from item in propertyGrid1.EnumerateAllItems()

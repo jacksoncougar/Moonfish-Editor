@@ -350,7 +350,7 @@ namespace Moonfish.Graphics
 
         public MatrixChangedEventArgs(Matrix4 beforeMatrix, Matrix4 afterMatrix)
         {
-            Delta = afterMatrix - beforeMatrix;
+            Delta = beforeMatrix.Inverted() * afterMatrix;
             Matrix = afterMatrix;
         }
     }

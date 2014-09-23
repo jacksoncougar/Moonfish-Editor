@@ -76,7 +76,7 @@ namespace Moonfish.Graphics
                 sectionBuffers.Add(new Mesh(section));
             }
             this.nodes = new NodeCollection(model.RenderModel.nodes);
-            this.markers = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToDictionary(x => x, x => new MarkerWrapper(x));
+            this.markers = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToDictionary(x => x, x => new MarkerWrapper(x, this.nodes));
         }
 
         public IEnumerable<StringID> Permutations
