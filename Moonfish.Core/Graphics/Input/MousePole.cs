@@ -1,6 +1,6 @@
 ﻿using Moonfish.Collision;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -346,10 +346,10 @@ namespace Moonfish.Graphics.Input
             using (shaderProgram.Use())
             using (OpenGL.Enable(EnableCap.PrimitiveRestartFixedIndex))
             {
-                shaderProgram.UniformBuffer.UseDefault(UniformBuffer.Uniform.WorldMatrix);
+                shaderProgram[Uniforms.WorldMatrix] = Matrix4.Identity;
                 GL.BindVertexArray(glBuffers[0]);
-                GL.DrawElements(BeginMode.Lines, 6, DrawElementsType.UnsignedShort, 0);
-                GL.DrawElements(BeginMode.TriangleFan, elementCount - 6, DrawElementsType.UnsignedShort, 12);
+                GL.DrawElements(PrimitiveType.Lines, 6, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.DrawElements(PrimitiveType.TriangleFan, elementCount - 6, DrawElementsType.UnsignedShort, (IntPtr)12);
                 GL.BindVertexArray(0);
             }
         }
@@ -459,22 +459,8 @@ namespace Moonfish.Graphics.Input
 
             BufferColourData(Vector3.SizeInBytes * coordinates.Length, colourArray);
 
-            GL.BindVertexBuffer(
-                0,
-                glBuffers[1],
-                (IntPtr)0,
-                Vector3.SizeInBytes);
-            GL.BindVertexBuffer(
-                1,
-                glBuffers[1],
-                (IntPtr)(Vector3.SizeInBytes * coordinates.Length),
-                sizeof(float) * 3);
-
-            GL.VertexAttribFormat(0, 3, VertexAttribType.Float, false, 0);
-            GL.VertexAttribFormat(1, 3, VertexAttribType.Float, false, 0);
-
-            GL.VertexAttribBinding(0, 0);
-            GL.VertexAttribBinding(1, 1);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, (IntPtr)(Vector3.SizeInBytes * coordinates.Length));
 
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);

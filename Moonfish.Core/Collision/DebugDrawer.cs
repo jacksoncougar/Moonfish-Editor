@@ -1,6 +1,6 @@
 ﻿using Moonfish.Graphics;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,8 +22,7 @@ namespace Moonfish.Collision
             GL.BindBuffer(BufferTarget.ArrayBuffer, arrayBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)Vector3.SizeInBytes, ref position, BufferUsageHint.StaticDraw);
 
-            GL.BindVertexBuffer(0, arrayBuffer, IntPtr.Zero, Vector3.SizeInBytes);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.EnableVertexAttribArray(0);
         }
 
@@ -71,9 +70,7 @@ namespace Moonfish.Collision
 
         internal static void DrawPoint(Vector3 coordinate, float pointSize)
         {
-            GL.PointSize(pointSize);
             DrawPoint(coordinate);
-            GL.PointSize(size: 1);
         }
 
 
@@ -133,9 +130,7 @@ namespace Moonfish.Collision
             GL.BindBuffer(BufferTarget.ArrayBuffer, arrayBuffer);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                 (IntPtr)(Vector3.SizeInBytes * coordinates.Length), coordinates, BufferUsageHint.DynamicDraw);
-            GL.VertexAttribFormat(0, 3, VertexAttribType.Float, false, 0);
-            GL.VertexAttribBinding(0, 0);
-            GL.BindVertexBuffer(0, arrayBuffer, (IntPtr)0, Vector3.SizeInBytes);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             GL.EnableVertexAttribArray(0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, colourBuffer);
@@ -153,7 +148,7 @@ namespace Moonfish.Collision
             //GL.LineWidth(2);
             using (debugProgram.Use())
             {
-                GL.DrawElements(BeginMode.Lines, indices.Length, DrawElementsType.UnsignedShort, 0);
+                GL.DrawElements(PrimitiveType.Lines, indices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
             GL.DeleteBuffers(2, new[] { arrayBuffer, elementBuffer, colourBuffer });
             GL.DeleteVertexArray(vao);

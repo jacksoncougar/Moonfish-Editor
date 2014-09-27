@@ -18,3 +18,6 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\x86\Debug\Moonfish.G
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\x86\Debug\Moonfish.Core.csproj.GenerateResource.Cache
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\x86\Debug\Moonfish.exe
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\x86\Debug\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\x86\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\x86\Debug\data\sprite.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\x86\Debug\data\sprite.vert

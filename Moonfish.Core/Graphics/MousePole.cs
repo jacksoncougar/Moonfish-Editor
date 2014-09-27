@@ -1,7 +1,7 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Tags;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

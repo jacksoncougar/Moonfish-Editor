@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,20 +93,23 @@ namespace Moonfish.Graphics
             
             // generate buffers
             vertex_array_buffer_id = GL.GenVertexArray();
+            OpenGL.ReportError();
             array_buffer_id = GL.GenBuffer();
+            OpenGL.ReportError();
             index_buffer_id = GL.GenBuffer();
+            OpenGL.ReportError();
 
             // bind VAO
             GL.BindVertexArray(vertex_array_buffer_id);
+            OpenGL.ReportError();
 
             // bind and buffer array buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, array_buffer_id);
+            OpenGL.ReportError();
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(this.Vertices.Length * 12), this.Vertices, BufferUsageHint.StaticDraw);
+            OpenGL.ReportError();
 
-            GL.BindVertexBuffer(0, array_buffer_id, (IntPtr)0, 12);
-
-            GL.VertexAttribFormat(0, 3, VertexAttribType.Float, false, 0);
-            GL.VertexAttribBinding(0, 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             // bind and buffer element array
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, index_buffer_id);
@@ -123,7 +126,8 @@ namespace Moonfish.Graphics
         public void Draw()
         {
             GL.BindVertexArray(vertex_array_buffer_id);
-            GL.DrawElements(BeginMode.Lines, Indices.Length, DrawElementsType.UnsignedShort, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, index_buffer_id);
+            GL.DrawElements(PrimitiveType.Lines, Indices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             GL.BindVertexArray(0);
         }
 
@@ -174,12 +178,11 @@ namespace Moonfish.Graphics
             GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, (IntPtr)(12 * base.Vertices.Length), base.Vertices);
             GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(12 * base.Vertices.Length), (IntPtr)(12 * DiffuseColours.Length), DiffuseColours);
 
-            GL.BindVertexBuffer(0, array_buffer_id, (IntPtr)0, 12);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 12, 0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 12, base.Vertices.Length * 12);
 
-            GL.VertexAttribFormat(0, 3, VertexAttribType.Float, false, 0);
-            GL.VertexAttribBinding(0, 0);
-            GL.VertexAttribFormat(1, 3, VertexAttribType.Float, false, base.Vertices.Length * 12);
-            GL.VertexAttribBinding(1, 0);
+            GL.EnableVertexAttribArray(0);
+            GL.EnableVertexAttribArray(1);
 
             // bind and buffer element array
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, index_buffer_id);
@@ -187,16 +190,14 @@ namespace Moonfish.Graphics
 
             // unbind buffers
             GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            OpenGL.ReportError();
         }
 
         public void Draw()
         {
             GL.BindVertexArray(vertex_array_buffer_id);
-            GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(1);
-            GL.DrawElements(BeginMode.Lines, Indices.Length, DrawElementsType.UnsignedShort, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, index_buffer_id);
+            GL.DrawElements(PrimitiveType.Lines, Indices.Length, DrawElementsType.UnsignedShort, (IntPtr)0);
             GL.BindVertexArray(0);
         }
     }

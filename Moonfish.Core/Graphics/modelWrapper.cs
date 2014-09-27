@@ -1,7 +1,8 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Tags;
+using Moonfish.Tags.BSP;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -44,6 +45,48 @@ namespace Moonfish.Graphics
             var worldMatrix = node.WorldMatrix;
             if ((int)node.parentNode < 0) return worldMatrix;
             return worldMatrix * GetWorldMatrix(this[(int)node.parentNode]);
+        }
+    }
+
+    public class RenderObject
+    {
+        List<Mesh> sectionBuffers;
+
+        public RenderObject()
+        {
+            sectionBuffers = new List<Mesh>();
+        }
+
+        public RenderObject(StructureInstancedGeometryRenderInfoStruct geometryInfo)
+            : this()
+        {
+            sectionBuffers.Add(new Mesh(geometryInfo));
+        }
+
+        public RenderObject(StructureBspClusterBlock x)
+            : this()
+        {
+            sectionBuffers.Add(new Mesh(x));
+        }
+
+        public void Render(Program program)
+        {
+            if (sectionBuffers.Count == 0) return;
+            program[Uniforms.WorldMatrix] = Matrix4.Identity;
+            using (program.Use())
+            {
+                program[Uniforms.WorldMatrix] = Matrix4.Identity;
+                program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
+                using (sectionBuffers.First().Bind())
+                {
+                    GL.UseProgram(program.ID);
+                    foreach (var part in sectionBuffers.First().Parts)
+                    {
+                        GL.DrawElements(PrimitiveType.Triangles, part.stripLength, DrawElementsType.UnsignedShort,
+                            (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); 
+                    }
+                }
+            }
         }
     }
 
@@ -91,10 +134,6 @@ namespace Moonfish.Graphics
 
         void Render(IEnumerable<Program> shaderPasses)
         {
-            var anyProgram = shaderPasses.First();
-            anyProgram.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, Matrix4.Identity);
-            anyProgram.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, model.RenderModel.compressionInfo[0].ToExtentsMatrix());
-
             foreach (var program in shaderPasses)
             {
                 RenderPass(program);
@@ -108,19 +147,21 @@ namespace Moonfish.Graphics
             {
                 using (program.Use())
                 {
+                    program[Uniforms.NormalizationMatrix] = model.RenderModel.compressionInfo[0].ToExtentsMatrix();
                     foreach (var region in model.RenderModel.regions)
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
                         var mesh = sectionBuffers[section_index];
                         using (mesh.Bind())
                         {
+                            GL.UseProgram(program.ID);
                             foreach (var part in mesh.Parts)
                             {
-                                GL.DrawElements(BeginMode.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort, part.stripStartIndex * 2);
+                                GL.DrawElements(PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
+                                    (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); OpenGL.ReportError();
                             }
                         }
                     }
-
                 }
             }
             if (program.Name == "system")
@@ -139,7 +180,7 @@ namespace Moonfish.Graphics
 
                             var worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
 
-                            program.UniformBuffer.BufferUniformData(UniformBuffer.Uniform.WorldMatrix, ref worldMatrix);
+                            program[Uniforms.WorldMatrix] = worldMatrix;
 
                             if (selectedObjects.Contains(marker))
                             {

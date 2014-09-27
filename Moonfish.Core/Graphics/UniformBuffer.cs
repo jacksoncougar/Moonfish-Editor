@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,17 +24,20 @@ namespace Moonfish.Graphics
 
         public UniformBuffer()
         {
-            Name = "GlobalMatrices";
-            Uniforms = new Dictionary<int, UniformLayout>(3);
-            Uniforms[(int)Uniform.ExtentsMatrix] = new UniformLayout(0, Maths.SizeOfMatrix4);
-            Uniforms[(int)Uniform.WorldMatrix] = new UniformLayout(Maths.SizeOfMatrix4, Maths.SizeOfMatrix4);
-            Uniforms[(int)Uniform.ViewProjectionMatrix] = new UniformLayout(Maths.SizeOfMatrix4 * 2, Maths.SizeOfMatrix4);
+            //OpenGL.ReportError();
+            //Name = "GlobalMatrices";
+            //Uniforms = new Dictionary<int, UniformLayout>(3);
+            //Uniforms[(int)Uniform.ExtentsMatrix] = new UniformLayout(0, Maths.SizeOfMatrix4);
+            //Uniforms[(int)Uniform.WorldMatrix] = new UniformLayout(Maths.SizeOfMatrix4, Maths.SizeOfMatrix4);
+            //Uniforms[(int)Uniform.ViewProjectionMatrix] = new UniformLayout(Maths.SizeOfMatrix4 * 2, Maths.SizeOfMatrix4);
 
-            buffer = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.UniformBuffer, buffer);
-            GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(Maths.SizeOfMatrix4 * 3), IntPtr.Zero, BufferUsageHint.StreamDraw);
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-            OpenGL.ReportError();
+            //buffer = GL.GenBuffer();
+            //GL.BindBuffer(BufferTarget.UniformBuffer, buffer);
+            //OpenGL.ReportError();
+            //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(Maths.SizeOfMatrix4 * 3), IntPtr.Zero, BufferUsageHint.StreamDraw);
+            //OpenGL.ReportError();
+            //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            //OpenGL.ReportError();
         }
 
         public void BufferUniformData(Uniform uniform, Matrix4 matrix4)
@@ -50,12 +53,12 @@ namespace Moonfish.Graphics
             }
         }
 
-        public void UseDefault(Uniform uniform)
+        private void UseDefault(Uniform uniform)
         {
             BufferUniformData(uniform, Matrix4.Identity);
         }
 
-        public void BufferUniformData(Uniform uniform, ref Matrix4 matrix4)
+        private void BufferUniformData(Uniform uniform, ref Matrix4 matrix4)
         {
             if(!Uniforms.ContainsKey((int)uniform)) throw new ArgumentOutOfRangeException();
 

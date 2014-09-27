@@ -3,7 +3,7 @@ using Moonfish.Model;
 using Moonfish.Structures;
 using Moonfish.Tags;
 using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.ES30;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +21,8 @@ namespace Moonfish.Graphics
     public class Mesh : IDisposable
     {
         public RenderModelSectionBlock sectionBlock;
+        public Moonfish.Tags.BSP.StructureInstancedGeometryRenderInfoStruct geometryBlock;
+        private Tags.BSP.StructureBspClusterBlock clusterBlock;
 
         int mVAO_id;
         List<int> mVBO_ids;
@@ -31,8 +33,25 @@ namespace Moonfish.Graphics
         {
             get
             {
-                var sectionData = sectionBlock.sectionData;
-                return sectionData.Count() > 0 ? sectionData[0].section.parts : new GlobalGeometryPartBlockNew[0];
+                if (sectionBlock != null)
+                {
+                    var sectionData = sectionBlock.sectionData;
+                    return sectionData.Count() > 0 ? sectionData[0].section.parts : new GlobalGeometryPartBlockNew[0];
+                }
+                else if (geometryBlock != null)
+                {
+                    var sectionData = geometryBlock.renderData;
+                    return sectionData[0].section.parts;
+                }
+                else if (clusterBlock != null)
+                {
+                    var sectionData = clusterBlock.clusterData;
+                    return sectionData[0].section.parts;
+                }
+                else
+                {
+                    return new GlobalGeometryPartBlockNew[0];
+                }
             }
         }
 
@@ -42,9 +61,40 @@ namespace Moonfish.Graphics
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
         }
+
+        public Mesh(Moonfish.Tags.BSP.StructureInstancedGeometryRenderInfoStruct geometryBlock)
+        {
+            geometryBlock.LoadSectionData();
+            this.geometryBlock = geometryBlock;
+            BufferMeshResources(geometryBlock.renderData);
+        }
+
+        public Mesh(Tags.BSP.StructureBspClusterBlock clusterBlock)
+        {
+            this.clusterBlock = clusterBlock;
+            clusterBlock.LoadSectionData();
+            BufferMeshResources(clusterBlock.clusterData);
+        }
+
+        private void BufferMeshResources(Tags.BSP.StructureBspClusterDataBlockNew[] structureBspClusterDataBlockNew)
+        {
+            if (structureBspClusterDataBlockNew.Length > 0)
+            {
+                mVBO_ids = new List<int>();
+                mVAO_id = GL.GenVertexArray();
+                GL.BindVertexArray(mVAO_id);
+
+                BufferElementArrayData(structureBspClusterDataBlockNew[0].section.stripIndices.Select(x => x.index).ToArray());
+
+                BufferVertexAttributeData(structureBspClusterDataBlockNew[0].section.vertexBuffers.Select(x => x.vertexBuffer).ToArray());
+
+                GL.BindVertexArray(0);
+            }
+        }
+
         public IDisposable Bind()
         {
-            GL.BindVertexArray(mVAO_id);
+            GL.BindVertexArray(mVAO_id); OpenGL.ReportError();
             return new Handle(0);
         }
 
@@ -66,53 +116,46 @@ namespace Moonfish.Graphics
 
         private void BufferVertexAttributeData(VertexBuffer[] vertexBuffers)
         {
-
             for (int i = 0; i < vertexBuffers.Length; ++i)
             {
+                if (!Enum.IsDefined(typeof(VertexAttributeType), vertexBuffers[i].Type)) continue;
                 mVBO_ids.Add(GL.GenBuffer());
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mVBO_ids.Last());
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)vertexBuffers[i].Data.Length, vertexBuffers[i].Data, BufferUsageHint.StaticDraw);
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, mVBO_ids.Last()); OpenGL.ReportError();
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)vertexBuffers[i].Data.Length, vertexBuffers[i].Data, BufferUsageHint.StaticDraw); OpenGL.ReportError();
+                GL.EnableVertexAttribArray(i); OpenGL.ReportError();
 
                 var attribute_type = vertexBuffers[i].Type;
                 var attribute_size = attribute_type.GetSize();
-                GL.BindVertexBuffer(i, mVBO_ids.Last(), (IntPtr)0, attribute_size);
                 switch (attribute_type)
                 {
                     case VertexAttributeType.coordinate_compressed:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
                         break;
                     case VertexAttributeType.coordinate_with_single_node:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
                         break;
                     case VertexAttributeType.coordinate_with_double_node:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
                         break;
                     case VertexAttributeType.coordinate_with_triple_node:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Short, true, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
                         break;
                     case VertexAttributeType.texture_coordinate_compressed:
-                        GL.VertexAttribFormat(i, 2, VertexAttribType.Short, true, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 2, VertexAttribPointerType.Short, true, attribute_size, 0);
                         break;
                     case VertexAttributeType.tangent_space_unit_vectors_compressed:
-                        GL.VertexAttribIFormat(i, 3, VertexAttribIntegerType.Int, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribIPointer(i, 3, VertexAttribIntegerType.Int, attribute_size, IntPtr.Zero);
                         break;
                     case VertexAttributeType.coordinate_float:
-                        GL.VertexAttribFormat(i, 3, VertexAttribType.Float, false, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Float, false, attribute_size, 0);
                         break;
                     case VertexAttributeType.texture_coordinate_float:
-                        GL.VertexAttribFormat(i, 2, VertexAttribType.Float, false, 0);
-                        GL.VertexAttribBinding(i, i);
+                        GL.VertexAttribPointer(i, 2, VertexAttribPointerType.Float, false, attribute_size, 0);
                         break;
+                    default: break;
                 }
-                GL.EnableVertexAttribArray(i);
-                var error = GL.GetError();
+                OpenGL.ReportError();
             }
         }
 
@@ -125,8 +168,6 @@ namespace Moonfish.Graphics
 
         public void Dispose()
         {
-            //  Set default program
-            GL.UseProgram(0);
             //  Bind default VBA
             GL.BindVertexArray(0);
             //  Delete VBA buffer
@@ -147,6 +188,7 @@ namespace Moonfish.Graphics
             public void Dispose()
             {
                 GL.BindVertexArray(previousVAO);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
         }
     }
@@ -209,15 +251,10 @@ namespace Moonfish.Graphics
                 RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
-        public async Task<bool> Add(TagIdent item)
+        public void Add(TagIdent item)
         {
-            var success = await Task.Factory.StartNew<bool>(()=>
-            {
-                var data = Halo2.GetReferenceObject(item);
-                objects[item] = new ScenarioObject((HierarchyModel)data);
-                return data != null;
-            }, System.Threading.CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.FromCurrentSynchronizationContext());
-            return success;
+            var data = Halo2.GetReferenceObject(item);
+            objects[item] = new ScenarioObject((HierarchyModel)data);
         }
         public void Draw(TagIdent item)
         {
@@ -239,7 +276,8 @@ namespace Moonfish.Graphics
             {
                 using (program.Use())
                 {
-                    program["object_matrix"] = instance.WorldMatrix;
+                    if ((int)instance.PaletteIndex < 0) continue;
+                    program[Uniforms.WorldMatrix] = (Matrix4)instance.WorldMatrix;
                     IRenderable @object = objects[palette[(int)instance.PaletteIndex].ObjectReference.TagID];
                     @object.Render(new[] { program });
                 }
@@ -263,6 +301,11 @@ namespace Moonfish.Graphics
         internal void Clear()
         {
             this.objects.Clear();
+        }
+
+        internal void Load(Tags.BSP.StructureBspInstancedGeometryDefinitionBlock structureBspInstancedGeometryDefinitionBlock)
+        {
+            structureBspInstancedGeometryDefinitionBlock.renderInfo.LoadSectionData();
         }
     }
 

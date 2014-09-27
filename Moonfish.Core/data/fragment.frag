@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 130
 
 smooth in vec4 frag_diffuse_color;
 smooth in vec3 vertexPosition;

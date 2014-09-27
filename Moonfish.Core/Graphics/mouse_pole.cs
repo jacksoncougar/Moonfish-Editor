@@ -1,6 +1,6 @@
 ﻿using Moonfish.Collision;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,6 @@ namespace Moonfish.Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, arrayBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Vector3.SizeInBytes * coordinates.Length), coordinates, BufferUsageHint.StaticDraw);
 
-            GL.BindVertexBuffer(0, arrayBuffer, IntPtr.Zero, Vector3.SizeInBytes);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
@@ -246,7 +245,7 @@ namespace Moonfish.Graphics
 
         public void Render(IEnumerable<Program> shaderPasses)
         {
-            GL.DrawElementsBaseVertex(PrimitiveType.TriangleFan, base.elementCount, DrawElementsType.UnsignedShort, (IntPtr)base.elementBufferOffset, base.elementBufferOffset / sizeof(ushort));
+            //GL.DrawElementsBaseVertex(PrimitiveType.TriangleFan, base.elementCount, DrawElementsType.UnsignedShort, (IntPtr)base.elementBufferOffset, base.elementBufferOffset / sizeof(ushort));
         }
 
         public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)

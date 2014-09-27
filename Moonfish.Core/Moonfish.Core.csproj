@@ -10,13 +10,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Moonfish</RootNamespace>
     <AssemblyName>Moonfish</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,10 +31,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,6 +71,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -140,6 +141,7 @@
     <Compile Include="Graphics\node.cs" />
     <Compile Include="Graphics\program.cs" />
     <Compile Include="Graphics\resource.cs" />
+    <Compile Include="Graphics\Scene.cs" />
     <Compile Include="Graphics\Section.cs" />
     <Compile Include="Graphics\shader.cs" />
     <Compile Include="Graphics\Track.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Tags\Sounds.Code.cs" />
     <Compile Include="Tags\StructureBinarySeperationPlane.Code.cs" />
     <Compile Include="Guerilla\TagGroups.cs" />
+    <Compile Include="Tags\StructureBinarySeperationPlane.cs" />
     <Compile Include="Tags\ValueTypes.cs" />
     <Compile Include="Tags\Vehicle.cs" />
     <Compile Include="Tags\Weapon.cs" />
@@ -205,6 +208,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="data\sprite.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\sprite.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="data\viewscreen.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -228,31 +228,39 @@ namespace Moonfish
                 for (int i = 0; i < count; ++i)
                 {
                     this.Seek(address - SecondaryMagic + i * 68, SeekOrigin.Begin);
-                    var sbsp_offset = bin.ReadInt32();
-                    var sbsp_length = bin.ReadInt32();
-                    var sbsp_virtual_address = bin.ReadInt32();
+                    var structureBlockOffset = bin.ReadInt32();
+                    var structureBlockLength = bin.ReadInt32();
+                    var structureBlockAddress = bin.ReadInt32();
                     if (i == 0)
                     {
-                        this.PrimaryMagic = sbsp_virtual_address - sbsp_offset;
-                        this.MemoryBlocks[0].Address = sbsp_virtual_address;
+                        this.PrimaryMagic = structureBlockAddress - structureBlockOffset;
+                        this.MemoryBlocks[0].Address = structureBlockAddress;
                         this.MemoryBlocks[0].Magic = this.PrimaryMagic;
-                        this.MemoryBlocks[0].Length = sbsp_length;
+                        this.MemoryBlocks[0].Length = structureBlockLength;
                     }
                     Seek(8, SeekOrigin.Current);
-                    var sbsp_identifier = bin.ReadTagIdent();
+                    var sbspIdentifier = bin.ReadTagIdent();
                     Seek(4, SeekOrigin.Current);
-                    var ltmp_identifier = bin.ReadTagIdent();
+                    var ltmpIdentifier = bin.ReadTagIdent();
 
-                    var ltmp_offset = bin.ReadInt32();
-                    var ltmp_length = sbsp_offset + sbsp_length - ltmp_offset;
+                    Seek(structureBlockOffset, SeekOrigin.Begin);
 
-                    Tags[sbsp_identifier.Index].VirtualAddress = sbsp_virtual_address;
-                    Tags[sbsp_identifier.Index].Length = sbsp_length - ltmp_length;
+                    // is this the total block length or minus the 16?
+                    var blockLength = bin.ReadInt32();
+                    var sbspVirtualAddress = bin.ReadInt32();
+                    var ltmpVirtualAddress = bin.ReadInt32();
+                    var sbsp = bin.ReadTagClass();
 
-                    if (ltmp_identifier != TagIdent.NullIdentifier)
+                    var sbspLength = ltmpVirtualAddress - sbspVirtualAddress;
+                    var ltmpLength = blockLength - sbspLength;
+
+                    Tags[sbspIdentifier.Index].VirtualAddress = sbspVirtualAddress;
+                    Tags[sbspIdentifier.Index].Length = sbspLength;
+
+                    if (ltmpIdentifier != TagIdent.NullIdentifier)
                     {
-                        Tags[ltmp_identifier.Index].VirtualAddress = sbsp_virtual_address + ltmp_offset;
-                        Tags[ltmp_identifier.Index].Length = ltmp_length;
+                        Tags[ltmpIdentifier.Index].VirtualAddress = ltmpVirtualAddress;
+                        Tags[ltmpIdentifier.Index].Length = ltmpLength;
                     }
                 }
 

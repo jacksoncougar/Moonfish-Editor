@@ -45,13 +45,6 @@ namespace Moonfish
 
         public static GlobalPaths Paths { get; set; }
 
-        public static Task<dynamic> GetReferenceObjectAsync(TagIdent identifier, bool reload = false)
-        {
-            if (mapStream == null) return null;
-            if (reload)
-                mapStream.Remove(identifier);
-            return Task.Run((Func<dynamic>)mapStream[identifier].Deserialize);
-        }
 
         public static dynamic GetReferenceObject(TagIdent identifier, bool reload = false)
         {

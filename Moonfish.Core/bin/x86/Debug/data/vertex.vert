@@ -1,17 +1,14 @@
-﻿#version  330
+﻿#version 130
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec2 texcoord;
-layout(location = 2) in int compressedNormal;
+in vec4 position;
+in vec2 texcoord;
+in int compressedNormal;
 
-layout(std140) uniform GlobalMatrices
-{
-	uniform mat4 objectExtents;
-	uniform mat4 objectWorldMatrix;
-	uniform mat4 viewProjectionMatrix;
-};
+uniform mat4 objectExtents;
+uniform mat4 objectWorldMatrix;
+uniform mat4 viewProjectionMatrix;
 
-smooth out vec3 frag_diffuse_color;
+smooth out vec4 frag_diffuse_color;
 smooth out vec3 vertexPosition;
 
 vec3 decompress(in int compressedNormal)
@@ -48,5 +45,5 @@ void main()
     gl_Position = viewProjectionMatrix  * objectWorldMatrix * objectExtents * position;
 	
 	vertexPosition = gl_Position.xyz;
-	frag_diffuse_color = normalMatrix * decompress(compressedNormal);
+	frag_diffuse_color = vec4(normalMatrix * decompress(compressedNormal), 1.0);
 }

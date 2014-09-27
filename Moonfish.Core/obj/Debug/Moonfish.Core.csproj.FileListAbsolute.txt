@@ -45,3 +45,5 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\fragment.
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\vertex.vert
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\viewscreen.vert
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe.config
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.vert

@@ -3,17 +3,43 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Fasterflect;
+using System.Runtime.InteropServices;
+using Moonfish.ResourceManagement;
 
-namespace Moonfish.Tags
+namespace Moonfish.Tags.BSP
 {
+    partial class StructureInstancedGeometryRenderInfoStruct
+    {
+        public void LoadSectionData()
+        {
+            ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
+            BinaryReader reader = new BinaryReader(source);
+            this.renderData = new[] { new StructureBspClusterDataBlockNew(reader) };
+        }
+
+    }
+
+    partial class StructureBspClusterBlock
+    {
+        public void LoadSectionData()
+        {
+            ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
+            BinaryReader reader = new BinaryReader(source);
+            this.clusterData = new[] { new StructureBspClusterDataBlockNew(reader) };
+        }
+    }
     partial class StructureBinarySeperationPlane
     {
         [GuerillaPreProcessMethod(BlockName = "scenario_structure_bsp_block")]
         protected static void GuerillaPreProcessMethod(BinaryReader binaryReader, IList<tag_field> fields)
         {
-            fields.Insert(0, new tag_field() { type = field_type._field_pad, Name = "padding", definition = 8 });
-            fields.Insert(1, new tag_field() { type = field_type._field_tag_reference, Name = "sbsp" });
+            fields.Insert(0, new tag_field() { type = field_type._field_long_integer, Name = "Block Length" });
+            fields.Insert(1, new tag_field() { type = field_type._field_long_integer, Name = "SBSP virtual start address" });
+            fields.Insert(2, new tag_field() { type = field_type._field_long_integer, Name = "LTMP virtual start address" });
+            fields.Insert(3, new tag_field() { type = field_type._field_tag, Name = "SBSP class" });
         }
     }
     public partial class CollisionBSPPhysicsBlock

@@ -84,6 +84,7 @@ namespace Moonfish.Tags
             valueTypeDictionary.Add(field_type._field_real_fraction, typeof(float));
             valueTypeDictionary.Add(field_type._field_real_fraction_bounds, typeof(float));
             valueTypeDictionary.Add(field_type._field_real_vector_3d, typeof(Vector3));
+            valueTypeDictionary.Add(field_type._field_real_vector_2d, typeof(Vector2));
             valueTypeDictionary.Add(field_type._field_real_point_2d, typeof(Vector2));
             valueTypeDictionary.Add(field_type._field_real_point_3d, typeof(Vector3));
             valueTypeDictionary.Add(field_type._field_real_euler_angles_2d, typeof(Vector2));
