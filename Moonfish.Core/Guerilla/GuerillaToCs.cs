@@ -17,11 +17,18 @@ namespace Moonfish.Guerilla
 {
     public class GuerillaCs : Guerilla
     {
+        Dictionary<field_type, Type> valueTypeDictionary;
         Dictionary<Type, string> Methods;
         Dictionary<string, ClassInfo> DefinitionsDictionary = new Dictionary<string, ClassInfo>();
-        List<string> Namespaces { get; set; }
 
-        void InitializeNamespaceDictionary()
+        static List<string> Namespaces { get; set; }
+
+        static GuerillaCs()
+        {
+            InitializeNamespaceDictionary();
+        }
+
+        static void InitializeNamespaceDictionary()
         {
             const string GlobalNamespace = "global";
             const string GlobalGeometryNamespace = "global_geometry";
@@ -39,9 +46,9 @@ namespace Moonfish.Guerilla
             Namespaces.Reverse();
         }
 
-        public bool SplitNamespaceFromFieldName(string longFieldName, out string name, out string @namespace)
+        public static bool SplitNamespaceFromFieldName(string longFieldName, out string name, out string @namespace)
         {
-            foreach (var item in this.Namespaces)
+            foreach (var item in Namespaces)
             {
                 if (longFieldName.StartsWith(item))
                 {
@@ -59,11 +66,9 @@ namespace Moonfish.Guerilla
         {
             var readTag = h2Tags.Where(x => x.Class.ToString() == tagClassName).First();
 
-            var info = (ClassInfo)BeginProcessTagBlockDefinition(readTag.Definition, readTag.definition_address, readTag.Class.ToString(), outputClassName);
-            info.FormatFieldNames();
+            var info = (ClassInfo)BeginProcessTagBlockDefinition(readTag.Definition, readTag.definition_address, readTag.Class.ToString(), "");
         }
 
-        Dictionary<field_type, Type> valueTypeDictionary;
         public GuerillaCs(string guerillaExecutablePath)
             : base(guerillaExecutablePath)
         {
@@ -111,12 +116,12 @@ namespace Moonfish.Guerilla
             ClassInfo @class = new ClassInfo()
             {
                 AccessModifiers = AccessModifiers.Protected | AccessModifiers.Partial,
-                Name = className == string.Empty ? ToTypeName(block.Name) : className,
+                Value = className == string.Empty ? block.Name : className,
                 Attributes = { new AttributeInfo(typeof(LayoutAttribute), "Size", size) }
             };
 
             ProcessFields(block.LatestFieldSet.Fields, @class);
-
+            @class.Format();
             return @class;
         }
 
@@ -132,7 +137,7 @@ namespace Moonfish.Guerilla
                             fieldInfo = new FieldInfo()
                             {
                                 Attributes = { new AttributeInfo(typeof(TagReference), null, field.Definition.Class.ToString()) },
-                                Name = ToMemberName(field.Name),
+                                Name = field.Name,
                                 FieldTypeName = valueTypeDictionary[field.type].FullName,
                             };
                             @class.Fields.Add(fieldInfo);
@@ -142,7 +147,6 @@ namespace Moonfish.Guerilla
                         {
                             fieldInfo = new FieldInfo()
                             {
-                                Attributes = { new AttributeInfo(typeof(TagBlockFieldAttribute)) },
                                 Name = IsValidFieldName(field.Name.ToUpper()) ? field.Name : field.Definition.DisplayName,
                             };
 
@@ -152,17 +156,15 @@ namespace Moonfish.Guerilla
                                     BeginProcessTagBlockDefinition(field.Definition, field.definition);
                             }
 
-                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Name;
+                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Value;
                             fieldInfo.IsArray = true;
                             @class.Fields.Add(fieldInfo);
-                            fieldInfo.ToString();
                             break;
                         }
                     case field_type._field_struct:
                         {
                             fieldInfo = new FieldInfo()
                             {
-                                Attributes = { new AttributeInfo(typeof(TagStructFieldAttribute)) },
                                 Name = IsValidFieldName(field.Name.ToUpper()) ? field.Name : field.Definition.DisplayName,
                             };
 
@@ -172,7 +174,7 @@ namespace Moonfish.Guerilla
                                     BeginProcessTagBlockDefinition(field.Definition.Definition, field.Definition.block_definition_address);
                             }
 
-                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Name;
+                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Value;
                             @class.Fields.Add(fieldInfo);
                             break;
                         }
@@ -207,10 +209,11 @@ namespace Moonfish.Guerilla
                         {
                             var enumInfo = new EnumInfo()
                             {
-                                Name = field.Name,
-                                Values = field.Definition.Options,
+                                Value = field.Name,
                                 AccessModifiers = AccessModifiers.Internal | AccessModifiers.Partial | AccessModifiers.Private
                             };
+                            var enumDefinition = (enum_definition)field.Definition;
+                            enumInfo.ValueNames.AddRange(enumDefinition.Options.Select(x => (GuerillaName)x));
                             switch (field.type)
                             {
                                 case field_type._field_byte_flags:
@@ -239,7 +242,7 @@ namespace Moonfish.Guerilla
                             fieldInfo = new FieldInfo()
                             {
                                 Name = field.Name,
-                                FieldTypeName = enumInfo.Name
+                                FieldTypeName = enumInfo.Value
                             };
 
                             enumInfo.ToString();
@@ -273,7 +276,7 @@ namespace Moonfish.Guerilla
                             fieldInfo = new FieldInfo()
                             {
                                 Name = field.Name,
-                                FieldTypeName = @class.ClassDefinitions.Last().Name
+                                FieldTypeName = @class.ClassDefinitions.Last().Value
                             };
 
                             @class.Fields.Add(fieldInfo);
@@ -460,7 +463,7 @@ namespace Moonfish.Guerilla
         {
             ClassInfo arrayClass = new ClassInfo()
             {
-                Name = fields[0].Name,
+                Value = fields[0].Name,
             };
             fields.RemoveAt(0);
             ProcessFields(fields, arrayClass);
@@ -553,6 +556,12 @@ namespace Moonfish.Guerilla
         public new static string ToTypeName(string value)
         {
             return Guerilla.ToTypeName(value);
+        }
+
+        public static string[] SplitNameDescription(string fieldName)
+        {
+            var items = fieldName.Split('#');
+            return new[] { items.Length > 0 ? items[0] : null, items.Length > 1 ? items[1] : null };
         }
     }
 }

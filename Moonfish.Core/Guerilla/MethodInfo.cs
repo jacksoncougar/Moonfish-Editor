@@ -5,6 +5,16 @@ using System.Text;
 
 namespace Moonfish.Guerilla
 {
+    public static class StringBuilderExtensions
+    {
+        public static void AppendSummary(this StringBuilder stringBuilder, string value)
+        {
+            stringBuilder.AppendLine("/// <summary>");
+            stringBuilder.AppendLine(string.Format("/// {0}", value));
+            stringBuilder.AppendLine("/// </summary>");
+        }
+    }
+
     [Flags]
     public enum AccessModifiers
     {
@@ -29,17 +39,29 @@ namespace Moonfish.Guerilla
             ClassDefinitions = new List<ClassInfo>();
             Methods = new List<MethodInfo>();
         }
+
         public List<string> Usings { get; set; }
         public string Namespace { get; set; }
         public List<AttributeInfo> Attributes { get; set; }
         public AccessModifiers AccessModifiers { get; set; }
-        public string Name { get; set; }
+        public GuerillaName Value { get; set; }
         public List<FieldInfo> Fields { get; set; }
         public List<MethodInfo> Constructors { get; set; }
         public List<EnumInfo> EnumDefinitions { get; set; }
         public List<ClassInfo> ClassDefinitions { get; set; }
         public List<MethodInfo> Methods { get; set; }
 
+        public void Format()
+        {
+            string name, @namespace;
+            if (GuerillaCs.SplitNamespaceFromFieldName(Value.Name, out name, out @namespace))
+            {
+                this.Value.Name = GuerillaCs.ToTypeName(name);
+                this.Namespace = GuerillaCs.ToTypeName(@namespace);
+            }
+
+            FormatFieldNames();
+        }
         public void FormatFieldNames()
         {
             using (var code = new Microsoft.CSharp.CSharpCodeProvider())
@@ -47,6 +69,7 @@ namespace Moonfish.Guerilla
                 foreach (var field in Fields)
                 {
                     var memberName = GuerillaCs.ToMemberName(field.Name);
+                    field.Name = memberName;
                 }
             }
         }
@@ -54,7 +77,7 @@ namespace Moonfish.Guerilla
         public override string ToString()
         {
             return string.Format("{0}:{1}", "Class",
-                String.IsNullOrEmpty(Namespace) ? Name : string.Format("{0}.{1}", Namespace, Name));
+                String.IsNullOrEmpty(Namespace) ? Value.Name : string.Format("{0}.{1}", Namespace, Value.Name));
         }
     }
 
@@ -70,13 +93,47 @@ namespace Moonfish.Guerilla
             return value.ToString();
         }
     }
+
+    public class GuerillaName
+    {
+        public string Name
+        {
+            get { return GuerillaCs.SplitNameDescription(this.Value)[0]; }
+            set { this.Value = this.Value.Replace(GuerillaCs.SplitNameDescription(this.Value)[0], value); }
+        }
+        public string Description
+        {
+            get { return GuerillaCs.SplitNameDescription(this.Value)[1]; }
+            set { this.Value.Replace(GuerillaCs.SplitNameDescription(this.Value)[1], value); }
+        }
+
+        public bool HasDescription { get { return Description != null; } }
+
+        string Value;
+
+        public GuerillaName(string value)
+        {
+            this.Value = value;
+        }
+
+        public static implicit operator GuerillaName(string value)
+        {
+            return new GuerillaName(value);
+        }
+
+        public static implicit operator string(GuerillaName guerillaName)
+        {
+            return guerillaName.Value;
+        }
+    }
+
     public class EnumInfo
     {
         public Type BaseType { get; set; }
         public List<AttributeInfo> Attributes { get; set; }
         public AccessModifiers AccessModifiers { get; set; }
-        public string Name { get; set; }
-        public List<string> Values { get; set; }
+        public GuerillaName Value { get; set; }
+        public List<GuerillaName> ValueNames { get; set; }
 
         public enum Type
         {
@@ -88,15 +145,26 @@ namespace Moonfish.Guerilla
         public EnumInfo()
         {
             Attributes = new List<AttributeInfo>();
-            Values = new List<string>();
+            ValueNames = new List<GuerillaName>();
         }
 
         public override string ToString()
         {
             var stringBuilder = new StringBuilder
                 (
-                string.Format("{0} enum {1} : {2}", AccessModifiersExtensions.ToString(AccessModifiers), Name, BaseType.ToString().ToLowerInvariant())
+                string.Format("{0} enum {1} : {2}", AccessModifiersExtensions.ToString(AccessModifiers), Value, BaseType.ToString().ToLowerInvariant())
                 );
+            stringBuilder.AppendLine("{");
+
+            var isFlags = Attributes.Any(x => x.AttributeType == typeof(FlagsAttribute));
+            var value = isFlags ? 1 : 0;
+            foreach (var item in ValueNames)
+            {
+                if (item.HasDescription) stringBuilder.AppendSummary(item.Description);
+                stringBuilder.AppendLine(string.Format("{0} = {1}", item.Name, value));
+                value = isFlags ? value >> 1 : value++;
+            }
+            stringBuilder.AppendLine("};");
             return stringBuilder.ToString();
         }
     }
