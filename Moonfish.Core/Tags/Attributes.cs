@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Moonfish.Tags
 {
-    public class TagBlockLayoutAttribute : Attribute
+    public class LayoutAttribute : Attribute
     {
         public int Size;
         public int Alignment;

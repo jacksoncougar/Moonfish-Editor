@@ -28,7 +28,7 @@ namespace Moonfish.Guerilla
             return fields;
         }
 
-        public static List<tag_field> ReadFieldSet(this BinaryReader reader, ref tag_block_definition definition, out tag_field_set field_set)
+        public static List<tag_field> ReadFieldSet(this BinaryReader reader, ref TagBlockDefinition definition, out tag_field_set field_set)
         {
             field_set = new tag_field_set();
             if (definition.Name == "sound_block")

@@ -72,7 +72,7 @@ namespace Moonfish.Guerilla
         private static IList<tag_field> ExtractFields(IEnumerable<tag_group> h2Tags, BinaryReader reader, tag_group tag)
         {
             reader.BaseStream.Position = tag.definition_address - Guerilla.BaseAddress;
-            var definition = reader.ReadFieldDefinition<tag_block_definition>();
+            var definition = reader.ReadFieldDefinition<TagBlockDefinition>();
             tag_field_set field_set;
             return reader.ReadFieldSet(ref definition, out field_set);
         }
@@ -161,7 +161,7 @@ namespace Moonfish.Guerilla
             }
         }
 
-        private void ProcessTagBlockDefinition(tag_block_definition tagBlock, XmlWriter writer, int address, ref int fieldOffset, string group_tag = "", string className = "", bool root = false, bool inline = false, IList<tag_field> fieldOverride = null)
+        private void ProcessTagBlockDefinition(TagBlockDefinition tagBlock, XmlWriter writer, int address, ref int fieldOffset, string group_tag = "", string className = "", bool root = false, bool inline = false, IList<tag_field> fieldOverride = null)
         {
             IList<tag_field> fields = tagBlock.LatestFieldSet.Fields;
             if (fieldOverride != null)
@@ -213,7 +213,7 @@ namespace Moonfish.Guerilla
             }
         }
 
-        private void ProcessFields(tag_block_definition tagBlock, XmlWriter writer, IList<tag_field> fields, ref int i, ref int fieldOffset)
+        private void ProcessFields(TagBlockDefinition tagBlock, XmlWriter writer, IList<tag_field> fields, ref int i, ref int fieldOffset)
         {
             writer.Flush();
             for (; i < fields.Count; ++i)
@@ -418,7 +418,7 @@ namespace Moonfish.Guerilla
             description = items.Length > 1 ? String.IsNullOrEmpty(items[1]) ? string.Empty : items[1] : string.Empty;
         }
 
-        private void ProcessArrayFields(tag_block_definition definition, XmlWriter writer, IList<tag_field> fields, ref tag_field field, ref int i, ref int offset)
+        private void ProcessArrayFields(TagBlockDefinition definition, XmlWriter writer, IList<tag_field> fields, ref tag_field field, ref int i, ref int offset)
         {
             var name = field.Name;
             ++i;    //move past field_type._field_array_start

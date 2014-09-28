@@ -170,7 +170,7 @@ namespace Moonfish.Tags
                     }
                     catch (ArgumentException)
                     {
-                        var layoutAttribute = elementType.Attribute(typeof(TagBlockLayoutAttribute)) as TagBlockLayoutAttribute;
+                        var layoutAttribute = elementType.Attribute(typeof(LayoutAttribute)) as LayoutAttribute;
                         if (layoutAttribute != null)
                             elementSize = layoutAttribute.Size;
                     }
@@ -270,7 +270,7 @@ namespace Moonfish.Tags
         public static int SizeOf(Type elementType)
         {
             var elementSize = 0;
-            var layoutAttribute = elementType.Attribute(typeof(TagBlockLayoutAttribute)) as TagBlockLayoutAttribute;
+            var layoutAttribute = elementType.Attribute(typeof(LayoutAttribute)) as LayoutAttribute;
             if (layoutAttribute != null)
                 elementSize = layoutAttribute.Size;
             else elementSize = Marshal.SizeOf(elementType);

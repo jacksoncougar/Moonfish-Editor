@@ -150,6 +150,7 @@
     <Compile Include="Guerilla\GuerillaBase.cs" />
     <Compile Include="Guerilla\GuerillaExtensions.cs" />
     <Compile Include="Guerilla\GuerillaFields.cs" />
+    <Compile Include="Guerilla\MethodInfo.cs" />
     <Compile Include="Guerilla\Validator.cs" />
     <Compile Include="Guerilla\VirtualMemoryStream.cs" />
     <Compile Include="IResource.cs" />

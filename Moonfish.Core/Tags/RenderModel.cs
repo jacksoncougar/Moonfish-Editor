@@ -894,7 +894,7 @@ namespace Moonfish.Tags
     }
 
 
-    [TagBlockLayout(Size = 72)]
+    [Layout(Size = 72)]
     public partial class GlobalGeometryPartBlockNew
     {
         public Type type;

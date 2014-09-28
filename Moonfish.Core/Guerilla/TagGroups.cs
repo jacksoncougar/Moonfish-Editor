@@ -93,6 +93,7 @@ namespace Moonfish.Guerilla
         public int definition;
         public int group_tag;
 
+        public TagClass Class { get { return new TagClass(group_tag); } }
         public string Name { get; set; }
         public dynamic Definition { get; private set; }
 
@@ -115,7 +116,7 @@ namespace Moonfish.Guerilla
             switch (type)
             {
                 case field_type._field_block:
-                    return reader.ReadFieldDefinition<tag_block_definition>(ref this);
+                    return reader.ReadFieldDefinition<TagBlockDefinition>(ref this);
                 case field_type._field_struct:
                     return reader.ReadFieldDefinition<tag_struct_definition>(ref this);
                 case field_type._field_char_enum:
@@ -145,6 +146,8 @@ namespace Moonfish.Guerilla
         public int flags;
         public int group_tag;
         public int group_tags_address;
+
+        public TagClass Class { get { return new TagClass(group_tag); } }
 
         public void Read(IntPtr h2LangLib, BinaryReader reader)
         {
@@ -248,6 +251,8 @@ namespace Moonfish.Guerilla
         public string displayName;
         public string name;
 
+        public string Name { get { return this.name; } }
+        public TagClass Class { get { return new TagClass(group_tag); } }
         public dynamic Definition { get; set; }
 
         public tag_struct_definition(BinaryReader reader)
@@ -263,7 +268,7 @@ namespace Moonfish.Guerilla
             this.name = Guerilla.ReadString(reader, this.name_address);
 
             reader.BaseStream.Seek(block_definition_address, SeekOrigin.Begin);
-            Definition = reader.ReadFieldDefinition<tag_block_definition>();
+            Definition = reader.ReadFieldDefinition<TagBlockDefinition>();
         }
 
         public void Read(IntPtr h2LangLib, BinaryReader reader)
@@ -272,7 +277,7 @@ namespace Moonfish.Guerilla
         }
     }
 
-    public struct tag_block_definition : IReadDefinition
+    public struct TagBlockDefinition : IReadDefinition
     {
         public int display_name_address;
         public int name_address;
@@ -300,7 +305,7 @@ namespace Moonfish.Guerilla
         public List<tag_field_set> FieldSets { get; set; }
         public tag_field_set LatestFieldSet { get; set; }
 
-        public tag_block_definition(BinaryReader reader)
+        public TagBlockDefinition(BinaryReader reader)
             : this()
         {
             // Read all the fields from the stream.
@@ -373,11 +378,9 @@ namespace Moonfish.Guerilla
 
         public void Read(IntPtr h2LangLib, BinaryReader reader)
         {
-            this = new tag_block_definition(reader);
+            this = new TagBlockDefinition(reader);
         }
     }
-
-
 
     public struct s_tag_field_set_version : IReadDefinition
     {
@@ -520,11 +523,11 @@ namespace Moonfish.Guerilla
             if (Class.ToString() == "snd!")
             {
 
-                Definition = reader.ReadFieldDefinition<tag_block_definition>();
+                Definition = reader.ReadFieldDefinition<TagBlockDefinition>();
             }
             else
             {
-                Definition = reader.ReadFieldDefinition<tag_block_definition>();
+                Definition = reader.ReadFieldDefinition<TagBlockDefinition>();
             }
         }
 

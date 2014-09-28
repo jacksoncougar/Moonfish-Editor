@@ -17,42 +17,50 @@ namespace Moonfish.Guerilla
 {
     public class GuerillaCs : Guerilla
     {
+        Dictionary<Type, string> Methods;
+        Dictionary<string, ClassInfo> DefinitionsDictionary = new Dictionary<string, ClassInfo>();
+        List<string> Namespaces { get; set; }
+
+        void InitializeNamespaceDictionary()
+        {
+            const string GlobalNamespace = "global";
+            const string GlobalGeometryNamespace = "global_geometry";
+            const string StructureNamespace = "structure";
+            const string StructureBSPNamespace = "structure_bsp";
+
+            Namespaces = new List<string>(new[] { 
+            GlobalNamespace,
+            GlobalGeometryNamespace,
+            StructureNamespace,
+            StructureBSPNamespace,
+            });
+
+            Namespaces.Sort();
+            Namespaces.Reverse();
+        }
+
+        public bool SplitNamespaceFromFieldName(string longFieldName, out string name, out string @namespace)
+        {
+            foreach (var item in this.Namespaces)
+            {
+                if (longFieldName.StartsWith(item))
+                {
+                    name = longFieldName.Remove(0, item.Length);
+                    @namespace = item;
+                    return true;
+                }
+            }
+            name = longFieldName;
+            @namespace = string.Empty;
+            return false;
+        }
+
         public void DumpTagLayout(string folder, string tagClassName, string outputClassName)
         {
             var readTag = h2Tags.Where(x => x.Class.ToString() == tagClassName).First();
 
-            // Create the tag layout file.
-            StreamWriter writer = new StreamWriter(string.Format("{0}\\{1}.cs", folder, readTag.Class.ToSafeString()));
-
-            // Write Includes & Namespace
-            writer.WriteLine(
-@"using Moonfish.Model;
-using OpenTK;
-using System;
-using System.Runtime.InteropServices;
-using System.IO;
-
-namespace Moonfish.Tags
-{"
-                );
-
-            Dictionary<string, string> definitionDictionary = new Dictionary<string, string>();
-
-            // Process the tag_group definition.
-            string definitionString = ProcessTagBlockDefinition(readTag.Definition, definitionDictionary, readTag.definition_address, readTag.Class.ToString(), outputClassName, true);
-
-            writer.Write(definitionString);
-            foreach (string definition in definitionDictionary.Values.ToArray())
-            {
-                writer.WriteLine(writer.NewLine);
-                writer.Write(definition);
-            }
-
-            // Write closing brace
-            writer.WriteLine("}");
-
-            // Close the tag layout writer.
-            writer.Close();
+            var info = (ClassInfo)BeginProcessTagBlockDefinition(readTag.Definition, readTag.definition_address, readTag.Class.ToString(), outputClassName);
+            info.FormatFieldNames();
         }
 
         Dictionary<field_type, Type> valueTypeDictionary;
@@ -96,114 +104,87 @@ namespace Moonfish.Tags
 
         }
 
-        public string ProcessTagBlockDefinition(tag_block_definition tagBlock, Dictionary<string, string> structDictionary, int address, string group_tag = "", string className = "", bool root = false)
+        public ClassInfo BeginProcessTagBlockDefinition(TagBlockDefinition block, int address, string group_tag = "", string className = "")
         {
-            //
-            StringWriter writer = new StringWriter();
-            var size = CalculateSizeOfFieldSet(tagBlock.LatestFieldSet.Fields);
+            var size = CalculateSizeOfFieldSet(block.LatestFieldSet.Fields);
 
-            // Write StructLayout attribute
-            writer.WriteLine(@"[StructLayout(LayoutKind.Sequential, Size = {0}, Pack = {1})]", size, tagBlock.LatestFieldSet.Alignment);
-            if (root) { writer.WriteLine(@"[TagClass(""{0}"")]", group_tag); }
-            //Write class declaration
-            writer.WriteLine(@"public partial {0} {1}", "class", className == string.Empty ? ToTypeName(tagBlock.Name) : className);
-            writer.WriteLine("{");
+            ClassInfo @class = new ClassInfo()
+            {
+                AccessModifiers = AccessModifiers.Protected | AccessModifiers.Partial,
+                Name = className == string.Empty ? ToTypeName(block.Name) : className,
+                Attributes = { new AttributeInfo(typeof(LayoutAttribute), "Size", size) }
+            };
 
-            var i = 0;
-            string constructorBody, fieldDefinitions;
-            ProcessFields(tagBlock, structDictionary, writer, tagBlock.LatestFieldSet.Fields, ref i, out fieldDefinitions, out constructorBody);
-            writer.WriteLine("public {0}()", className == string.Empty ? ToTypeName(tagBlock.Name) : className);
-            writer.WriteLine("{");
-            writer.WriteLine("}");
-            writer.WriteLine("public {0}(BinaryReader binaryReader)", className == string.Empty ? ToTypeName(tagBlock.Name) : className);
-            writer.WriteLine("{");
-            writer.Write(constructorBody);
-            writer.WriteLine("}");
+            ProcessFields(block.LatestFieldSet.Fields, @class);
 
-            writer.Write(fieldDefinitions);
-
-
-            // Finish the tag_field_set struct.
-            writer.WriteLine("}");
-
-            //
-            return writer.ToString();
+            return @class;
         }
 
-        private void ProcessFields(tag_block_definition tagBlock, Dictionary<string, string> structDictionary, StringWriter writer, List<tag_field> fields, ref int i,
-            out string fieldDefinitions, out string constructorBody)
+        void ProcessFields(List<tag_field> fields, ClassInfo @class)
         {
-            StringBuilder fieldDefinitionsBuilder = new StringBuilder();
-            StringBuilder constructorBodyBuilder = new StringBuilder();
-            Dictionary<string, int> fieldNames = new Dictionary<string, int>();
-            for (; i < fields.Count; ++i)
+            foreach (var field in fields)
             {
-                StringBuilder attributeString = new StringBuilder();
-                var field = fields[i];
-                // Check the field type.
+                var fieldInfo = new FieldInfo();
                 switch (field.type)
                 {
                     case field_type._field_tag_reference:
                         {
-                            attributeString.AppendFormat(@"TagReference(""{0}"")", GroupTagToString(field.Definition.group_tag));
-
-                            string fieldName, fieldType;
-                            WriteField(writer, field, fieldNames, out fieldName, out fieldType, attributeString.ToString());
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1}();", fieldName, fieldType));
-
+                            fieldInfo = new FieldInfo()
+                            {
+                                Attributes = { new AttributeInfo(typeof(TagReference), null, field.Definition.Class.ToString()) },
+                                Name = ToMemberName(field.Name),
+                                FieldTypeName = valueTypeDictionary[field.type].FullName,
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_block:
                         {
-                            attributeString.Append("TagBlockField");
-
-                            // Write the field
-                            var fieldName = ProcessFieldName(ResolveFieldName(ref field, ToMemberName(field.Definition.DisplayName)), fieldNames);
-                            var fieldType = ToTypeName(field.Definition.Name);
-
-                            WriteField(writer, fieldType, fieldName, attributeString.ToString(), true);
-                            constructorBodyBuilder.AppendLine(string.Format(@"{{    
-    var elementSize = Marshal.SizeOf(typeof({0}));
-    var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-    this.{1} = new {0}[blamPointer.Count];
-    using(binaryReader.BaseStream.Pin())
-    {{
-    for(int i = 0; i < blamPointer.Count; ++i)
-    {{
-        binaryReader.BaseStream.Position = blamPointer[i]; 
-        this.{1}[i] = new {0}(binaryReader);
-    }}
-    }}
-}}", fieldType, fieldName));
-
-                            if (!structDictionary.ContainsKey(field.Definition.Name))
+                            fieldInfo = new FieldInfo()
                             {
-                                structDictionary[field.Definition.Name] = ProcessTagBlockDefinition(field.Definition, structDictionary, field.definition);
+                                Attributes = { new AttributeInfo(typeof(TagBlockFieldAttribute)) },
+                                Name = IsValidFieldName(field.Name.ToUpper()) ? field.Name : field.Definition.DisplayName,
+                            };
+
+                            if (!DefinitionsDictionary.ContainsKey(field.Definition.Name))
+                            {
+                                DefinitionsDictionary[field.Definition.Name] =
+                                    BeginProcessTagBlockDefinition(field.Definition, field.definition);
                             }
+
+                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Name;
+                            fieldInfo.IsArray = true;
+                            @class.Fields.Add(fieldInfo);
+                            fieldInfo.ToString();
                             break;
                         }
                     case field_type._field_struct:
                         {
-                            attributeString.Append("TagStructField");
-
-                            var fieldName = ProcessFieldName(ResolveFieldName(ref field, ToMemberName(field.Definition.displayName)), fieldNames);
-                            var fieldType = ToTypeName(field.Definition.name);
-
-                            WriteField(writer, fieldType, fieldName, attributeString.ToString());
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = new {1}(binaryReader);", fieldName, fieldType));
-
-                            if (!structDictionary.ContainsKey(field.Definition.name))
+                            fieldInfo = new FieldInfo()
                             {
-                                structDictionary[field.Definition.name] = ProcessTagBlockDefinition(field.Definition.Definition, structDictionary, field.Definition.block_definition_address, "", fieldType);
+                                Attributes = { new AttributeInfo(typeof(TagStructFieldAttribute)) },
+                                Name = IsValidFieldName(field.Name.ToUpper()) ? field.Name : field.Definition.DisplayName,
+                            };
+
+                            if (!DefinitionsDictionary.ContainsKey(field.Definition.name))
+                            {
+                                DefinitionsDictionary[field.Definition.name] =
+                                    BeginProcessTagBlockDefinition(field.Definition.Definition, field.Definition.block_definition_address);
                             }
+
+                            fieldInfo.FieldTypeName = DefinitionsDictionary[(string)field.Definition.Name].Name;
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_data:
                         {
-                            string fieldName;
-                            WritePaddingField(writer, ref field, fieldNames, out fieldName, 8);
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.ReadBytes(8);",
-                                fieldName));
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = typeof(Byte).FullName,
+                                IsArray = true
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_explanation:
@@ -224,34 +205,46 @@ namespace Moonfish.Tags
                     case field_type._field_enum:
                     case field_type._field_long_enum:
                         {
-                            var enumString = ReadEnum(ref field);
-
-                            fieldDefinitionsBuilder.Append(enumString);
-
-                            string fieldName = ToMemberName(field.Name);
-                            string fieldType = ToTypeName(field.Name);
-
-                            WriteField(writer, fieldType, fieldName, attributeString.ToString());
-                            string baseType;
+                            var enumInfo = new EnumInfo()
+                            {
+                                Name = field.Name,
+                                Values = field.Definition.Options,
+                                AccessModifiers = AccessModifiers.Internal | AccessModifiers.Partial | AccessModifiers.Private
+                            };
                             switch (field.type)
                             {
-                                case field_type._field_char_enum:
                                 case field_type._field_byte_flags:
-                                    baseType = "Byte";
+                                    enumInfo.BaseType = EnumInfo.Type.Byte;
+                                    enumInfo.Attributes.Add(new AttributeInfo(typeof(FlagsAttribute)));
                                     break;
                                 case field_type._field_word_flags:
-                                case field_type._field_enum:
-                                    baseType = "Int16";
+                                    enumInfo.BaseType = EnumInfo.Type.Short;
+                                    enumInfo.Attributes.Add(new AttributeInfo(typeof(FlagsAttribute)));
                                     break;
                                 case field_type._field_long_flags:
-                                case field_type._field_long_enum:
-                                    baseType = "Int32";
+                                    enumInfo.BaseType = EnumInfo.Type.Int;
+                                    enumInfo.Attributes.Add(new AttributeInfo(typeof(FlagsAttribute)));
                                     break;
-                                default:
-                                    baseType = ""; break;
-
+                                case field_type._field_char_enum:
+                                    enumInfo.BaseType = EnumInfo.Type.Byte;
+                                    break;
+                                case field_type._field_enum:
+                                    enumInfo.BaseType = EnumInfo.Type.Short;
+                                    break;
+                                case field_type._field_long_enum:
+                                    enumInfo.BaseType = EnumInfo.Type.Int;
+                                    break;
                             }
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = ({1})binaryReader.Read{2}();", fieldName, fieldType, baseType));
+                            @class.EnumDefinitions.Add(enumInfo);
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = enumInfo.Name
+                            };
+
+                            enumInfo.ToString();
+
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_byte_block_flags:
@@ -264,44 +257,52 @@ namespace Moonfish.Tags
                     case field_type._field_short_block_index2:
                     case field_type._field_long_block_index2:
                         {
-                            string fieldName, fieldType;
-                            WriteField(writer, field, fieldNames, out fieldName, out fieldType);
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1}();", fieldName, fieldType));
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = valueTypeDictionary[field.type].FullName,
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_array_start:
                         {
-                            string fieldName, fieldType;
-                            ProcessArrayFields(tagBlock, structDictionary, writer, fields, ref field, ref i, fieldNames, out fieldName, out fieldType);
-                            var count = field.definition;
-                            constructorBodyBuilder.AppendLine(string.Format(
-@"this.{0} = new {1}[{2}];
-for(int i = 0 ; i < {2}; ++i)
-{{
-    this.{0}[i] = new {1}(binaryReader);
-}}", fieldName, fieldType, count));
+                            var fieldSubSet = fields.GetRange(fields.IndexOf(field), fields.Count - fields.IndexOf(field));
+                            @class.ClassDefinitions.Add(ProcessArrayFields(fieldSubSet));
+
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = @class.ClassDefinitions.Last().Name
+                            };
+
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_array_end:
                         {
-                            constructorBody = constructorBodyBuilder.ToString();
-                            fieldDefinitions = fieldDefinitionsBuilder.ToString();
                             return;
                         }
                     case field_type._field_pad:
                         {
-                            string fieldName;
-                            WritePaddingField(writer, ref field, fieldNames, out fieldName);
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1};",
-                                fieldName, field.definition == 1 ? "Byte()" : string.Format("Bytes({0})", field.definition)));
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = typeof(Byte[]).FullName,
+                                ArraySize = field.definition,
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_skip:
                         {
-                            string fieldName;
-                            WritePaddingField(writer, ref field, fieldNames, out fieldName, true);
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.Read{1};",
-                                fieldName, field.definition == 1 ? "Byte()" : string.Format("Bytes({0})", field.definition)));
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = typeof(Byte[]).FullName,
+                                ArraySize = field.definition,
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                     case field_type._field_useless_pad:
@@ -312,15 +313,28 @@ for(int i = 0 ; i < {2}; ++i)
                         }
                     default:
                         {
-                            string fieldName, fieldType;
-                            WriteField(writer, field, fieldNames, out fieldName, out fieldType, attributeString.ToString());
-                            constructorBodyBuilder.AppendLine(string.Format("this.{0} = binaryReader.{1}();", fieldName, GetBinaryReaderMethod(field)));
+                            fieldInfo = new FieldInfo()
+                            {
+                                Name = field.Name,
+                                FieldTypeName = valueTypeDictionary[field.type].FullName
+                            };
+                            @class.Fields.Add(fieldInfo);
                             break;
                         }
                 }
             }
-            fieldDefinitions = fieldDefinitionsBuilder.ToString();
-            constructorBody = constructorBodyBuilder.ToString();
+        }
+
+        private static bool IsValidFieldName(string value)
+        {
+            string[] invalidNames = new[] 
+            { 
+                "EMPTY_STRING",
+                "EMPTYSTRING", 
+                "", 
+                "YOUR MOM"
+            };
+            return !invalidNames.Any(x => value.Equals(x));
         }
 
         void CacheBinaryReaderMethods()
@@ -366,9 +380,7 @@ for(int i = 0 ; i < {2}; ++i)
             }
         }
 
-        Dictionary<Type, string> Methods;
-
-        private string GetBinaryReaderMethod(tag_field field)
+        string GetBinaryReaderMethodName(tag_field field)
         {
             var method = (from m in Methods
                           where m.Key == valueTypeDictionary[field.type]
@@ -377,11 +389,11 @@ for(int i = 0 ; i < {2}; ++i)
             return method.Value;
         }
 
-        private void WritePaddingField(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, bool isSkip = false)
+        void WritePaddingField(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, bool isSkip = false)
         {
             WritePaddingField(writer, ref field, fieldNames, out fieldName, field.definition, isSkip);
         }
-        private void WritePaddingField(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, int paddingLength, bool isSkip = false)
+        void WritePaddingField(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, int paddingLength, bool isSkip = false)
         {
             var postFix = ProcessFieldName(ToMemberName(field.Name), fieldNames);
             var token = "invalidName_";
@@ -394,13 +406,13 @@ for(int i = 0 ; i < {2}; ++i)
             WriteFieldValArray(writer, paddingLength, fieldName, fieldType, true);
             writer.WriteLine(@"#endregion");
         }
-        private void WriteFieldValArray(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, out string fieldType, int arrayLength, bool isSkip = false)
+        void WriteFieldValArray(StringWriter writer, ref tag_field field, Dictionary<string, int> fieldNames, out string fieldName, out string fieldType, int arrayLength, bool isSkip = false)
         {
             fieldName = ProcessFieldName(ToMemberName(field.Name), fieldNames);
             fieldType = ToTypeName(field.Name);
             WriteFieldValArray(writer, arrayLength, fieldName, fieldType);
         }
-        private void WriteFieldValArray(StringWriter writer, int arrayLength, string fieldName, string fieldType, bool isPrivate = false)
+        void WriteFieldValArray(StringWriter writer, int arrayLength, string fieldName, string fieldType, bool isPrivate = false)
         {
             if (arrayLength != 1)
             {
@@ -409,13 +421,13 @@ for(int i = 0 ; i < {2}; ++i)
             writer.WriteLine("{3} {0} {1}{2};", fieldType, arrayLength == 1 ? "" : "[]", fieldName, isPrivate ? "private" : "public");
         }
 
-        private void WriteField(StringWriter writer, tag_field field, Dictionary<string, int> fieldNames, out string fieldName, out string fieldType, string attributeString = "")
+        void WriteField(StringWriter writer, tag_field field, Dictionary<string, int> fieldNames, out string fieldName, out string fieldType, string attributeString = "")
         {
             fieldType = FormatTypeString(ref field);
             fieldName = ProcessFieldName(ToMemberName(field.Name), fieldNames);
             WriteField(writer, fieldType, fieldName, attributeString);
         }
-        private void WriteField(StringWriter writer, string typeString, string fieldNameString, string attributesString, bool isArray = false)
+        void WriteField(StringWriter writer, string typeString, string fieldNameString, string attributesString, bool isArray = false)
         {
             if (!string.IsNullOrEmpty(attributesString))
             {
@@ -431,7 +443,7 @@ for(int i = 0 ; i < {2}; ++i)
             return FormatTypeReference(csType);
         }
 
-        private string ProcessFieldName(string fieldName, Dictionary<string, int> fieldNames)
+        string ProcessFieldName(string fieldName, Dictionary<string, int> fieldNames)
         {
             if (fieldNames.ContainsKey(fieldName))
             {
@@ -444,28 +456,19 @@ for(int i = 0 ; i < {2}; ++i)
             return ValidateFieldName(fieldName);
         }
 
-        private void ProcessArrayFields(tag_block_definition definition, Dictionary<string, string> structDictionary,
-            StringWriter writer, List<tag_field> fields, ref tag_field field, ref int fieldIndex, Dictionary<string, int> fieldNames,
-            out string fieldName, out string fieldType)
+        ClassInfo ProcessArrayFields(List<tag_field> fields)
         {
-            fieldName = ToTypeName(field.Name);
-            writer.WriteLine("public struct {0}", fieldName);
-            writer.WriteLine("{");
+            ClassInfo arrayClass = new ClassInfo()
+            {
+                Name = fields[0].Name,
+            };
+            fields.RemoveAt(0);
+            ProcessFields(fields, arrayClass);
 
-            var name = field.Name;
-            ++fieldIndex;
-            string fieldDefinitions, constructorBody;
-            ProcessFields(definition, structDictionary, writer, fields, ref fieldIndex, out fieldDefinitions, out constructorBody);
-
-            writer.WriteLine("public {0}(BinaryReader binaryReader)", fieldName);
-            writer.WriteLine("{");
-            writer.Write(constructorBody);
-            writer.WriteLine("}");
-            writer.WriteLine("}");
-            WriteFieldValArray(writer, ref field, fieldNames, out fieldName, out fieldType, field.definition);
+            return arrayClass;
         }
 
-        private string ReadEnum(ref tag_field field)
+        string ReadEnum(ref tag_field field)
         {
             switch (field.type)
             {
@@ -488,6 +491,16 @@ for(int i = 0 ; i < {2}; ++i)
 
         delegate void ActionRef<T>(ref T item);
 
+        void IncrementEnum(ref int enumIndex)
+        {
+            enumIndex++;
+        }
+
+        void IncrementFlags(ref int flagsIndex)
+        {
+            flagsIndex <<= 1;
+        }
+
         public static string FormatTypeReference(Type type)
         {
             using (var provider = new CSharpCodeProvider())
@@ -500,7 +513,7 @@ for(int i = 0 ; i < {2}; ++i)
             }
         }
 
-        private string FormatEnum(ref tag_field field, List<string> options, Type baseType, ActionRef<int> incrementMethod, bool isFlags = false)
+        string FormatEnum(ref tag_field field, List<string> options, Type baseType, ActionRef<int> incrementMethod, bool isFlags = false)
         {
             StringWriter stringWriter = new StringWriter();
             Dictionary<string, int> optionDictionary = new Dictionary<string, int>();
@@ -527,78 +540,19 @@ for(int i = 0 ; i < {2}; ++i)
             return stringWriter.ToString();
         }
 
-        void IncrementEnum(ref int enumIndex)
-        {
-            enumIndex++;
-        }
-
-        void IncrementFlags(ref int flagsIndex)
-        {
-            flagsIndex <<= 1;
-        }
-
         protected override string FormatAttributeString(string attributeString)
         {
             return string.Format("[{0}]", attributeString);
         }
 
-        public string ReadString(BinaryReader reader, int address)
+        public new static string ToMemberName(string value)
         {
-            string str = "";
-
-            // Check if address is smaller than the base address of the executable.
-            if (address < Guerilla.BaseAddress)
-            {
-                // The string is stored in the h2 language library.
-                StringBuilder sb = new StringBuilder(0x1000);
-                Guerilla.LoadString(Guerilla.h2LangLib, (uint)address, sb, sb.Capacity);
-                str = sb.ToString();
-            }
-            else if (address > Guerilla.BaseAddress && (address - Guerilla.BaseAddress) < (int)reader.BaseStream.Length)
-            {
-                // Seek to the string address.
-                reader.BaseStream.Position = address - Guerilla.BaseAddress;
-
-                // Read the string from the executable.
-                char b;
-                while ((b = reader.ReadChar()) != '\0')
-                    str += b;
-            }
-
-            // Return the string buffer.
-            return str;
+            return Guerilla.ToMemberName(value);
         }
 
-        public string GroupTagToString(int group_tag)
+        public new static string ToTypeName(string value)
         {
-            // Check if the group_tag is null.
-            if (group_tag == -1)
-                return string.Empty;
-
-            // Convert the group_tag to a byte array.
-            byte[] bytes = BitConverter.GetBytes(group_tag);
-
-            // Convert each byte to a char.
-            string str = "";
-            for (int i = 0; i < bytes.Length; i++)
-                str += (char)bytes[i];
-
-            // Return the string buffer.
-            return Microsoft.VisualBasic.Strings.StrReverse(str);
-        }
-
-        public bool IsNumeric(string str)
-        {
-            // Loop through the string and check each character.
-            for (int i = 0; i < str.Length; i++)
-            {
-                // Check if the character is numeric.
-                if (char.IsDigit(str[i]) == false)
-                    return false;
-            }
-
-            // Every character is numeric, return true.
-            return true;
+            return Guerilla.ToTypeName(value);
         }
     }
 }

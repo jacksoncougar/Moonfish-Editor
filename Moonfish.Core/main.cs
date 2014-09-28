@@ -20,6 +20,9 @@ namespace Moonfish
         [STAThread]
         static void Main()
         {
+            GuerillaCs ripper = new GuerillaCs(@"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe");
+            ripper.DumpTagLayout(@"C:\Users\stem\Documents\C# layouts", "sbsp", "StructureBinarySeperationPlanes");
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

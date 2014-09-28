@@ -236,12 +236,12 @@ namespace Moonfish.Guerilla
             return true;
         }
 
-        private ElementArray ProcessTagBlockDefinition(tag_block_definition tagBlock, ref int offset, bool inline = false)
+        private ElementArray ProcessTagBlockDefinition(TagBlockDefinition tagBlock, ref int offset, bool inline = false)
         {
             return ProcessTagBlockDefinition(null, tagBlock, ref offset, inline, "");
         }
 
-        private ElementArray ProcessTagBlockDefinition(ElementArray parent, tag_block_definition tagBlock, ref int offset, bool inline = false, string group_tag = "")
+        private ElementArray ProcessTagBlockDefinition(ElementArray parent, TagBlockDefinition tagBlock, ref int offset, bool inline = false, string group_tag = "")
         {
 
             var size = Guerilla.CalculateSizeOfFieldSet(tagBlock.LatestFieldSet.Fields);
@@ -263,7 +263,7 @@ namespace Moonfish.Guerilla
             return blockElementArray;
         }
 
-        private IEnumerable<ElementArray> ProcessTagStructDefinition(ElementArray parent, tag_block_definition definition, ref int offset)
+        private IEnumerable<ElementArray> ProcessTagStructDefinition(ElementArray parent, TagBlockDefinition definition, ref int offset)
         {
             var size = Guerilla.CalculateSizeOfFieldSet(definition.LatestFieldSet.Fields);
 
