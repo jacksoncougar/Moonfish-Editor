@@ -2,8 +2,8 @@
 using Moonfish.ResourceManagement;
 using OpenTK;
 using System;
-using System.Runtime.InteropServices;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Moonfish.Tags
 {

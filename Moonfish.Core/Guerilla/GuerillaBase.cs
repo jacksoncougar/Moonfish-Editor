@@ -288,14 +288,16 @@ namespace Moonfish.Guerilla
         protected static string ToTypeName(string value)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-            var typeName = value.Replace('_', ' ');
+            var indices = value.Where(x => Char.IsUpper(x)).Select(x=>value.IndexOf(x)).ToList();
+            var typeName = new StringBuilder(value.Replace('_', ' '));
             typeName = typeName.Replace('-', ' ');
-            typeName = textInfo.ToTitleCase(typeName);
+            typeName = new StringBuilder(textInfo.ToTitleCase(typeName.ToString()));
             Regex r = new Regex("[^a-zA-Z0-9 -]");
-            typeName = r.Replace(typeName, "");
+            typeName = new StringBuilder(r.Replace(typeName.ToString(), " "));
+            indices.ForEach(x => typeName[x] = Char.ToUpperInvariant(typeName[x]));
             typeName = typeName.Replace(" ", "");
-            typeName = ValidateFieldName(typeName);
-            return typeName;
+            typeName = new StringBuilder(ValidateFieldName(typeName.ToString()));
+            return typeName.ToString();
         }
 
         protected static string ToMemberName(string value)
