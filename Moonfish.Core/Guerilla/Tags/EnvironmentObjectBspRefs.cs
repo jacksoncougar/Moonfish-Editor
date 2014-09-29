@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class EnvironmentObjectBspRefs
+    [LayoutAttribute(Size = 16)]
+    public  partial class EnvironmentObjectBspRefs : EnvironmentObjectBspRefsBase
     {
-        int bspReference;
-        int firstSector;
-        int lastSector;
-        short nodeIndex;
-        byte[] invalidName_;
-        internal  EnvironmentObjectBspRefs(BinaryReader binaryReader)
+        public  EnvironmentObjectBspRefs(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class EnvironmentObjectBspRefsBase
+    {
+        internal int bspReference;
+        internal int firstSector;
+        internal int lastSector;
+        internal short nodeIndex;
+        internal byte[] invalidName_;
+        internal  EnvironmentObjectBspRefsBase(BinaryReader binaryReader)
         {
             this.bspReference = binaryReader.ReadInt32();
             this.firstSector = binaryReader.ReadInt32();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.nodeIndex = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

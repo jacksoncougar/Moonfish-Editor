@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintWellBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class UserHintWellBlock : UserHintWellBlockBase
     {
-        Flags flags;
-        UserHintWellPointBlock[] points;
-        internal  UserHintWellBlock(BinaryReader binaryReader)
+        public  UserHintWellBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class UserHintWellBlockBase
+    {
+        internal Flags flags;
+        internal UserHintWellPointBlock[] points;
+        internal  UserHintWellBlockBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt32();
             this.points = ReadUserHintWellPointBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        UserHintWellPointBlock[] ReadUserHintWellPointBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintWellPointBlock[] ReadUserHintWellPointBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintWellPointBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

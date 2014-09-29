@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalMapLeafBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class GlobalMapLeafBlock : GlobalMapLeafBlockBase
     {
-        MapLeafFaceBlock[] faces;
-        MapLeafConnectionIndexBlock[] connectionIndices;
-        internal  GlobalMapLeafBlock(BinaryReader binaryReader)
+        public  GlobalMapLeafBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class GlobalMapLeafBlockBase
+    {
+        internal MapLeafFaceBlock[] faces;
+        internal MapLeafConnectionIndexBlock[] connectionIndices;
+        internal  GlobalMapLeafBlockBase(BinaryReader binaryReader)
         {
             this.faces = ReadMapLeafFaceBlockArray(binaryReader);
             this.connectionIndices = ReadMapLeafConnectionIndexBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        MapLeafFaceBlock[] ReadMapLeafFaceBlockArray(BinaryReader binaryReader)
+        internal  virtual MapLeafFaceBlock[] ReadMapLeafFaceBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(MapLeafFaceBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -45,7 +54,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        MapLeafConnectionIndexBlock[] ReadMapLeafConnectionIndexBlockArray(BinaryReader binaryReader)
+        internal  virtual MapLeafConnectionIndexBlock[] ReadMapLeafConnectionIndexBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(MapLeafConnectionIndexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

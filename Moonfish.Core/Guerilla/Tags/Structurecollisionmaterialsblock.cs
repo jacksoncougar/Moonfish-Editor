@@ -7,22 +7,31 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureCollisionMaterialsBlock
+    [LayoutAttribute(Size = 20)]
+    public  partial class StructureCollisionMaterialsBlock : StructureCollisionMaterialsBlockBase
+    {
+        public  StructureCollisionMaterialsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 20)]
+    public class StructureCollisionMaterialsBlockBase
     {
         [TagReference("shad")]
-        Moonfish.Tags.TagReference oldShader;
-        byte[] invalidName_;
-        Moonfish.Tags.ShortBlockIndex1 conveyorSurfaceIndex;
+        internal Moonfish.Tags.TagReference oldShader;
+        internal byte[] invalidName_;
+        internal Moonfish.Tags.ShortBlockIndex1 conveyorSurfaceIndex;
         [TagReference("shad")]
-        Moonfish.Tags.TagReference newShader;
-        internal  StructureCollisionMaterialsBlock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference newShader;
+        internal  StructureCollisionMaterialsBlockBase(BinaryReader binaryReader)
         {
             this.oldShader = binaryReader.ReadTagReference();
             this.invalidName_ = binaryReader.ReadBytes(2);
             this.conveyorSurfaceIndex = binaryReader.ReadShortBlockIndex1();
             this.newShader = binaryReader.ReadTagReference();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

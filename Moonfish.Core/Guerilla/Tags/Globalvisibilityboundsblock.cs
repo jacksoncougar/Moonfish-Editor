@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalVisibilityBoundsblock
+    [LayoutAttribute(Size = 20)]
+    public  partial class GlobalVisibilityBoundsBlock : GlobalVisibilityBoundsBlockBase
     {
-        float positionX;
-        float positionY;
-        float positionZ;
-        float radius;
-        byte node0;
-        byte[] invalidName_;
-        internal  GlobalVisibilityBoundsblock(BinaryReader binaryReader)
+        public  GlobalVisibilityBoundsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 20)]
+    public class GlobalVisibilityBoundsBlockBase
+    {
+        internal float positionX;
+        internal float positionY;
+        internal float positionZ;
+        internal float radius;
+        internal byte node0;
+        internal byte[] invalidName_;
+        internal  GlobalVisibilityBoundsBlockBase(BinaryReader binaryReader)
         {
             this.positionX = binaryReader.ReadSingle();
             this.positionY = binaryReader.ReadSingle();
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.node0 = binaryReader.ReadByte();
             this.invalidName_ = binaryReader.ReadBytes(3);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

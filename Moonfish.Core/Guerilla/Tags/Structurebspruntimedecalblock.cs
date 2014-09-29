@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspRuntimeDecalblock
+    [LayoutAttribute(Size = 16)]
+    public  partial class StructureBspRuntimeDecalBlock : StructureBspRuntimeDecalBlockBase
     {
-        byte[] invalidName_;
-        internal  StructureBspRuntimeDecalblock(BinaryReader binaryReader)
+        public  StructureBspRuntimeDecalBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class StructureBspRuntimeDecalBlockBase
+    {
+        internal byte[] invalidName_;
+        internal  StructureBspRuntimeDecalBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadBytes(16);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspClusterInstancedGeometryindexblock
+    [LayoutAttribute(Size = 2)]
+    public  partial class StructureBspClusterInstancedGeometryIndexBlock : StructureBspClusterInstancedGeometryIndexBlockBase
     {
-        short instancedGeometryIndex;
-        internal  StructureBspClusterInstancedGeometryindexblock(BinaryReader binaryReader)
+        public  StructureBspClusterInstancedGeometryIndexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class StructureBspClusterInstancedGeometryIndexBlockBase
+    {
+        internal short instancedGeometryIndex;
+        internal  StructureBspClusterInstancedGeometryIndexBlockBase(BinaryReader binaryReader)
         {
             this.instancedGeometryIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

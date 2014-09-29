@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class WaterGeometrySectionBlock
+    [LayoutAttribute(Size = 68)]
+    public  partial class WaterGeometrySectionBlock : WaterGeometrySectionBlockBase
     {
-        GlobalgeometrySectionstructBlock section;
-        internal  WaterGeometrySectionBlock(BinaryReader binaryReader)
+        public  WaterGeometrySectionBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.section = new GlobalgeometrySectionstructBlock(binaryReader);
+            
         }
-        byte[] ReadData(BinaryReader binaryReader)
+    };
+    [LayoutAttribute(Size = 68)]
+    public class WaterGeometrySectionBlockBase
+    {
+        internal GlobalGeometrySectionStructBlock section;
+        internal  WaterGeometrySectionBlockBase(BinaryReader binaryReader)
+        {
+            this.section = new GlobalGeometrySectionStructBlock(binaryReader);
+        }
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

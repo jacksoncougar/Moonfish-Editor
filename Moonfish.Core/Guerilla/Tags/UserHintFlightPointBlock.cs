@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintFlightPointBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class UserHintFlightPointBlock : UserHintFlightPointBlockBase
     {
-        OpenTK.Vector3 point;
-        internal  UserHintFlightPointBlock(BinaryReader binaryReader)
+        public  UserHintFlightPointBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class UserHintFlightPointBlockBase
+    {
+        internal OpenTK.Vector3 point;
+        internal  UserHintFlightPointBlockBase(BinaryReader binaryReader)
         {
             this.point = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

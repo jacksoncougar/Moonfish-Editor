@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class MapLeafFaceVertexBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class MapLeafFaceVertexBlock : MapLeafFaceVertexBlockBase
     {
-        OpenTK.Vector3 vertex;
-        internal  MapLeafFaceVertexBlock(BinaryReader binaryReader)
+        public  MapLeafFaceVertexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class MapLeafFaceVertexBlockBase
+    {
+        internal OpenTK.Vector3 vertex;
+        internal  MapLeafFaceVertexBlockBase(BinaryReader binaryReader)
         {
             this.vertex = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

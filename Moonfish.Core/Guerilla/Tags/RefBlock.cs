@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class RefBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class RefBlock : RefBlockBase
     {
-        int nodeRefOrSectorRef;
-        internal  RefBlock(BinaryReader binaryReader)
+        public  RefBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class RefBlockBase
+    {
+        internal int nodeRefOrSectorRef;
+        internal  RefBlockBase(BinaryReader binaryReader)
         {
             this.nodeRefOrSectorRef = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspWeatherPolyhedronblock
+    [LayoutAttribute(Size = 24)]
+    public  partial class StructureBspWeatherPolyhedronBlock : StructureBspWeatherPolyhedronBlockBase
     {
-        OpenTK.Vector3 boundingSphereCenter;
-        float boundingSphereRadius;
-        StructureBspWeatherPolyhedronplaneblock[] planes;
-        internal  StructureBspWeatherPolyhedronblock(BinaryReader binaryReader)
+        public  StructureBspWeatherPolyhedronBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class StructureBspWeatherPolyhedronBlockBase
+    {
+        internal OpenTK.Vector3 boundingSphereCenter;
+        internal float boundingSphereRadius;
+        internal StructureBspWeatherPolyhedronPlaneBlock[] planes;
+        internal  StructureBspWeatherPolyhedronBlockBase(BinaryReader binaryReader)
         {
             this.boundingSphereCenter = binaryReader.ReadVector3();
             this.boundingSphereRadius = binaryReader.ReadSingle();
-            this.planes = ReadStructureBspWeatherPolyhedronplaneblockArray(binaryReader);
+            this.planes = ReadStructureBspWeatherPolyhedronPlaneBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -32,17 +41,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        StructureBspWeatherPolyhedronplaneblock[] ReadStructureBspWeatherPolyhedronplaneblockArray(BinaryReader binaryReader)
+        internal  virtual StructureBspWeatherPolyhedronPlaneBlock[] ReadStructureBspWeatherPolyhedronPlaneBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(StructureBspWeatherPolyhedronplaneblock));
+            var elementSize = Deserializer.SizeOf(typeof(StructureBspWeatherPolyhedronPlaneBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new StructureBspWeatherPolyhedronplaneblock[blamPointer.Count];
+            var array = new StructureBspWeatherPolyhedronPlaneBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new StructureBspWeatherPolyhedronplaneblock(binaryReader);
+                    array[i] = new StructureBspWeatherPolyhedronPlaneBlock(binaryReader);
                 }
             }
             return array;

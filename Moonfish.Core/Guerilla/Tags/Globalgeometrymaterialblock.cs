@@ -7,26 +7,35 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometryMaterialBlock
+    [LayoutAttribute(Size = 32)]
+    public  partial class GlobalGeometryMaterialBlock : GlobalGeometryMaterialBlockBase
+    {
+        public  GlobalGeometryMaterialBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 32)]
+    public class GlobalGeometryMaterialBlockBase
     {
         [TagReference("shad")]
-        Moonfish.Tags.TagReference oldShader;
+        internal Moonfish.Tags.TagReference oldShader;
         [TagReference("shad")]
-        Moonfish.Tags.TagReference shader;
-        GlobalgeometryMaterialPropertyBlock[] properties;
-        byte[] invalidName_;
-        byte breakableSurfaceIndex;
-        byte[] invalidName_0;
-        internal  GlobalgeometryMaterialBlock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference shader;
+        internal GlobalGeometryMaterialPropertyBlock[] properties;
+        internal byte[] invalidName_;
+        internal byte breakableSurfaceIndex;
+        internal byte[] invalidName_0;
+        internal  GlobalGeometryMaterialBlockBase(BinaryReader binaryReader)
         {
             this.oldShader = binaryReader.ReadTagReference();
             this.shader = binaryReader.ReadTagReference();
-            this.properties = ReadGlobalgeometryMaterialPropertyBlockArray(binaryReader);
+            this.properties = ReadGlobalGeometryMaterialPropertyBlockArray(binaryReader);
             this.invalidName_ = binaryReader.ReadBytes(4);
             this.breakableSurfaceIndex = binaryReader.ReadByte();
             this.invalidName_0 = binaryReader.ReadBytes(3);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -40,17 +49,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        GlobalgeometryMaterialPropertyBlock[] ReadGlobalgeometryMaterialPropertyBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometryMaterialPropertyBlock[] ReadGlobalGeometryMaterialPropertyBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometryMaterialPropertyBlock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometryMaterialPropertyBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometryMaterialPropertyBlock[blamPointer.Count];
+            var array = new GlobalGeometryMaterialPropertyBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometryMaterialPropertyBlock(binaryReader);
+                    array[i] = new GlobalGeometryMaterialPropertyBlock(binaryReader);
                 }
             }
             return array;

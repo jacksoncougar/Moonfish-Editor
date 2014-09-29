@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorPlacementBlock
+    [LayoutAttribute(Size = 22)]
+    public  partial class DecoratorPlacementBlock : DecoratorPlacementBlockBase
     {
-        int internalData1;
-        int compressedPosition;
-        Moonfish.Tags.RGBColor tintColor;
-        Moonfish.Tags.RGBColor lightmapColor;
-        int compressedLightDirection;
-        int compressedLight2Direction;
-        internal  DecoratorPlacementBlock(BinaryReader binaryReader)
+        public  DecoratorPlacementBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 22)]
+    public class DecoratorPlacementBlockBase
+    {
+        internal int internalData1;
+        internal int compressedPosition;
+        internal Moonfish.Tags.RGBColor tintColor;
+        internal Moonfish.Tags.RGBColor lightmapColor;
+        internal int compressedLightDirection;
+        internal int compressedLight2Direction;
+        internal  DecoratorPlacementBlockBase(BinaryReader binaryReader)
         {
             this.internalData1 = binaryReader.ReadInt32();
             this.compressedPosition = binaryReader.ReadInt32();
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.compressedLightDirection = binaryReader.ReadInt32();
             this.compressedLight2Direction = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

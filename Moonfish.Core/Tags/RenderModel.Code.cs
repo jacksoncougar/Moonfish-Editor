@@ -97,7 +97,7 @@ namespace Moonfish.Tags
             if (binaryReader.BaseStream is ResourceStream)
             {
                 var stream = binaryReader.BaseStream as ResourceStream;
-                vertexBufferPointers = stream.Resources.Where(x => x.type == GlobalGeometryBlockResourceBlock.Type.VertexBuffer)
+                vertexBufferPointers = stream.Resources.Where(x => x.type == Guerilla.Tags.GlobalGeometryBlockResourceBlockBase.Type.VertexBuffer)
                 .Select(x =>
                 {
                     var count = x.resourceDataSize;
@@ -133,12 +133,12 @@ namespace Moonfish.Tags
             var originalDelegate = Deserializer.ProcessTagBlockArray.Clone();
             Deserializer.ProcessTagBlockArray = new Deserializer.ProcessTagBlockArrayDelegate(CustomProcessTagBlockArray);
 
-            if (!geometryBlockInfo.IsInternal)
+            if (geometryBlockInfo.ResourceLocation != Halo2.ResourceSource.Local)
             {
                 Stream resourceStream;
                 if (Halo2.TryGettingResourceStream(geometryBlockInfo.blockOffset + 8, out resourceStream))
                 {
-                    resourceStream.Position = geometryBlockInfo.BlockAddress + 8;
+                    resourceStream.Position = geometryBlockInfo.ResourceOffset + 8;
                     var readerResource = new BinaryReader(resourceStream);
                     var returnValue = Deserializer.Deserialize(readerResource, typeof(RenderModelSectionDataBlock));
 
@@ -155,7 +155,7 @@ namespace Moonfish.Tags
             }
             else
             {
-                sourceReader.BaseStream.Position = geometryBlockInfo.BlockAddress + 8;
+                sourceReader.BaseStream.Position = geometryBlockInfo.ResourceOffset + 8;
                 var returnValue = Deserializer.Deserialize(sourceReader, typeof(RenderModelSectionDataBlock));
 
                 Deserializer.PreprocessField = null;
@@ -193,7 +193,7 @@ namespace Moonfish.Tags
                 var r = (from resource in this.geometryBlockInfo.resources
                          where resource.primaryLocator == offset
                          select resource).ToArray();
-                address = this.geometryBlockInfo.BlockAddress + this.geometryBlockInfo.sectionDataSize + 8 + r.First().resourceDataOffset;
+                address = this.geometryBlockInfo.ResourceOffset + this.geometryBlockInfo.sectionDataSize + 8 + r.First( ).resourceDataOffset;
 
 
                 for (int i = 0; i < count; ++i)
@@ -210,7 +210,7 @@ namespace Moonfish.Tags
                             if (elementField.FieldType == typeof(VertexBuffer))
                             {
                                 var vertexBufferField = (VertexBuffer)elementField.GetValue(element);
-                                sourceReader.BaseStream.Position = this.geometryBlockInfo.BlockAddress + this.geometryBlockInfo.sectionDataSize + 8 + r[i + 1].resourceDataOffset;
+                                sourceReader.BaseStream.Position = this.geometryBlockInfo.ResourceOffset + this.geometryBlockInfo.sectionDataSize + 8 + r[i + 1].resourceDataOffset;
                                 vertexBufferField.Data = sourceReader.ReadBytes(r[i + 1].resourceDataSize);
                                 elementField.SetValue(element, vertexBufferField);
                             }

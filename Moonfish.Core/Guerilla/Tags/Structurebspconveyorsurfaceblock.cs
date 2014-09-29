@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspConveyorsurfaceblock
+    [LayoutAttribute(Size = 24)]
+    public  partial class StructureBspConveyorSurfaceBlock : StructureBspConveyorSurfaceBlockBase
     {
-        OpenTK.Vector3 u;
-        OpenTK.Vector3 v;
-        internal  StructureBspConveyorsurfaceblock(BinaryReader binaryReader)
+        public  StructureBspConveyorSurfaceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class StructureBspConveyorSurfaceBlockBase
+    {
+        internal OpenTK.Vector3 u;
+        internal OpenTK.Vector3 v;
+        internal  StructureBspConveyorSurfaceBlockBase(BinaryReader binaryReader)
         {
             this.u = binaryReader.ReadVector3();
             this.v = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

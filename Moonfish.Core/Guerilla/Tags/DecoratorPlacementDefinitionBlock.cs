@@ -7,24 +7,33 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorPlacementdefinitionBlock
+    [LayoutAttribute(Size = 48)]
+    public  partial class DecoratorPlacementDefinitionBlock : DecoratorPlacementDefinitionBlockBase
     {
-        OpenTK.Vector3 gridOrigin;
-        int cellCountPerDimension;
-        DecoratorCacheBlockblock[] cacheBlocks;
-        DecoratorGroupBlock[] groups;
-        DecoratorCellcollectionBlock[] cells;
-        DecoratorProjecteddecalBlock[] decals;
-        internal  DecoratorPlacementdefinitionBlock(BinaryReader binaryReader)
+        public  DecoratorPlacementDefinitionBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 48)]
+    public class DecoratorPlacementDefinitionBlockBase
+    {
+        internal OpenTK.Vector3 gridOrigin;
+        internal int cellCountPerDimension;
+        internal DecoratorCacheBlockBlock[] cacheBlocks;
+        internal DecoratorGroupBlock[] groups;
+        internal DecoratorCellCollectionBlock[] cells;
+        internal DecoratorProjectedDecalBlock[] decals;
+        internal  DecoratorPlacementDefinitionBlockBase(BinaryReader binaryReader)
         {
             this.gridOrigin = binaryReader.ReadVector3();
             this.cellCountPerDimension = binaryReader.ReadInt32();
-            this.cacheBlocks = ReadDecoratorCacheBlockblockArray(binaryReader);
+            this.cacheBlocks = ReadDecoratorCacheBlockBlockArray(binaryReader);
             this.groups = ReadDecoratorGroupBlockArray(binaryReader);
-            this.cells = ReadDecoratorCellcollectionBlockArray(binaryReader);
-            this.decals = ReadDecoratorProjecteddecalBlockArray(binaryReader);
+            this.cells = ReadDecoratorCellCollectionBlockArray(binaryReader);
+            this.decals = ReadDecoratorProjectedDecalBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -38,22 +47,22 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        DecoratorCacheBlockblock[] ReadDecoratorCacheBlockblockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorCacheBlockBlock[] ReadDecoratorCacheBlockBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(DecoratorCacheBlockblock));
+            var elementSize = Deserializer.SizeOf(typeof(DecoratorCacheBlockBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new DecoratorCacheBlockblock[blamPointer.Count];
+            var array = new DecoratorCacheBlockBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new DecoratorCacheBlockblock(binaryReader);
+                    array[i] = new DecoratorCacheBlockBlock(binaryReader);
                 }
             }
             return array;
         }
-        DecoratorGroupBlock[] ReadDecoratorGroupBlockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorGroupBlock[] ReadDecoratorGroupBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(DecoratorGroupBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -68,32 +77,32 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        DecoratorCellcollectionBlock[] ReadDecoratorCellcollectionBlockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorCellCollectionBlock[] ReadDecoratorCellCollectionBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(DecoratorCellcollectionBlock));
+            var elementSize = Deserializer.SizeOf(typeof(DecoratorCellCollectionBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new DecoratorCellcollectionBlock[blamPointer.Count];
+            var array = new DecoratorCellCollectionBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new DecoratorCellcollectionBlock(binaryReader);
+                    array[i] = new DecoratorCellCollectionBlock(binaryReader);
                 }
             }
             return array;
         }
-        DecoratorProjecteddecalBlock[] ReadDecoratorProjecteddecalBlockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorProjectedDecalBlock[] ReadDecoratorProjectedDecalBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(DecoratorProjecteddecalBlock));
+            var elementSize = Deserializer.SizeOf(typeof(DecoratorProjectedDecalBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new DecoratorProjecteddecalBlock[blamPointer.Count];
+            var array = new DecoratorProjectedDecalBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new DecoratorProjecteddecalBlock(binaryReader);
+                    array[i] = new DecoratorProjectedDecalBlock(binaryReader);
                 }
             }
             return array;

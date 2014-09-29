@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalErrorReportCategoriesBlock
+    [LayoutAttribute(Size = 676)]
+    public  partial class GlobalErrorReportCategoriesBlock : GlobalErrorReportCategoriesBlockBase
     {
-        Moonfish.Tags.String256 name;
-        ReportType reportType;
-        Flags flags;
-        byte[] invalidName_;
-        byte[] invalidName_0;
-        byte[] invalidName_1;
-        ErrorReportsBlock[] reports;
-        internal  GlobalErrorReportCategoriesBlock(BinaryReader binaryReader)
+        public  GlobalErrorReportCategoriesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 676)]
+    public class GlobalErrorReportCategoriesBlockBase
+    {
+        internal Moonfish.Tags.String256 name;
+        internal ReportType reportType;
+        internal Flags flags;
+        internal byte[] invalidName_;
+        internal byte[] invalidName_0;
+        internal byte[] invalidName_1;
+        internal ErrorReportsBlock[] reports;
+        internal  GlobalErrorReportCategoriesBlockBase(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadString256();
             this.reportType = (ReportType)binaryReader.ReadInt16();
@@ -26,7 +35,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_1 = binaryReader.ReadBytes(404);
             this.reports = ReadErrorReportsBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -40,7 +49,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        ErrorReportsBlock[] ReadErrorReportsBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportsBlock[] ReadErrorReportsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -58,9 +67,9 @@ namespace Moonfish.Guerilla.Tags
         internal enum ReportType : short
         {
             Silent = 0,
-            Comment = 0,
-            Warning = 0,
-            Error = 0,
+            Comment = 1,
+            Warning = 2,
+            Error = 3,
         };
         internal enum Flags : short
         {

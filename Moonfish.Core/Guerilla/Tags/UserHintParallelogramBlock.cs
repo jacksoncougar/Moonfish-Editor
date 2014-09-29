@@ -7,22 +7,31 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintParallelogramBlock
+    [LayoutAttribute(Size = 68)]
+    public  partial class UserHintParallelogramBlock : UserHintParallelogramBlockBase
     {
-        Flags flags;
-        OpenTK.Vector3 point0;
-        short referenceFrame;
-        byte[] invalidName_;
-        OpenTK.Vector3 point1;
-        short referenceFrame0;
-        byte[] invalidName_0;
-        OpenTK.Vector3 point2;
-        short referenceFrame1;
-        byte[] invalidName_1;
-        OpenTK.Vector3 point3;
-        short referenceFrame2;
-        byte[] invalidName_2;
-        internal  UserHintParallelogramBlock(BinaryReader binaryReader)
+        public  UserHintParallelogramBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 68)]
+    public class UserHintParallelogramBlockBase
+    {
+        internal Flags flags;
+        internal OpenTK.Vector3 point0;
+        internal short referenceFrame;
+        internal byte[] invalidName_;
+        internal OpenTK.Vector3 point1;
+        internal short referenceFrame0;
+        internal byte[] invalidName_0;
+        internal OpenTK.Vector3 point2;
+        internal short referenceFrame1;
+        internal byte[] invalidName_1;
+        internal OpenTK.Vector3 point3;
+        internal short referenceFrame2;
+        internal byte[] invalidName_2;
+        internal  UserHintParallelogramBlockBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt32();
             this.point0 = binaryReader.ReadVector3();
@@ -38,7 +47,7 @@ namespace Moonfish.Guerilla.Tags
             this.referenceFrame2 = binaryReader.ReadInt16();
             this.invalidName_2 = binaryReader.ReadBytes(2);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

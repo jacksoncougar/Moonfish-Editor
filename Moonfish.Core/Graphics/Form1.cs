@@ -2,7 +2,6 @@
 using Moonfish.Definitions;
 using Moonfish.Graphics.Input;
 using Moonfish.Tags;
-using Moonfish.Tags.BSP;
 using OpenTK;
 using OpenTK.Graphics.ES30;
 using OpenTK.Input;
@@ -235,7 +234,7 @@ namespace Moonfish.Graphics
         private void LoadScenarioStructureBSP()
         {
             var structureBSP = (ScenarioStructureBSP)map["sbsp", ""].Deserialize();
-            structureBSP.clusters.ToList().ForEach(x => test.Add(new RenderObject(x)));
+            //structureBSP.clusters.ToList().ForEach(x => test.Add(new RenderObject(x)));
         }
 
         private void LoadScenario()

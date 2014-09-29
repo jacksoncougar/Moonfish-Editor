@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class EdgesBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class EdgesBlock : EdgesBlockBase
     {
-        short startVertex;
-        short endVertex;
-        short forwardEdge;
-        short reverseEdge;
-        short leftSurface;
-        short rightSurface;
-        internal  EdgesBlock(BinaryReader binaryReader)
+        public  EdgesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class EdgesBlockBase
+    {
+        internal short startVertex;
+        internal short endVertex;
+        internal short forwardEdge;
+        internal short reverseEdge;
+        internal short leftSurface;
+        internal short rightSurface;
+        internal  EdgesBlockBase(BinaryReader binaryReader)
         {
             this.startVertex = binaryReader.ReadInt16();
             this.endVertex = binaryReader.ReadInt16();
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.leftSurface = binaryReader.ReadInt16();
             this.rightSurface = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

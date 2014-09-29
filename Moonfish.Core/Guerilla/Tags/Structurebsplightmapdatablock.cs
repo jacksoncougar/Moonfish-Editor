@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspLightmapDatablock
+    [LayoutAttribute(Size = 8)]
+    public  partial class StructureBspLightmapDataBlock : StructureBspLightmapDataBlockBase
+    {
+        public  StructureBspLightmapDataBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class StructureBspLightmapDataBlockBase
     {
         [TagReference("bitm")]
-        Moonfish.Tags.TagReference bitmapGroup;
-        internal  StructureBspLightmapDatablock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference bitmapGroup;
+        internal  StructureBspLightmapDataBlockBase(BinaryReader binaryReader)
         {
             this.bitmapGroup = binaryReader.ReadTagReference();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

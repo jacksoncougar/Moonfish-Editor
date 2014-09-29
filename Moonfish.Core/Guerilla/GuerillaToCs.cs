@@ -134,7 +134,9 @@ namespace Moonfish.Guerilla
             using( var stream = new FileStream( Path.Combine( folder, info.Value.Name + ".cs" ), FileMode.Create,
                    FileAccess.Write, FileShare.ReadWrite ) )
             {
-                GenerateOutputForClass( info, new StreamWriter( stream ) );
+                var streamWriter = new StreamWriter( stream );
+                info.Generate( );
+                GenerateOutputForClass( info, streamWriter );
             }
 
             var localDefinitions = DefinitionsDictionary.Select( x => x.Value );
@@ -144,6 +146,7 @@ namespace Moonfish.Guerilla
                 using( var stream = new FileStream( Path.Combine( folder, item.Value.Name + ".cs" ), FileMode.Create,
                     FileAccess.Write, FileShare.ReadWrite ) )
                 {
+                    item.Generate( );
                     GenerateOutputForClass( item, new StreamWriter( stream ) );
                 }
             }
@@ -152,9 +155,12 @@ namespace Moonfish.Guerilla
 
         private void GenerateOutputForClass( ClassInfo classInfo, StreamWriter streamWriter, bool subClass = false, int tabCount = 0 )
         {
-            classInfo.Generate( );
             if( !subClass )
             {
+                var wrapperClassInfo = classInfo.GenerateWrapper( classInfo.Value.Name, classInfo.Value.Name + "Base" );
+                classInfo.Value.Name += "Base";
+                classInfo.Generate( );
+
                 foreach( var item in classInfo.Usings )
                 {
                     streamWriter.WriteLine( item );
@@ -162,52 +168,56 @@ namespace Moonfish.Guerilla
                 streamWriter.WriteLine( );
                 streamWriter.WriteLine( classInfo.NamespaceDeclaration.Tab( ref tabCount ) );
                 streamWriter.WriteLine( "{".Tab( ref tabCount ) );
+
+                GenerateOutputForSubclass( wrapperClassInfo, streamWriter, tabCount );
             }
+            classInfo.Attributes.ForEach( x => streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) ) );
             streamWriter.WriteLine( classInfo.ClassDeclaration.Tab( ref tabCount ) );
             streamWriter.WriteLine( "{".Tab( ref tabCount ) );
+
             foreach( var item in classInfo.Fields )
             {
-                var subItems = item.ToString( ).Split( new[] { Environment.NewLine }, StringSplitOptions.None ).ToList( );
-                subItems.ForEach( x =>
-                {
-                    streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) );
-                } );
+                tabCount = ProcessLines( streamWriter, tabCount, item );
             }
+
             foreach( var item in classInfo.Constructors )
             {
-                var subItems = item.ToString( ).Split( new[] { Environment.NewLine }, StringSplitOptions.None ).ToList( );
-                subItems.ForEach( x =>
-                {
-                    streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) );
-                } );
+                tabCount = ProcessLines( streamWriter, tabCount, item );
             }
+
             foreach( var item in classInfo.Methods )
             {
-                var subItems = item.ToString( ).Split( new[] { Environment.NewLine }, StringSplitOptions.None ).ToList( );
-                subItems.ForEach( x =>
-                {
-                    streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) );
-                } );
+                tabCount = ProcessLines( streamWriter, tabCount, item );
             }
+
             foreach( var item in classInfo.EnumDefinitions )
             {
-                var subItems = item.ToString( ).Split( new[] { Environment.NewLine }, StringSplitOptions.None ).ToList( );
-                subItems.ForEach( x =>
-                {
-                    streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) );
-                } );
+                tabCount = ProcessLines( streamWriter, tabCount, item );
             }
+
             foreach( var item in classInfo.ClassDefinitions )
             {
-
+                item.Generate( );
                 GenerateOutputForSubclass( item, streamWriter, tabCount );
             }
+
             streamWriter.WriteLine( "};".Tab( ref tabCount ) );
+
             if( !subClass )
             {
                 streamWriter.WriteLine( "}".Tab( ref tabCount ) );
             }
             streamWriter.Flush( );
+        }
+
+        private static int ProcessLines( StreamWriter streamWriter, int tabCount, object item )
+        {
+            var subItems = item.ToString( ).Split( new[] { Environment.NewLine }, StringSplitOptions.None ).ToList( );
+            subItems.ForEach( x =>
+            {
+                streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) );
+            } );
+            return tabCount;
         }
 
         private void GenerateOutputForSubclass( ClassInfo item, StreamWriter streamWriter, int tabCount )
@@ -264,7 +274,7 @@ namespace Moonfish.Guerilla
 
             ClassInfo @class = new ClassInfo( )
             {
-                AccessModifiers = AccessModifiers.Protected | AccessModifiers.Partial,
+                AccessModifiers = AccessModifiers.Public,
                 Value = className == string.Empty ? GuerillaCs.ToTypeName( block.Name ) : GuerillaCs.ToTypeName( className ),
                 Attributes = { new AttributeInfo( typeof( LayoutAttribute ), "Size", size ) }
             };
@@ -335,6 +345,7 @@ namespace Moonfish.Guerilla
                             fieldInfo = new FieldInfo( )
                             {
                                 Value = field.Name,
+                                AccessModifiers = Moonfish.Guerilla.AccessModifiers.Internal,
                                 FieldTypeName = typeof( Byte ).FullName,
                                 IsArray = true
                             };
@@ -575,6 +586,7 @@ namespace Moonfish.Guerilla
             ClassInfo arrayClass = new ClassInfo( )
             {
                 Value = GuerillaCs.ToTypeName( fields[0].Name ),
+                AccessModifiers = Moonfish.Guerilla.AccessModifiers.Public,
             };
             fields.RemoveAt( 0 );
             ProcessFields( fields, arrayClass );

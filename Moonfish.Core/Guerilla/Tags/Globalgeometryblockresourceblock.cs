@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometryBlockResourceblock
+    [LayoutAttribute(Size = 16)]
+    public  partial class GlobalGeometryBlockResourceBlock : GlobalGeometryBlockResourceBlockBase
     {
-        Type type;
-        byte[] invalidName_;
-        short primaryLocator;
-        short secondaryLocator;
-        int resourceDataSize;
-        int resourceDataOffset;
-        internal  GlobalgeometryBlockResourceblock(BinaryReader binaryReader)
+        public  GlobalGeometryBlockResourceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class GlobalGeometryBlockResourceBlockBase
+    {
+        internal Type type;
+        internal byte[] invalidName_;
+        internal short primaryLocator;
+        internal short secondaryLocator;
+        internal int resourceDataSize;
+        internal int resourceDataOffset;
+        internal  GlobalGeometryBlockResourceBlockBase(BinaryReader binaryReader)
         {
             this.type = (Type)binaryReader.ReadByte();
             this.invalidName_ = binaryReader.ReadBytes(3);
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.resourceDataSize = binaryReader.ReadInt32();
             this.resourceDataOffset = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -41,8 +50,8 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : byte
         {
             TagBlock = 0,
-            TagData = 0,
-            VertexBuffer = 0,
+            TagData = 1,
+            VertexBuffer = 2,
         };
     };
 }

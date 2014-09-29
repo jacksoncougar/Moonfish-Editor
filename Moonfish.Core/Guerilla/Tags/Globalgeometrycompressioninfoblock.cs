@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometryCompressionInfoBlock
+    [LayoutAttribute(Size = 56)]
+    public  partial class GlobalGeometryCompressionInfoBlock : GlobalGeometryCompressionInfoBlockBase
     {
-        Moonfish.Model.Range positionBoundsX;
-        Moonfish.Model.Range positionBoundsY;
-        Moonfish.Model.Range positionBoundsZ;
-        Moonfish.Model.Range texcoordBoundsX;
-        Moonfish.Model.Range texcoordBoundsY;
-        Moonfish.Model.Range secondaryTexcoordBoundsX;
-        Moonfish.Model.Range secondaryTexcoordBoundsY;
-        internal  GlobalgeometryCompressionInfoBlock(BinaryReader binaryReader)
+        public  GlobalGeometryCompressionInfoBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 56)]
+    public class GlobalGeometryCompressionInfoBlockBase
+    {
+        internal Moonfish.Model.Range positionBoundsX;
+        internal Moonfish.Model.Range positionBoundsY;
+        internal Moonfish.Model.Range positionBoundsZ;
+        internal Moonfish.Model.Range texcoordBoundsX;
+        internal Moonfish.Model.Range texcoordBoundsY;
+        internal Moonfish.Model.Range secondaryTexcoordBoundsX;
+        internal Moonfish.Model.Range secondaryTexcoordBoundsY;
+        internal  GlobalGeometryCompressionInfoBlockBase(BinaryReader binaryReader)
         {
             this.positionBoundsX = binaryReader.ReadRange();
             this.positionBoundsY = binaryReader.ReadRange();
@@ -26,7 +35,7 @@ namespace Moonfish.Guerilla.Tags
             this.secondaryTexcoordBoundsX = binaryReader.ReadRange();
             this.secondaryTexcoordBoundsY = binaryReader.ReadRange();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

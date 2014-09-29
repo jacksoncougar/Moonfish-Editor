@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspClusterDatablockNew
+    [LayoutAttribute(Size = 68)]
+    public  partial class StructureBspClusterDataBlockNew : StructureBspClusterDataBlockNewBase
     {
-        GlobalgeometrySectionstructBlock section;
-        internal  StructureBspClusterDatablockNew(BinaryReader binaryReader)
+        public  StructureBspClusterDataBlockNew(BinaryReader binaryReader): base(binaryReader)
         {
-            this.section = new GlobalgeometrySectionstructBlock(binaryReader);
+            
         }
-        byte[] ReadData(BinaryReader binaryReader)
+    };
+    [LayoutAttribute(Size = 68)]
+    public class StructureBspClusterDataBlockNewBase
+    {
+        internal GlobalGeometrySectionStructBlock section;
+        internal  StructureBspClusterDataBlockNewBase(BinaryReader binaryReader)
+        {
+            this.section = new GlobalGeometrySectionStructBlock(binaryReader);
+        }
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

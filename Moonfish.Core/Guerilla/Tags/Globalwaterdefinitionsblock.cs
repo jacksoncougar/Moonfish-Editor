@@ -7,37 +7,46 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalWaterDefinitionsBlock
+    [LayoutAttribute(Size = 172)]
+    public  partial class GlobalWaterDefinitionsBlock : GlobalWaterDefinitionsBlockBase
+    {
+        public  GlobalWaterDefinitionsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 172)]
+    public class GlobalWaterDefinitionsBlockBase
     {
         [TagReference("shad")]
-        Moonfish.Tags.TagReference shader;
-        WaterGeometrySectionBlock[] section;
-        GlobalgeometryBlockInfoStructblock geometryBlockInfo;
-        Moonfish.Tags.ColorR8G8B8 sunSpotColor;
-        Moonfish.Tags.ColorR8G8B8 reflectionTint;
-        Moonfish.Tags.ColorR8G8B8 refractionTint;
-        Moonfish.Tags.ColorR8G8B8 horizonColor;
-        float sunSpecularPower;
-        float reflectionBumpScale;
-        float refractionBumpScale;
-        float fresnelScale;
-        float sunDirHeading;
-        float sunDirPitch;
-        float fOV;
-        float aspect;
-        float height;
-        float farz;
-        float rotateOffset;
-        OpenTK.Vector2 center;
-        OpenTK.Vector2 extents;
-        float fogNear;
-        float fogFar;
-        float dynamicHeightBias;
-        internal  GlobalWaterDefinitionsBlock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference shader;
+        internal WaterGeometrySectionBlock[] section;
+        internal GlobalGeometryBlockInfoStructBlock geometryBlockInfo;
+        internal Moonfish.Tags.ColorR8G8B8 sunSpotColor;
+        internal Moonfish.Tags.ColorR8G8B8 reflectionTint;
+        internal Moonfish.Tags.ColorR8G8B8 refractionTint;
+        internal Moonfish.Tags.ColorR8G8B8 horizonColor;
+        internal float sunSpecularPower;
+        internal float reflectionBumpScale;
+        internal float refractionBumpScale;
+        internal float fresnelScale;
+        internal float sunDirHeading;
+        internal float sunDirPitch;
+        internal float fOV;
+        internal float aspect;
+        internal float height;
+        internal float farz;
+        internal float rotateOffset;
+        internal OpenTK.Vector2 center;
+        internal OpenTK.Vector2 extents;
+        internal float fogNear;
+        internal float fogFar;
+        internal float dynamicHeightBias;
+        internal  GlobalWaterDefinitionsBlockBase(BinaryReader binaryReader)
         {
             this.shader = binaryReader.ReadTagReference();
             this.section = ReadWaterGeometrySectionBlockArray(binaryReader);
-            this.geometryBlockInfo = new GlobalgeometryBlockInfoStructblock(binaryReader);
+            this.geometryBlockInfo = new GlobalGeometryBlockInfoStructBlock(binaryReader);
             this.sunSpotColor = binaryReader.ReadColorR8G8B8();
             this.reflectionTint = binaryReader.ReadColorR8G8B8();
             this.refractionTint = binaryReader.ReadColorR8G8B8();
@@ -59,7 +68,7 @@ namespace Moonfish.Guerilla.Tags
             this.fogFar = binaryReader.ReadSingle();
             this.dynamicHeightBias = binaryReader.ReadSingle();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -73,7 +82,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        WaterGeometrySectionBlock[] ReadWaterGeometrySectionBlockArray(BinaryReader binaryReader)
+        internal  virtual WaterGeometrySectionBlock[] ReadWaterGeometrySectionBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(WaterGeometrySectionBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

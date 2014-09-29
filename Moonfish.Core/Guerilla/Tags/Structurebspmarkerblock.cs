@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspMarkerblock
+    [LayoutAttribute(Size = 60)]
+    public  partial class StructureBspMarkerBlock : StructureBspMarkerBlockBase
     {
-        Moonfish.Tags.String32 name;
-        OpenTK.Quaternion rotation;
-        OpenTK.Vector3 position;
-        internal  StructureBspMarkerblock(BinaryReader binaryReader)
+        public  StructureBspMarkerBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 60)]
+    public class StructureBspMarkerBlockBase
+    {
+        internal Moonfish.Tags.String32 name;
+        internal OpenTK.Quaternion rotation;
+        internal OpenTK.Vector3 position;
+        internal  StructureBspMarkerBlockBase(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadString32();
             this.rotation = binaryReader.ReadQuaternion();
             this.position = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

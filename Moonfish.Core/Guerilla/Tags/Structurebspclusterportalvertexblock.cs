@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspClusterPortalVertexblock
+    [LayoutAttribute(Size = 12)]
+    public  partial class StructureBspClusterPortalVertexBlock : StructureBspClusterPortalVertexBlockBase
     {
-        OpenTK.Vector3 point;
-        internal  StructureBspClusterPortalVertexblock(BinaryReader binaryReader)
+        public  StructureBspClusterPortalVertexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class StructureBspClusterPortalVertexBlockBase
+    {
+        internal OpenTK.Vector3 point;
+        internal  StructureBspClusterPortalVertexBlockBase(BinaryReader binaryReader)
         {
             this.point = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

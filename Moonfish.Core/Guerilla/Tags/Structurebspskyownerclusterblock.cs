@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspskyOwnerClusterblock
+    [LayoutAttribute(Size = 2)]
+    public  partial class StructureBspSkyOwnerClusterBlock : StructureBspSkyOwnerClusterBlockBase
     {
-        short clusterOwner;
-        internal  StructureBspskyOwnerClusterblock(BinaryReader binaryReader)
+        public  StructureBspSkyOwnerClusterBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class StructureBspSkyOwnerClusterBlockBase
+    {
+        internal short clusterOwner;
+        internal  StructureBspSkyOwnerClusterBlockBase(BinaryReader binaryReader)
         {
             this.clusterOwner = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

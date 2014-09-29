@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ErrorReportVerticesBlock
+    [LayoutAttribute(Size = 52)]
+    public  partial class ErrorReportVerticesBlock : ErrorReportVerticesBlockBase
     {
-        OpenTK.Vector3 position;
-        NodeIndices nodeIndices;
-        byte nodeIndex;
-        internal  ErrorReportVerticesBlock(BinaryReader binaryReader)
+        public  ErrorReportVerticesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 52)]
+    public class ErrorReportVerticesBlockBase
+    {
+        internal OpenTK.Vector3 position;
+        internal NodeIndices nodeIndices;
+        internal byte nodeIndex;
+        internal  ErrorReportVerticesBlockBase(BinaryReader binaryReader)
         {
             this.position = binaryReader.ReadVector3();
             this.nodeIndices = new NodeIndices(binaryReader);
             this.nodeIndex = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -32,14 +41,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        class NodeIndices
+        public class NodeIndices
         {
-            byte nodeIndex;
+            internal byte nodeIndex;
             internal  NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];

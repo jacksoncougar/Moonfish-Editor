@@ -7,19 +7,28 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class RenderLightingStructBlock
+    [LayoutAttribute(Size = 84)]
+    public  partial class RenderLightingStructBlock : RenderLightingStructBlockBase
     {
-        Moonfish.Tags.ColorR8G8B8 ambient;
-        OpenTK.Vector3 shadowDirection;
-        float lightingAccuracy;
-        float shadowOpacity;
-        Moonfish.Tags.ColorR8G8B8 primaryDirectionColor;
-        OpenTK.Vector3 primaryDirection;
-        Moonfish.Tags.ColorR8G8B8 secondaryDirectionColor;
-        OpenTK.Vector3 secondaryDirection;
-        short shIndex;
-        byte[] invalidName_;
-        internal  RenderLightingStructBlock(BinaryReader binaryReader)
+        public  RenderLightingStructBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 84)]
+    public class RenderLightingStructBlockBase
+    {
+        internal Moonfish.Tags.ColorR8G8B8 ambient;
+        internal OpenTK.Vector3 shadowDirection;
+        internal float lightingAccuracy;
+        internal float shadowOpacity;
+        internal Moonfish.Tags.ColorR8G8B8 primaryDirectionColor;
+        internal OpenTK.Vector3 primaryDirection;
+        internal Moonfish.Tags.ColorR8G8B8 secondaryDirectionColor;
+        internal OpenTK.Vector3 secondaryDirection;
+        internal short shIndex;
+        internal byte[] invalidName_;
+        internal  RenderLightingStructBlockBase(BinaryReader binaryReader)
         {
             this.ambient = binaryReader.ReadColorR8G8B8();
             this.shadowDirection = binaryReader.ReadVector3();
@@ -32,7 +41,7 @@ namespace Moonfish.Guerilla.Tags
             this.shIndex = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

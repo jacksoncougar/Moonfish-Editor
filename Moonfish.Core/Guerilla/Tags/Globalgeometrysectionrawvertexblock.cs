@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometrySectionRawVertexBlock
+    [LayoutAttribute(Size = 196)]
+    public  partial class GlobalGeometrySectionRawVertexBlock : GlobalGeometrySectionRawVertexBlockBase
     {
-        OpenTK.Vector3 position;
-        NodeIndicesOLD nodeIndicesOLD;
-        int nodeIndexOLD;
-        internal  GlobalgeometrySectionRawVertexBlock(BinaryReader binaryReader)
+        public  GlobalGeometrySectionRawVertexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 196)]
+    public class GlobalGeometrySectionRawVertexBlockBase
+    {
+        internal OpenTK.Vector3 position;
+        internal NodeIndicesOLD nodeIndicesOLD;
+        internal int nodeIndexOLD;
+        internal  GlobalGeometrySectionRawVertexBlockBase(BinaryReader binaryReader)
         {
             this.position = binaryReader.ReadVector3();
             this.nodeIndicesOLD = new NodeIndicesOLD(binaryReader);
             this.nodeIndexOLD = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -32,14 +41,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        class NodeIndicesOLD
+        public class NodeIndicesOLD
         {
-            int nodeIndexOLD;
+            internal int nodeIndexOLD;
             internal  NodeIndicesOLD(BinaryReader binaryReader)
             {
                 this.nodeIndexOLD = binaryReader.ReadInt32();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];

@@ -7,17 +7,26 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class TagImportFileBlock
+    [LayoutAttribute(Size = 528)]
+    public  partial class TagImportFileBlock : TagImportFileBlockBase
     {
-        Moonfish.Tags.String256 path;
-        Moonfish.Tags.String32 modificationDate;
-        byte[] invalidName_;
-        byte[] invalidName_0;
-        int checksumCrc32;
-        int sizeBytes;
-        byte[] zippedData;
-        byte[] invalidName_1;
-        internal  TagImportFileBlock(BinaryReader binaryReader)
+        public  TagImportFileBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 528)]
+    public class TagImportFileBlockBase
+    {
+        internal Moonfish.Tags.String256 path;
+        internal Moonfish.Tags.String32 modificationDate;
+        internal byte[] invalidName_;
+        internal byte[] invalidName_0;
+        internal int checksumCrc32;
+        internal int sizeBytes;
+        internal byte[] zippedData;
+        internal byte[] invalidName_1;
+        internal  TagImportFileBlockBase(BinaryReader binaryReader)
         {
             this.path = binaryReader.ReadString256();
             this.modificationDate = binaryReader.ReadString32();
@@ -28,7 +37,7 @@ namespace Moonfish.Guerilla.Tags
             this.zippedData = ReadData(binaryReader);
             this.invalidName_1 = binaryReader.ReadBytes(128);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

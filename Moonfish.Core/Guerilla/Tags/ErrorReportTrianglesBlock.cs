@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ErrorReportTrianglesBlock
+    [LayoutAttribute(Size = 71)]
+    public  partial class ErrorReportTrianglesBlock : ErrorReportTrianglesBlockBase
     {
-        Points points;
-        OpenTK.Vector3 position;
-        NodeIndices nodeIndices;
-        byte nodeIndex;
-        internal  ErrorReportTrianglesBlock(BinaryReader binaryReader)
+        public  ErrorReportTrianglesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 71)]
+    public class ErrorReportTrianglesBlockBase
+    {
+        internal Points points;
+        internal OpenTK.Vector3 position;
+        internal NodeIndices nodeIndices;
+        internal byte nodeIndex;
+        internal  ErrorReportTrianglesBlockBase(BinaryReader binaryReader)
         {
             this.points = new Points(binaryReader);
             this.position = binaryReader.ReadVector3();
             this.nodeIndices = new NodeIndices(binaryReader);
             this.nodeIndex = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -34,18 +43,18 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        class Points
+        public class Points
         {
-            OpenTK.Vector3 position;
-            NodeIndices nodeIndices;
-            byte nodeIndex;
+            internal OpenTK.Vector3 position;
+            internal NodeIndices nodeIndices;
+            internal byte nodeIndex;
             internal  Points(BinaryReader binaryReader)
             {
                 this.position = binaryReader.ReadVector3();
                 this.nodeIndices = new NodeIndices(binaryReader);
                 this.nodeIndex = binaryReader.ReadByte();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];
@@ -59,14 +68,14 @@ namespace Moonfish.Guerilla.Tags
                 }
                 return data;
             }
-            class NodeIndices
+            public class NodeIndices
             {
-                byte nodeIndex;
+                internal byte nodeIndex;
                 internal  NodeIndices(BinaryReader binaryReader)
                 {
                     this.nodeIndex = binaryReader.ReadByte();
                 }
-                byte[] ReadData(BinaryReader binaryReader)
+                internal  virtual byte[] ReadData(BinaryReader binaryReader)
                 {
                     var blamPointer = binaryReader.ReadBlamPointer(1);
                     var data = new byte[blamPointer.Count];
@@ -82,14 +91,14 @@ namespace Moonfish.Guerilla.Tags
                 }
             };
         };
-        class NodeIndices
+        public class NodeIndices
         {
-            byte nodeIndex;
+            internal byte nodeIndex;
             internal  NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];

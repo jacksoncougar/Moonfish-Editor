@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class PredictedResourceBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class PredictedResourceBlock : PredictedResourceBlockBase
     {
-        Type type;
-        short resourceIndex;
-        int tagIndex;
-        internal  PredictedResourceBlock(BinaryReader binaryReader)
+        public  PredictedResourceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class PredictedResourceBlockBase
+    {
+        internal Type type;
+        internal short resourceIndex;
+        internal int tagIndex;
+        internal  PredictedResourceBlockBase(BinaryReader binaryReader)
         {
             this.type = (Type)binaryReader.ReadInt16();
             this.resourceIndex = binaryReader.ReadInt16();
             this.tagIndex = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -35,14 +44,14 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : short
         {
             Bitmap = 0,
-            Sound = 0,
-            RenderModelGeometry = 0,
-            ClusterGeometry = 0,
-            ClusterInstancedGeometry = 0,
-            LightmapGeometryObjectBuckets = 0,
-            LightmapGeometryInstanceBuckets = 0,
-            LightmapClusterBitmaps = 0,
-            LightmapInstanceBitmaps = 0,
+            Sound = 1,
+            RenderModelGeometry = 2,
+            ClusterGeometry = 3,
+            ClusterInstancedGeometry = 4,
+            LightmapGeometryObjectBuckets = 5,
+            LightmapGeometryInstanceBuckets = 6,
+            LightmapClusterBitmaps = 7,
+            LightmapInstanceBitmaps = 8,
         };
     };
 }

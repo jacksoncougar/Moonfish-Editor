@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class MapLeafConnectionIndexBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class MapLeafConnectionIndexBlock : MapLeafConnectionIndexBlockBase
     {
-        int connectionIndex;
-        internal  MapLeafConnectionIndexBlock(BinaryReader binaryReader)
+        public  MapLeafConnectionIndexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class MapLeafConnectionIndexBlockBase
+    {
+        internal int connectionIndex;
+        internal  MapLeafConnectionIndexBlockBase(BinaryReader binaryReader)
         {
             this.connectionIndex = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

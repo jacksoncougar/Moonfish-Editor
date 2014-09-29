@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorProjecteddecalBlock
+    [LayoutAttribute(Size = 64)]
+    public  partial class DecoratorProjectedDecalBlock : DecoratorProjectedDecalBlockBase
     {
-        Moonfish.Tags.ByteBlockIndex1 decoratorSet;
-        byte decoratorClass;
-        byte decoratorPermutation;
-        byte spriteIndex;
-        OpenTK.Vector3 position;
-        OpenTK.Vector3 left;
-        OpenTK.Vector3 up;
-        OpenTK.Vector3 extents;
-        OpenTK.Vector3 previousPosition;
-        internal  DecoratorProjecteddecalBlock(BinaryReader binaryReader)
+        public  DecoratorProjectedDecalBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 64)]
+    public class DecoratorProjectedDecalBlockBase
+    {
+        internal Moonfish.Tags.ByteBlockIndex1 decoratorSet;
+        internal byte decoratorClass;
+        internal byte decoratorPermutation;
+        internal byte spriteIndex;
+        internal OpenTK.Vector3 position;
+        internal OpenTK.Vector3 left;
+        internal OpenTK.Vector3 up;
+        internal OpenTK.Vector3 extents;
+        internal OpenTK.Vector3 previousPosition;
+        internal  DecoratorProjectedDecalBlockBase(BinaryReader binaryReader)
         {
             this.decoratorSet = binaryReader.ReadByteBlockIndex1();
             this.decoratorClass = binaryReader.ReadByte();
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             this.extents = binaryReader.ReadVector3();
             this.previousPosition = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

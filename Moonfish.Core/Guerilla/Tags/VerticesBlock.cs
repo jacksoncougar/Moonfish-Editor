@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class VerticesBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class VerticesBlock : VerticesBlockBase
     {
-        OpenTK.Vector3 point;
-        short firstEdge;
-        byte[] invalidName_;
-        internal  VerticesBlock(BinaryReader binaryReader)
+        public  VerticesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class VerticesBlockBase
+    {
+        internal OpenTK.Vector3 point;
+        internal short firstEdge;
+        internal byte[] invalidName_;
+        internal  VerticesBlockBase(BinaryReader binaryReader)
         {
             this.point = binaryReader.ReadVector3();
             this.firstEdge = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

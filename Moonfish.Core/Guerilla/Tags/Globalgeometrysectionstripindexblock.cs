@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometrySectionstripIndexBlock
+    [LayoutAttribute(Size = 2)]
+    public  partial class GlobalGeometrySectionStripIndexBlock : GlobalGeometrySectionStripIndexBlockBase
     {
-        short index;
-        internal  GlobalgeometrySectionstripIndexBlock(BinaryReader binaryReader)
+        public  GlobalGeometrySectionStripIndexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class GlobalGeometrySectionStripIndexBlockBase
+    {
+        internal short index;
+        internal  GlobalGeometrySectionStripIndexBlockBase(BinaryReader binaryReader)
         {
             this.index = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class PlanesBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class PlanesBlock : PlanesBlockBase
     {
-        OpenTK.Vector4 plane;
-        internal  PlanesBlock(BinaryReader binaryReader)
+        public  PlanesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class PlanesBlockBase
+    {
+        internal OpenTK.Vector4 plane;
+        internal  PlanesBlockBase(BinaryReader binaryReader)
         {
             this.plane = binaryReader.ReadVector4();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

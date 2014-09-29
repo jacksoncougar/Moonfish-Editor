@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class Bsp2dNodesblock
+    [LayoutAttribute(Size = 16)]
+    public  partial class Bsp2dNodesBlock : Bsp2dNodesBlockBase
     {
-        OpenTK.Vector3 plane;
-        short leftChild;
-        short rightChild;
-        internal  Bsp2dNodesblock(BinaryReader binaryReader)
+        public  Bsp2dNodesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class Bsp2dNodesBlockBase
+    {
+        internal OpenTK.Vector3 plane;
+        internal short leftChild;
+        internal short rightChild;
+        internal  Bsp2dNodesBlockBase(BinaryReader binaryReader)
         {
             this.plane = binaryReader.ReadVector3();
             this.leftChild = binaryReader.ReadInt16();
             this.rightChild = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

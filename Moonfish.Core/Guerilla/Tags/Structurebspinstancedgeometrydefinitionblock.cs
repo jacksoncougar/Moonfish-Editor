@@ -7,28 +7,37 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspInstancedGeometryDefinitionblock
+    [LayoutAttribute(Size = 200)]
+    public  partial class StructureBspInstancedGeometryDefinitionBlock : StructureBspInstancedGeometryDefinitionBlockBase
     {
-        StructureInstancedGeometryRenderinfostructBlock renderInfo;
-        int checksum;
-        OpenTK.Vector3 boundingSphereCenter;
-        float boundingSphereRadius;
-        GlobalCollisionBspStructblock collisionInfo;
-        CollisionBspPhysicsblock[] bspPhysics;
-        StructureBspLeafblock[] renderLeaves;
-        StructureBspsurfaceReferenceblock[] surfaceReferences;
-        internal  StructureBspInstancedGeometryDefinitionblock(BinaryReader binaryReader)
+        public  StructureBspInstancedGeometryDefinitionBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.renderInfo = new StructureInstancedGeometryRenderinfostructBlock(binaryReader);
+            
+        }
+    };
+    [LayoutAttribute(Size = 200)]
+    public class StructureBspInstancedGeometryDefinitionBlockBase
+    {
+        internal StructureInstancedGeometryRenderInfoStructBlock renderInfo;
+        internal int checksum;
+        internal OpenTK.Vector3 boundingSphereCenter;
+        internal float boundingSphereRadius;
+        internal GlobalCollisionBspStructBlock collisionInfo;
+        internal CollisionBspPhysicsBlock[] bspPhysics;
+        internal StructureBspLeafBlock[] renderLeaves;
+        internal StructureBspSurfaceReferenceBlock[] surfaceReferences;
+        internal  StructureBspInstancedGeometryDefinitionBlockBase(BinaryReader binaryReader)
+        {
+            this.renderInfo = new StructureInstancedGeometryRenderInfoStructBlock(binaryReader);
             this.checksum = binaryReader.ReadInt32();
             this.boundingSphereCenter = binaryReader.ReadVector3();
             this.boundingSphereRadius = binaryReader.ReadSingle();
-            this.collisionInfo = new GlobalCollisionBspStructblock(binaryReader);
-            this.bspPhysics = ReadCollisionBspPhysicsblockArray(binaryReader);
-            this.renderLeaves = ReadStructureBspLeafblockArray(binaryReader);
-            this.surfaceReferences = ReadStructureBspsurfaceReferenceblockArray(binaryReader);
+            this.collisionInfo = new GlobalCollisionBspStructBlock(binaryReader);
+            this.bspPhysics = ReadCollisionBspPhysicsBlockArray(binaryReader);
+            this.renderLeaves = ReadStructureBspLeafBlockArray(binaryReader);
+            this.surfaceReferences = ReadStructureBspSurfaceReferenceBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -42,47 +51,47 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        CollisionBspPhysicsblock[] ReadCollisionBspPhysicsblockArray(BinaryReader binaryReader)
+        internal  virtual CollisionBspPhysicsBlock[] ReadCollisionBspPhysicsBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(CollisionBspPhysicsblock));
+            var elementSize = Deserializer.SizeOf(typeof(CollisionBspPhysicsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new CollisionBspPhysicsblock[blamPointer.Count];
+            var array = new CollisionBspPhysicsBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new CollisionBspPhysicsblock(binaryReader);
+                    array[i] = new CollisionBspPhysicsBlock(binaryReader);
                 }
             }
             return array;
         }
-        StructureBspLeafblock[] ReadStructureBspLeafblockArray(BinaryReader binaryReader)
+        internal  virtual StructureBspLeafBlock[] ReadStructureBspLeafBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(StructureBspLeafblock));
+            var elementSize = Deserializer.SizeOf(typeof(StructureBspLeafBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new StructureBspLeafblock[blamPointer.Count];
+            var array = new StructureBspLeafBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new StructureBspLeafblock(binaryReader);
+                    array[i] = new StructureBspLeafBlock(binaryReader);
                 }
             }
             return array;
         }
-        StructureBspsurfaceReferenceblock[] ReadStructureBspsurfaceReferenceblockArray(BinaryReader binaryReader)
+        internal  virtual StructureBspSurfaceReferenceBlock[] ReadStructureBspSurfaceReferenceBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(StructureBspsurfaceReferenceblock));
+            var elementSize = Deserializer.SizeOf(typeof(StructureBspSurfaceReferenceBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new StructureBspsurfaceReferenceblock[blamPointer.Count];
+            var array = new StructureBspSurfaceReferenceBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new StructureBspsurfaceReferenceblock(binaryReader);
+                    array[i] = new StructureBspSurfaceReferenceBlock(binaryReader);
                 }
             }
             return array;

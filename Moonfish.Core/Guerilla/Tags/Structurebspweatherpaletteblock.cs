@@ -7,21 +7,30 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspWeatherPaletteblock
+    [LayoutAttribute(Size = 136)]
+    public  partial class StructureBspWeatherPaletteBlock : StructureBspWeatherPaletteBlockBase
     {
-        Moonfish.Tags.String32 name;
+        public  StructureBspWeatherPaletteBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 136)]
+    public class StructureBspWeatherPaletteBlockBase
+    {
+        internal Moonfish.Tags.String32 name;
         [TagReference("weat")]
-        Moonfish.Tags.TagReference weatherSystem;
-        byte[] invalidName_;
-        byte[] invalidName_0;
-        byte[] invalidName_1;
+        internal Moonfish.Tags.TagReference weatherSystem;
+        internal byte[] invalidName_;
+        internal byte[] invalidName_0;
+        internal byte[] invalidName_1;
         [TagReference("wind")]
-        Moonfish.Tags.TagReference wind;
-        OpenTK.Vector3 windDirection;
-        float windMagnitude;
-        byte[] invalidName_2;
-        Moonfish.Tags.String32 windScaleFunction;
-        internal  StructureBspWeatherPaletteblock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference wind;
+        internal OpenTK.Vector3 windDirection;
+        internal float windMagnitude;
+        internal byte[] invalidName_2;
+        internal Moonfish.Tags.String32 windScaleFunction;
+        internal  StructureBspWeatherPaletteBlockBase(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadString32();
             this.weatherSystem = binaryReader.ReadTagReference();
@@ -34,7 +43,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_2 = binaryReader.ReadBytes(4);
             this.windScaleFunction = binaryReader.ReadString32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

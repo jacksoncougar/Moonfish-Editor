@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorCellcollectionBlock
+    [LayoutAttribute(Size = 24)]
+    public  partial class DecoratorCellCollectionBlock : DecoratorCellCollectionBlockBase
     {
-        ChildIndices childIndices;
-        short childIndex;
-        internal  DecoratorCellcollectionBlock(BinaryReader binaryReader)
+        public  DecoratorCellCollectionBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class DecoratorCellCollectionBlockBase
+    {
+        internal ChildIndices childIndices;
+        internal short childIndex;
+        internal  DecoratorCellCollectionBlockBase(BinaryReader binaryReader)
         {
             this.childIndices = new ChildIndices(binaryReader);
             this.childIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,14 +39,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        class ChildIndices
+        public class ChildIndices
         {
-            short childIndex;
+            internal short childIndex;
             internal  ChildIndices(BinaryReader binaryReader)
             {
                 this.childIndex = binaryReader.ReadInt16();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];

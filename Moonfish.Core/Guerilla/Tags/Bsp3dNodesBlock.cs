@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class Bsp3dNodesblock
+    [LayoutAttribute(Size = 8)]
+    public  partial class Bsp3dNodesBlock : Bsp3dNodesBlockBase
     {
-        byte[] invalidName_;
-        internal  Bsp3dNodesblock(BinaryReader binaryReader)
+        public  Bsp3dNodesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class Bsp3dNodesBlockBase
+    {
+        internal byte[] invalidName_;
+        internal  Bsp3dNodesBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadBytes(8);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

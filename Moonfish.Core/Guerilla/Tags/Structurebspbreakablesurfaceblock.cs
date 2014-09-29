@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspbreakablesurfaceblock
+    [LayoutAttribute(Size = 24)]
+    public  partial class StructureBspBreakableSurfaceBlock : StructureBspBreakableSurfaceBlockBase
     {
-        Moonfish.Tags.ShortBlockIndex1 instancedGeometryInstance;
-        short breakableSurfaceIndex;
-        OpenTK.Vector3 centroid;
-        float radius;
-        int collisionSurfaceIndex;
-        internal  StructureBspbreakablesurfaceblock(BinaryReader binaryReader)
+        public  StructureBspBreakableSurfaceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class StructureBspBreakableSurfaceBlockBase
+    {
+        internal Moonfish.Tags.ShortBlockIndex1 instancedGeometryInstance;
+        internal short breakableSurfaceIndex;
+        internal OpenTK.Vector3 centroid;
+        internal float radius;
+        internal int collisionSurfaceIndex;
+        internal  StructureBspBreakableSurfaceBlockBase(BinaryReader binaryReader)
         {
             this.instancedGeometryInstance = binaryReader.ReadShortBlockIndex1();
             this.breakableSurfaceIndex = binaryReader.ReadInt16();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.radius = binaryReader.ReadSingle();
             this.collisionSurfaceIndex = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

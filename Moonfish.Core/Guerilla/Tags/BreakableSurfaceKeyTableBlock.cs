@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class BreakableSurfaceKeyTableblock
+    [LayoutAttribute(Size = 32)]
+    public  partial class BreakableSurfaceKeyTableBlock : BreakableSurfaceKeyTableBlockBase
     {
-        short instancedGeometryIndex;
-        short breakableSurfaceIndex;
-        int seedSurfaceIndex;
-        float x0;
-        float x1;
-        float y0;
-        float y1;
-        float z0;
-        float z1;
-        internal  BreakableSurfaceKeyTableblock(BinaryReader binaryReader)
+        public  BreakableSurfaceKeyTableBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 32)]
+    public class BreakableSurfaceKeyTableBlockBase
+    {
+        internal short instancedGeometryIndex;
+        internal short breakableSurfaceIndex;
+        internal int seedSurfaceIndex;
+        internal float x0;
+        internal float x1;
+        internal float y0;
+        internal float y1;
+        internal float z0;
+        internal float z1;
+        internal  BreakableSurfaceKeyTableBlockBase(BinaryReader binaryReader)
         {
             this.instancedGeometryIndex = binaryReader.ReadInt16();
             this.breakableSurfaceIndex = binaryReader.ReadInt16();
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             this.z0 = binaryReader.ReadSingle();
             this.z1 = binaryReader.ReadSingle();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

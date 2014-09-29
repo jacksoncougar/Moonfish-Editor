@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class SpriteVerticesBlock
+    [LayoutAttribute(Size = 47)]
+    public  partial class SpriteVerticesBlock : SpriteVerticesBlockBase
     {
-        OpenTK.Vector3 position;
-        OpenTK.Vector3 offset;
-        OpenTK.Vector3 axis;
-        OpenTK.Vector2 texcoord;
-        Moonfish.Tags.RGBColor color;
-        internal  SpriteVerticesBlock(BinaryReader binaryReader)
+        public  SpriteVerticesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 47)]
+    public class SpriteVerticesBlockBase
+    {
+        internal OpenTK.Vector3 position;
+        internal OpenTK.Vector3 offset;
+        internal OpenTK.Vector3 axis;
+        internal OpenTK.Vector2 texcoord;
+        internal Moonfish.Tags.RGBColor color;
+        internal  SpriteVerticesBlockBase(BinaryReader binaryReader)
         {
             this.position = binaryReader.ReadVector3();
             this.offset = binaryReader.ReadVector3();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.texcoord = binaryReader.ReadVector2();
             this.color = binaryReader.ReadRGBColor();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

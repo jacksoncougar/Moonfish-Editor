@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspClusterPortalblock
+    [LayoutAttribute(Size = 36)]
+    public  partial class StructureBspClusterPortalBlock : StructureBspClusterPortalBlockBase
     {
-        short backCluster;
-        short frontCluster;
-        int planeIndex;
-        OpenTK.Vector3 centroid;
-        float boundingRadius;
-        Flags flags;
-        StructureBspClusterPortalVertexblock[] vertices;
-        internal  StructureBspClusterPortalblock(BinaryReader binaryReader)
+        public  StructureBspClusterPortalBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 36)]
+    public class StructureBspClusterPortalBlockBase
+    {
+        internal short backCluster;
+        internal short frontCluster;
+        internal int planeIndex;
+        internal OpenTK.Vector3 centroid;
+        internal float boundingRadius;
+        internal Flags flags;
+        internal StructureBspClusterPortalVertexBlock[] vertices;
+        internal  StructureBspClusterPortalBlockBase(BinaryReader binaryReader)
         {
             this.backCluster = binaryReader.ReadInt16();
             this.frontCluster = binaryReader.ReadInt16();
@@ -24,9 +33,9 @@ namespace Moonfish.Guerilla.Tags
             this.centroid = binaryReader.ReadVector3();
             this.boundingRadius = binaryReader.ReadSingle();
             this.flags = (Flags)binaryReader.ReadInt32();
-            this.vertices = ReadStructureBspClusterPortalVertexblockArray(binaryReader);
+            this.vertices = ReadStructureBspClusterPortalVertexBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -40,17 +49,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        StructureBspClusterPortalVertexblock[] ReadStructureBspClusterPortalVertexblockArray(BinaryReader binaryReader)
+        internal  virtual StructureBspClusterPortalVertexBlock[] ReadStructureBspClusterPortalVertexBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(StructureBspClusterPortalVertexblock));
+            var elementSize = Deserializer.SizeOf(typeof(StructureBspClusterPortalVertexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new StructureBspClusterPortalVertexblock[blamPointer.Count];
+            var array = new StructureBspClusterPortalVertexBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new StructureBspClusterPortalVertexblock(binaryReader);
+                    array[i] = new StructureBspClusterPortalVertexBlock(binaryReader);
                 }
             }
             return array;

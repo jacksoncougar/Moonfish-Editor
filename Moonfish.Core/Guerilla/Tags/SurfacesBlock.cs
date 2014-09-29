@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class SurfacesBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class SurfacesBlock : SurfacesBlockBase
     {
-        short plane;
-        short firstEdge;
-        Flags flags;
-        byte breakableSurface;
-        short material;
-        internal  SurfacesBlock(BinaryReader binaryReader)
+        public  SurfacesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class SurfacesBlockBase
+    {
+        internal short plane;
+        internal short firstEdge;
+        internal Flags flags;
+        internal byte breakableSurface;
+        internal short material;
+        internal  SurfacesBlockBase(BinaryReader binaryReader)
         {
             this.plane = binaryReader.ReadInt16();
             this.firstEdge = binaryReader.ReadInt16();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.breakableSurface = binaryReader.ReadByte();
             this.material = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

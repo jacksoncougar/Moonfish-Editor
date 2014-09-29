@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintJumpBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class UserHintJumpBlock : UserHintJumpBlockBase
     {
-        Flags flags;
-        Moonfish.Tags.ShortBlockIndex1 geometryIndex;
-        ForceJumpHeight forceJumpHeight;
-        ControlFlags controlFlags;
-        internal  UserHintJumpBlock(BinaryReader binaryReader)
+        public  UserHintJumpBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class UserHintJumpBlockBase
+    {
+        internal Flags flags;
+        internal Moonfish.Tags.ShortBlockIndex1 geometryIndex;
+        internal ForceJumpHeight forceJumpHeight;
+        internal ControlFlags controlFlags;
+        internal  UserHintJumpBlockBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt16();
             this.geometryIndex = binaryReader.ReadShortBlockIndex1();
             this.forceJumpHeight = (ForceJumpHeight)binaryReader.ReadInt16();
             this.controlFlags = (ControlFlags)binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -42,13 +51,13 @@ namespace Moonfish.Guerilla.Tags
         internal enum ForceJumpHeight : short
         {
             NONE = 0,
-            Down = 0,
-            Step = 0,
-            Crouch = 0,
-            Stand = 0,
-            Storey = 0,
-            Tower = 0,
-            Infinite = 0,
+            Down = 1,
+            Step = 2,
+            Crouch = 3,
+            Stand = 4,
+            Storey = 5,
+            Tower = 6,
+            Infinite = 7,
         };
         internal enum ControlFlags : short
         {

@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructuresoundClusterPortalDesignators
+    [LayoutAttribute(Size = 2)]
+    public  partial class StructureSoundClusterPortalDesignators : StructureSoundClusterPortalDesignatorsBase
     {
-        short portalDesignator;
-        internal  StructuresoundClusterPortalDesignators(BinaryReader binaryReader)
+        public  StructureSoundClusterPortalDesignators(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class StructureSoundClusterPortalDesignatorsBase
+    {
+        internal short portalDesignator;
+        internal  StructureSoundClusterPortalDesignatorsBase(BinaryReader binaryReader)
         {
             this.portalDesignator = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

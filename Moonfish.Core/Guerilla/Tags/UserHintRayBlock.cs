@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintRayBlock
+    [LayoutAttribute(Size = 28)]
+    public  partial class UserHintRayBlock : UserHintRayBlockBase
     {
-        OpenTK.Vector3 point;
-        short referenceFrame;
-        byte[] invalidName_;
-        OpenTK.Vector3 vector;
-        internal  UserHintRayBlock(BinaryReader binaryReader)
+        public  UserHintRayBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 28)]
+    public class UserHintRayBlockBase
+    {
+        internal OpenTK.Vector3 point;
+        internal short referenceFrame;
+        internal byte[] invalidName_;
+        internal OpenTK.Vector3 vector;
+        internal  UserHintRayBlockBase(BinaryReader binaryReader)
         {
             this.point = binaryReader.ReadVector3();
             this.referenceFrame = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
             this.vector = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

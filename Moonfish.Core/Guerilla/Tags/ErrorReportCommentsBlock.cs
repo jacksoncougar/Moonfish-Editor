@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ErrorReportCommentsBlock
+    [LayoutAttribute(Size = 56)]
+    public  partial class ErrorReportCommentsBlock : ErrorReportCommentsBlockBase
     {
-        byte[] text;
-        OpenTK.Vector3 position;
-        NodeIndices nodeIndices;
-        byte nodeIndex;
-        internal  ErrorReportCommentsBlock(BinaryReader binaryReader)
+        public  ErrorReportCommentsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 56)]
+    public class ErrorReportCommentsBlockBase
+    {
+        internal byte[] text;
+        internal OpenTK.Vector3 position;
+        internal NodeIndices nodeIndices;
+        internal byte nodeIndex;
+        internal  ErrorReportCommentsBlockBase(BinaryReader binaryReader)
         {
             this.text = ReadData(binaryReader);
             this.position = binaryReader.ReadVector3();
             this.nodeIndices = new NodeIndices(binaryReader);
             this.nodeIndex = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -34,14 +43,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        class NodeIndices
+        public class NodeIndices
         {
-            byte nodeIndex;
+            internal byte nodeIndex;
             internal  NodeIndices(BinaryReader binaryReader)
             {
                 this.nodeIndex = binaryReader.ReadByte();
             }
-            byte[] ReadData(BinaryReader binaryReader)
+            internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
                 var blamPointer = binaryReader.ReadBlamPointer(1);
                 var data = new byte[blamPointer.Count];

@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class MapLeafFaceBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class MapLeafFaceBlock : MapLeafFaceBlockBase
     {
-        int nodeIndex;
-        MapLeafFaceVertexBlock[] vertices;
-        internal  MapLeafFaceBlock(BinaryReader binaryReader)
+        public  MapLeafFaceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class MapLeafFaceBlockBase
+    {
+        internal int nodeIndex;
+        internal MapLeafFaceVertexBlock[] vertices;
+        internal  MapLeafFaceBlockBase(BinaryReader binaryReader)
         {
             this.nodeIndex = binaryReader.ReadInt32();
             this.vertices = ReadMapLeafFaceVertexBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        MapLeafFaceVertexBlock[] ReadMapLeafFaceVertexBlockArray(BinaryReader binaryReader)
+        internal  virtual MapLeafFaceVertexBlock[] ReadMapLeafFaceVertexBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(MapLeafFaceVertexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

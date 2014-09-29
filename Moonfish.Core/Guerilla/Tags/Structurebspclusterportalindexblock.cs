@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspClusterPortalIndexblock
+    [LayoutAttribute(Size = 2)]
+    public  partial class StructureBspClusterPortalIndexBlock : StructureBspClusterPortalIndexBlockBase
     {
-        short portalIndex;
-        internal  StructureBspClusterPortalIndexblock(BinaryReader binaryReader)
+        public  StructureBspClusterPortalIndexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class StructureBspClusterPortalIndexBlockBase
+    {
+        internal short portalIndex;
+        internal  StructureBspClusterPortalIndexBlockBase(BinaryReader binaryReader)
         {
             this.portalIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

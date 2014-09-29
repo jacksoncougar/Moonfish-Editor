@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ScenarioObjectIdstructBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class ScenarioObjectIdStructBlock : ScenarioObjectIdStructBlockBase
     {
-        int uniqueID;
-        Moonfish.Tags.ShortBlockIndex1 originBSPIndex;
-        Type type;
-        Source source;
-        internal  ScenarioObjectIdstructBlock(BinaryReader binaryReader)
+        public  ScenarioObjectIdStructBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class ScenarioObjectIdStructBlockBase
+    {
+        internal int uniqueID;
+        internal Moonfish.Tags.ShortBlockIndex1 originBSPIndex;
+        internal Type type;
+        internal Source source;
+        internal  ScenarioObjectIdStructBlockBase(BinaryReader binaryReader)
         {
             this.uniqueID = binaryReader.ReadInt32();
             this.originBSPIndex = binaryReader.ReadShortBlockIndex1();
             this.type = (Type)binaryReader.ReadByte();
             this.source = (Source)binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -37,25 +46,25 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : byte
         {
             Biped = 0,
-            Vehicle = 0,
-            Weapon = 0,
-            Equipment = 0,
-            Garbage = 0,
-            Projectile = 0,
-            Scenery = 0,
-            Machine = 0,
-            Control = 0,
-            LightFixture = 0,
-            SoundScenery = 0,
-            Crate = 0,
-            Creature = 0,
+            Vehicle = 1,
+            Weapon = 2,
+            Equipment = 3,
+            Garbage = 4,
+            Projectile = 5,
+            Scenery = 6,
+            Machine = 7,
+            Control = 8,
+            LightFixture = 9,
+            SoundScenery = 10,
+            Crate = 11,
+            Creature = 12,
         };
         internal enum Source : byte
         {
             Structure = 0,
-            Editor = 0,
-            Dynamic = 0,
-            Legacy = 0,
+            Editor = 1,
+            Dynamic = 2,
+            Legacy = 3,
         };
     };
 }

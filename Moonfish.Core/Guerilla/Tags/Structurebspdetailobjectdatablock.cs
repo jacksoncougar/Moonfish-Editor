@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspDetailObjectdatablock
+    [LayoutAttribute(Size = 36)]
+    public  partial class StructureBspDetailObjectDataBlock : StructureBspDetailObjectDataBlockBase
     {
-        GlobalDetailObjectCellsBlock[] cells;
-        GlobalDetailObjectBlock[] instances;
-        GlobalDetailObjectCountsBlock[] counts;
-        GlobalZReferenceVectorBlock[] zReferenceVectors;
-        byte[] invalidName_;
-        byte[] invalidName_0;
-        internal  StructureBspDetailObjectdatablock(BinaryReader binaryReader)
+        public  StructureBspDetailObjectDataBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 36)]
+    public class StructureBspDetailObjectDataBlockBase
+    {
+        internal GlobalDetailObjectCellsBlock[] cells;
+        internal GlobalDetailObjectBlock[] instances;
+        internal GlobalDetailObjectCountsBlock[] counts;
+        internal GlobalZReferenceVectorBlock[] zReferenceVectors;
+        internal byte[] invalidName_;
+        internal byte[] invalidName_0;
+        internal  StructureBspDetailObjectDataBlockBase(BinaryReader binaryReader)
         {
             this.cells = ReadGlobalDetailObjectCellsBlockArray(binaryReader);
             this.instances = ReadGlobalDetailObjectBlockArray(binaryReader);
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_ = binaryReader.ReadBytes(1);
             this.invalidName_0 = binaryReader.ReadBytes(3);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -38,7 +47,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        GlobalDetailObjectCellsBlock[] ReadGlobalDetailObjectCellsBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalDetailObjectCellsBlock[] ReadGlobalDetailObjectCellsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(GlobalDetailObjectCellsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -53,7 +62,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        GlobalDetailObjectBlock[] ReadGlobalDetailObjectBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalDetailObjectBlock[] ReadGlobalDetailObjectBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(GlobalDetailObjectBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -68,7 +77,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        GlobalDetailObjectCountsBlock[] ReadGlobalDetailObjectCountsBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalDetailObjectCountsBlock[] ReadGlobalDetailObjectCountsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(GlobalDetailObjectCountsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -83,7 +92,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        GlobalZReferenceVectorBlock[] ReadGlobalZReferenceVectorBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalZReferenceVectorBlock[] ReadGlobalZReferenceVectorBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(GlobalZReferenceVectorBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

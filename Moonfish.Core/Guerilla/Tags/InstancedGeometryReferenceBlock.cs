@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class InstancedGeometryReferenceBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class InstancedGeometryReferenceBlock : InstancedGeometryReferenceBlockBase
     {
-        short pathfindingObjectIndex;
-        byte[] invalidName_;
-        internal  InstancedGeometryReferenceBlock(BinaryReader binaryReader)
+        public  InstancedGeometryReferenceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class InstancedGeometryReferenceBlockBase
+    {
+        internal short pathfindingObjectIndex;
+        internal byte[] invalidName_;
+        internal  InstancedGeometryReferenceBlockBase(BinaryReader binaryReader)
         {
             this.pathfindingObjectIndex = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

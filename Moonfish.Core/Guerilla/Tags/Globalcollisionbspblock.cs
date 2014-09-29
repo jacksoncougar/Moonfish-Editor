@@ -7,28 +7,37 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalCollisionBspblock
+    [LayoutAttribute(Size = 64)]
+    public  partial class GlobalCollisionBspBlock : GlobalCollisionBspBlockBase
     {
-        Bsp3dNodesblock[] bSP3DNodes;
-        PlanesBlock[] planes;
-        LeavesBlock[] leaves;
-        Bsp2dReferencesblock[] bSP2DReferences;
-        Bsp2dNodesblock[] bSP2DNodes;
-        SurfacesBlock[] surfaces;
-        EdgesBlock[] edges;
-        VerticesBlock[] vertices;
-        internal  GlobalCollisionBspblock(BinaryReader binaryReader)
+        public  GlobalCollisionBspBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.bSP3DNodes = ReadBsp3dNodesblockArray(binaryReader);
+            
+        }
+    };
+    [LayoutAttribute(Size = 64)]
+    public class GlobalCollisionBspBlockBase
+    {
+        internal Bsp3dNodesBlock[] bSP3DNodes;
+        internal PlanesBlock[] planes;
+        internal LeavesBlock[] leaves;
+        internal Bsp2dReferencesBlock[] bSP2DReferences;
+        internal Bsp2dNodesBlock[] bSP2DNodes;
+        internal SurfacesBlock[] surfaces;
+        internal EdgesBlock[] edges;
+        internal VerticesBlock[] vertices;
+        internal  GlobalCollisionBspBlockBase(BinaryReader binaryReader)
+        {
+            this.bSP3DNodes = ReadBsp3dNodesBlockArray(binaryReader);
             this.planes = ReadPlanesBlockArray(binaryReader);
             this.leaves = ReadLeavesBlockArray(binaryReader);
-            this.bSP2DReferences = ReadBsp2dReferencesblockArray(binaryReader);
-            this.bSP2DNodes = ReadBsp2dNodesblockArray(binaryReader);
+            this.bSP2DReferences = ReadBsp2dReferencesBlockArray(binaryReader);
+            this.bSP2DNodes = ReadBsp2dNodesBlockArray(binaryReader);
             this.surfaces = ReadSurfacesBlockArray(binaryReader);
             this.edges = ReadEdgesBlockArray(binaryReader);
             this.vertices = ReadVerticesBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -42,22 +51,22 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        Bsp3dNodesblock[] ReadBsp3dNodesblockArray(BinaryReader binaryReader)
+        internal  virtual Bsp3dNodesBlock[] ReadBsp3dNodesBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(Bsp3dNodesblock));
+            var elementSize = Deserializer.SizeOf(typeof(Bsp3dNodesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new Bsp3dNodesblock[blamPointer.Count];
+            var array = new Bsp3dNodesBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new Bsp3dNodesblock(binaryReader);
+                    array[i] = new Bsp3dNodesBlock(binaryReader);
                 }
             }
             return array;
         }
-        PlanesBlock[] ReadPlanesBlockArray(BinaryReader binaryReader)
+        internal  virtual PlanesBlock[] ReadPlanesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(PlanesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -72,7 +81,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        LeavesBlock[] ReadLeavesBlockArray(BinaryReader binaryReader)
+        internal  virtual LeavesBlock[] ReadLeavesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(LeavesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -87,37 +96,37 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        Bsp2dReferencesblock[] ReadBsp2dReferencesblockArray(BinaryReader binaryReader)
+        internal  virtual Bsp2dReferencesBlock[] ReadBsp2dReferencesBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(Bsp2dReferencesblock));
+            var elementSize = Deserializer.SizeOf(typeof(Bsp2dReferencesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new Bsp2dReferencesblock[blamPointer.Count];
+            var array = new Bsp2dReferencesBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new Bsp2dReferencesblock(binaryReader);
+                    array[i] = new Bsp2dReferencesBlock(binaryReader);
                 }
             }
             return array;
         }
-        Bsp2dNodesblock[] ReadBsp2dNodesblockArray(BinaryReader binaryReader)
+        internal  virtual Bsp2dNodesBlock[] ReadBsp2dNodesBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(Bsp2dNodesblock));
+            var elementSize = Deserializer.SizeOf(typeof(Bsp2dNodesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new Bsp2dNodesblock[blamPointer.Count];
+            var array = new Bsp2dNodesBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new Bsp2dNodesblock(binaryReader);
+                    array[i] = new Bsp2dNodesBlock(binaryReader);
                 }
             }
             return array;
         }
-        SurfacesBlock[] ReadSurfacesBlockArray(BinaryReader binaryReader)
+        internal  virtual SurfacesBlock[] ReadSurfacesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SurfacesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -132,7 +141,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        EdgesBlock[] ReadEdgesBlockArray(BinaryReader binaryReader)
+        internal  virtual EdgesBlock[] ReadEdgesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(EdgesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -147,7 +156,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        VerticesBlock[] ReadVerticesBlockArray(BinaryReader binaryReader)
+        internal  virtual VerticesBlock[] ReadVerticesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(VerticesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

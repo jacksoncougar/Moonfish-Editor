@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalDetailObjectBlock
+    [LayoutAttribute(Size = 6)]
+    public  partial class GlobalDetailObjectBlock : GlobalDetailObjectBlockBase
     {
-        byte invalidName_;
-        byte invalidName_0;
-        byte invalidName_1;
-        byte invalidName_2;
-        short invalidName_3;
-        internal  GlobalDetailObjectBlock(BinaryReader binaryReader)
+        public  GlobalDetailObjectBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 6)]
+    public class GlobalDetailObjectBlockBase
+    {
+        internal byte invalidName_;
+        internal byte invalidName_0;
+        internal byte invalidName_1;
+        internal byte invalidName_2;
+        internal short invalidName_3;
+        internal  GlobalDetailObjectBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadByte();
             this.invalidName_0 = binaryReader.ReadByte();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_2 = binaryReader.ReadByte();
             this.invalidName_3 = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

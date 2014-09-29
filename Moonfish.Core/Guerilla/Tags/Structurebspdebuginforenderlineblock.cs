@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspDebugInfoRenderLineblock
+    [LayoutAttribute(Size = 32)]
+    public  partial class StructureBspDebugInfoRenderLineBlock : StructureBspDebugInfoRenderLineBlockBase
     {
-        Type type;
-        short code;
-        short padThai;
-        byte[] invalidName_;
-        OpenTK.Vector3 point0;
-        OpenTK.Vector3 point1;
-        internal  StructureBspDebugInfoRenderLineblock(BinaryReader binaryReader)
+        public  StructureBspDebugInfoRenderLineBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 32)]
+    public class StructureBspDebugInfoRenderLineBlockBase
+    {
+        internal Type type;
+        internal short code;
+        internal short padThai;
+        internal byte[] invalidName_;
+        internal OpenTK.Vector3 point0;
+        internal OpenTK.Vector3 point1;
+        internal  StructureBspDebugInfoRenderLineBlockBase(BinaryReader binaryReader)
         {
             this.type = (Type)binaryReader.ReadInt16();
             this.code = binaryReader.ReadInt16();
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.point0 = binaryReader.ReadVector3();
             this.point1 = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -41,12 +50,12 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : short
         {
             FogPlaneBoundaryEdge = 0,
-            FogPlaneInternalEdge = 0,
-            FogZoneFloodfill = 0,
-            FogZoneClusterCentroid = 0,
-            FogZoneClusterGeometry = 0,
-            FogZonePortalCentroid = 0,
-            FogZonePortalGeometry = 0,
+            FogPlaneInternalEdge = 1,
+            FogZoneFloodfill = 2,
+            FogZoneClusterCentroid = 3,
+            FogZoneClusterGeometry = 4,
+            FogZonePortalCentroid = 5,
+            FogZonePortalGeometry = 6,
         };
     };
 }

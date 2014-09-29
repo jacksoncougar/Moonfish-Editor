@@ -7,30 +7,39 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometryBlockInfoStructblock
+    [LayoutAttribute(Size = 36)]
+    public  partial class GlobalGeometryBlockInfoStructBlock : GlobalGeometryBlockInfoStructBlockBase
     {
-        int blockOffset;
-        int blockSize;
-        int sectionDataSize;
-        int resourceDataSize;
-        GlobalgeometryBlockResourceblock[] resources;
-        byte[] invalidName_;
-        short ownerTagSectionOffset;
-        byte[] invalidName_0;
-        byte[] invalidName_1;
-        internal  GlobalgeometryBlockInfoStructblock(BinaryReader binaryReader)
+        public  GlobalGeometryBlockInfoStructBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 36)]
+    public class GlobalGeometryBlockInfoStructBlockBase
+    {
+        internal int blockOffset;
+        internal int blockSize;
+        internal int sectionDataSize;
+        internal int resourceDataSize;
+        internal GlobalGeometryBlockResourceBlock[] resources;
+        internal byte[] invalidName_;
+        internal short ownerTagSectionOffset;
+        internal byte[] invalidName_0;
+        internal byte[] invalidName_1;
+        internal  GlobalGeometryBlockInfoStructBlockBase(BinaryReader binaryReader)
         {
             this.blockOffset = binaryReader.ReadInt32();
             this.blockSize = binaryReader.ReadInt32();
             this.sectionDataSize = binaryReader.ReadInt32();
             this.resourceDataSize = binaryReader.ReadInt32();
-            this.resources = ReadGlobalgeometryBlockResourceblockArray(binaryReader);
+            this.resources = ReadGlobalGeometryBlockResourceBlockArray(binaryReader);
             this.invalidName_ = binaryReader.ReadBytes(4);
             this.ownerTagSectionOffset = binaryReader.ReadInt16();
             this.invalidName_0 = binaryReader.ReadBytes(2);
             this.invalidName_1 = binaryReader.ReadBytes(4);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -44,17 +53,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        GlobalgeometryBlockResourceblock[] ReadGlobalgeometryBlockResourceblockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometryBlockResourceBlock[] ReadGlobalGeometryBlockResourceBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometryBlockResourceblock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometryBlockResourceBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometryBlockResourceblock[blamPointer.Count];
+            var array = new GlobalGeometryBlockResourceBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometryBlockResourceblock(binaryReader);
+                    array[i] = new GlobalGeometryBlockResourceBlock(binaryReader);
                 }
             }
             return array;

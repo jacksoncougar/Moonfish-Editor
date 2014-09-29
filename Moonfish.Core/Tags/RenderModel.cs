@@ -1888,7 +1888,7 @@ namespace Moonfish.Tags
         [TagBlockField]
         public RenderModelSectionDataBlock[] sectionData;
         [TagStructField]
-        public GlobalGeometryBlockInfoStruct geometryBlockInfo;
+        public Moonfish.Guerilla.Tags.GlobalGeometryBlockInfoStructBlock geometryBlockInfo;
         public RenderModelSectionBlock()
         {
         }
@@ -1900,7 +1900,7 @@ namespace Moonfish.Tags
             this.rigidNode = binaryReader.ReadShortBlockIndex1();
             this.flags = (Flags)binaryReader.ReadInt16();
             this.sectionData = ReadSectiondata(binaryReader);
-            this.geometryBlockInfo = new GlobalGeometryBlockInfoStruct(binaryReader);
+            this.geometryBlockInfo = new Moonfish.Guerilla.Tags.GlobalGeometryBlockInfoStructBlock( binaryReader );
         }
         public virtual void Write(BinaryWriter binaryWriter)
         {
@@ -1910,7 +1910,7 @@ namespace Moonfish.Tags
             binaryWriter.Write(this.rigidNode);
             binaryWriter.Write((Int16)this.flags);
             WriteSectiondata(binaryWriter);
-            this.geometryBlockInfo.Write(binaryWriter);
+            //this.geometryBlockInfo.Write(binaryWriter);
         }
         public enum GlobalGeometryClassificationEnumDefinition : short
         {

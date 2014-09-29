@@ -7,17 +7,26 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class VisibilityStructBlock
+    [LayoutAttribute(Size = 40)]
+    public  partial class VisibilityStructBlock : VisibilityStructBlockBase
     {
-        short projectionCount;
-        short clusterCount;
-        short volumeCount;
-        byte[] invalidName_;
-        byte[] projections;
-        byte[] visibilityClusters;
-        byte[] clusterRemapTable;
-        byte[] visibilityVolumes;
-        internal  VisibilityStructBlock(BinaryReader binaryReader)
+        public  VisibilityStructBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 40)]
+    public class VisibilityStructBlockBase
+    {
+        internal short projectionCount;
+        internal short clusterCount;
+        internal short volumeCount;
+        internal byte[] invalidName_;
+        internal byte[] projections;
+        internal byte[] visibilityClusters;
+        internal byte[] clusterRemapTable;
+        internal byte[] visibilityVolumes;
+        internal  VisibilityStructBlockBase(BinaryReader binaryReader)
         {
             this.projectionCount = binaryReader.ReadInt16();
             this.clusterCount = binaryReader.ReadInt16();
@@ -28,7 +37,7 @@ namespace Moonfish.Guerilla.Tags
             this.clusterRemapTable = ReadData(binaryReader);
             this.visibilityVolumes = ReadData(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

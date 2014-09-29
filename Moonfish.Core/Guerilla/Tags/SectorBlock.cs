@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class SectorBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class SectorBlock : SectorBlockBase
     {
-        PathFindingSectorflags pathFindingSectorFlags;
-        short hintIndex;
-        int firstLinkDoNotSetManually;
-        internal  SectorBlock(BinaryReader binaryReader)
+        public  SectorBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.pathFindingSectorFlags = (PathFindingSectorflags)binaryReader.ReadInt16();
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class SectorBlockBase
+    {
+        internal PathFindingSectorFlags pathFindingSectorFlags;
+        internal short hintIndex;
+        internal int firstLinkDoNotSetManually;
+        internal  SectorBlockBase(BinaryReader binaryReader)
+        {
+            this.pathFindingSectorFlags = (PathFindingSectorFlags)binaryReader.ReadInt16();
             this.hintIndex = binaryReader.ReadInt16();
             this.firstLinkDoNotSetManually = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -32,7 +41,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        internal enum PathFindingSectorflags : short
+        internal enum PathFindingSectorFlags : short
         {
             SectorWalkable = 1,
             SectorBreakable = 2,

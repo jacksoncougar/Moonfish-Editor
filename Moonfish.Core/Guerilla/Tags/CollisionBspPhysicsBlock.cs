@@ -7,28 +7,37 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class CollisionBspPhysicsblock
+    [LayoutAttribute(Size = 112)]
+    public  partial class CollisionBspPhysicsBlock : CollisionBspPhysicsBlockBase
     {
-        byte[] invalidName_;
-        short size;
-        short count;
-        byte[] invalidName_0;
-        byte[] invalidName_1;
-        byte[] invalidName_2;
-        byte[] invalidName_3;
-        byte[] invalidName_4;
-        short size0;
-        short count0;
-        byte[] invalidName_5;
-        byte[] invalidName_6;
-        byte[] invalidName_7;
-        short size1;
-        short count1;
-        byte[] invalidName_8;
-        byte[] invalidName_9;
-        byte[] moppCodeData;
-        byte[] padding;
-        internal  CollisionBspPhysicsblock(BinaryReader binaryReader)
+        public  CollisionBspPhysicsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 112)]
+    public class CollisionBspPhysicsBlockBase
+    {
+        internal byte[] invalidName_;
+        internal short size;
+        internal short count;
+        internal byte[] invalidName_0;
+        internal byte[] invalidName_1;
+        internal byte[] invalidName_2;
+        internal byte[] invalidName_3;
+        internal byte[] invalidName_4;
+        internal short size0;
+        internal short count0;
+        internal byte[] invalidName_5;
+        internal byte[] invalidName_6;
+        internal byte[] invalidName_7;
+        internal short size1;
+        internal short count1;
+        internal byte[] invalidName_8;
+        internal byte[] invalidName_9;
+        internal byte[] moppCodeData;
+        internal byte[] padding;
+        internal  CollisionBspPhysicsBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadBytes(4);
             this.size = binaryReader.ReadInt16();
@@ -50,7 +59,7 @@ namespace Moonfish.Guerilla.Tags
             this.moppCodeData = ReadData(binaryReader);
             this.padding = binaryReader.ReadBytes(4);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

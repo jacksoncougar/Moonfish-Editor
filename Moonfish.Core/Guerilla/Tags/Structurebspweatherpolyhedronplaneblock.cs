@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspWeatherPolyhedronplaneblock
+    [LayoutAttribute(Size = 16)]
+    public  partial class StructureBspWeatherPolyhedronPlaneBlock : StructureBspWeatherPolyhedronPlaneBlockBase
     {
-        OpenTK.Vector4 plane;
-        internal  StructureBspWeatherPolyhedronplaneblock(BinaryReader binaryReader)
+        public  StructureBspWeatherPolyhedronPlaneBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class StructureBspWeatherPolyhedronPlaneBlockBase
+    {
+        internal OpenTK.Vector4 plane;
+        internal  StructureBspWeatherPolyhedronPlaneBlockBase(BinaryReader binaryReader)
         {
             this.plane = binaryReader.ReadVector4();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

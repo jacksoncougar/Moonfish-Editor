@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspFakeLightprobesblock
+    [LayoutAttribute(Size = 92)]
+    public  partial class StructureBspFakeLightprobesBlock : StructureBspFakeLightprobesBlockBase
     {
-        ScenarioObjectIdstructBlock objectIdentifier;
-        RenderLightingStructBlock renderLighting;
-        internal  StructureBspFakeLightprobesblock(BinaryReader binaryReader)
+        public  StructureBspFakeLightprobesBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.objectIdentifier = new ScenarioObjectIdstructBlock(binaryReader);
+            
+        }
+    };
+    [LayoutAttribute(Size = 92)]
+    public class StructureBspFakeLightprobesBlockBase
+    {
+        internal ScenarioObjectIdStructBlock objectIdentifier;
+        internal RenderLightingStructBlock renderLighting;
+        internal  StructureBspFakeLightprobesBlockBase(BinaryReader binaryReader)
+        {
+            this.objectIdentifier = new ScenarioObjectIdStructBlock(binaryReader);
             this.renderLighting = new RenderLightingStructBlock(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

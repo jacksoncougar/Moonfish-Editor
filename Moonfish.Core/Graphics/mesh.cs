@@ -21,8 +21,6 @@ namespace Moonfish.Graphics
     public class Mesh : IDisposable
     {
         public RenderModelSectionBlock sectionBlock;
-        public Moonfish.Tags.BSP.StructureInstancedGeometryRenderInfoStruct geometryBlock;
-        private Tags.BSP.StructureBspClusterBlock clusterBlock;
 
         int mVAO_id;
         List<int> mVBO_ids;
@@ -38,16 +36,6 @@ namespace Moonfish.Graphics
                     var sectionData = sectionBlock.sectionData;
                     return sectionData.Count() > 0 ? sectionData[0].section.parts : new GlobalGeometryPartBlockNew[0];
                 }
-                else if (geometryBlock != null)
-                {
-                    var sectionData = geometryBlock.renderData;
-                    return sectionData[0].section.parts;
-                }
-                else if (clusterBlock != null)
-                {
-                    var sectionData = clusterBlock.clusterData;
-                    return sectionData[0].section.parts;
-                }
                 else
                 {
                     return new GlobalGeometryPartBlockNew[0];
@@ -60,36 +48,6 @@ namespace Moonfish.Graphics
             if (sectionBlock.sectionData.Length == 0) sectionBlock.LoadSectionData();
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
-        }
-
-        public Mesh(Moonfish.Tags.BSP.StructureInstancedGeometryRenderInfoStruct geometryBlock)
-        {
-            geometryBlock.LoadSectionData();
-            this.geometryBlock = geometryBlock;
-            BufferMeshResources(geometryBlock.renderData);
-        }
-
-        public Mesh(Tags.BSP.StructureBspClusterBlock clusterBlock)
-        {
-            this.clusterBlock = clusterBlock;
-            clusterBlock.LoadSectionData();
-            BufferMeshResources(clusterBlock.clusterData);
-        }
-
-        private void BufferMeshResources(Tags.BSP.StructureBspClusterDataBlockNew[] structureBspClusterDataBlockNew)
-        {
-            if (structureBspClusterDataBlockNew.Length > 0)
-            {
-                mVBO_ids = new List<int>();
-                mVAO_id = GL.GenVertexArray();
-                GL.BindVertexArray(mVAO_id);
-
-                BufferElementArrayData(structureBspClusterDataBlockNew[0].section.stripIndices.Select(x => x.index).ToArray());
-
-                BufferVertexAttributeData(structureBspClusterDataBlockNew[0].section.vertexBuffers.Select(x => x.vertexBuffer).ToArray());
-
-                GL.BindVertexArray(0);
-            }
         }
 
         public IDisposable Bind()
@@ -242,6 +200,7 @@ namespace Moonfish.Graphics
 
         public void Draw()
         {
+            if( scenario == null ) return;
             using (program.Use())
             {
                 RenderPalette(scenario.sceneryPalette, scenario.scenery);
@@ -301,11 +260,6 @@ namespace Moonfish.Graphics
         internal void Clear()
         {
             this.objects.Clear();
-        }
-
-        internal void Load(Tags.BSP.StructureBspInstancedGeometryDefinitionBlock structureBspInstancedGeometryDefinitionBlock)
-        {
-            structureBspInstancedGeometryDefinitionBlock.renderInfo.LoadSectionData();
         }
     }
 

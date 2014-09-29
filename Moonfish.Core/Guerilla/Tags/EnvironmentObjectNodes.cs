@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class EnvironmentObjectNodes
+    [LayoutAttribute(Size = 4)]
+    public  partial class EnvironmentObjectNodes : EnvironmentObjectNodesBase
     {
-        short referenceFrameIndex;
-        byte projectionAxis;
-        ProjectionSign projectionSign;
-        internal  EnvironmentObjectNodes(BinaryReader binaryReader)
+        public  EnvironmentObjectNodes(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class EnvironmentObjectNodesBase
+    {
+        internal short referenceFrameIndex;
+        internal byte projectionAxis;
+        internal ProjectionSign projectionSign;
+        internal  EnvironmentObjectNodesBase(BinaryReader binaryReader)
         {
             this.referenceFrameIndex = binaryReader.ReadInt16();
             this.projectionAxis = binaryReader.ReadByte();
             this.projectionSign = (ProjectionSign)binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

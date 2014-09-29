@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class SurfaceFlagsBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class SurfaceFlagsBlock : SurfaceFlagsBlockBase
     {
-        int flags;
-        internal  SurfaceFlagsBlock(BinaryReader binaryReader)
+        public  SurfaceFlagsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class SurfaceFlagsBlockBase
+    {
+        internal int flags;
+        internal  SurfaceFlagsBlockBase(BinaryReader binaryReader)
         {
             this.flags = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

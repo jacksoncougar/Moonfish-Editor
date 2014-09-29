@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintClimbBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class UserHintClimbBlock : UserHintClimbBlockBase
     {
-        Flags flags;
-        Moonfish.Tags.ShortBlockIndex1 geometryIndex;
-        internal  UserHintClimbBlock(BinaryReader binaryReader)
+        public  UserHintClimbBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class UserHintClimbBlockBase
+    {
+        internal Flags flags;
+        internal Moonfish.Tags.ShortBlockIndex1 geometryIndex;
+        internal  UserHintClimbBlockBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt16();
             this.geometryIndex = binaryReader.ReadShortBlockIndex1();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

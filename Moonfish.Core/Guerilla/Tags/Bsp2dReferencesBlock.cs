@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class Bsp2dReferencesblock
+    [LayoutAttribute(Size = 4)]
+    public  partial class Bsp2dReferencesBlock : Bsp2dReferencesBlockBase
     {
-        short plane;
-        short bSP2DNode;
-        internal  Bsp2dReferencesblock(BinaryReader binaryReader)
+        public  Bsp2dReferencesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class Bsp2dReferencesBlockBase
+    {
+        internal short plane;
+        internal short bSP2DNode;
+        internal  Bsp2dReferencesBlockBase(BinaryReader binaryReader)
         {
             this.plane = binaryReader.ReadInt16();
             this.bSP2DNode = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

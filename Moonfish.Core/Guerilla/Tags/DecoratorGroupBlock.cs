@@ -7,22 +7,31 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorGroupBlock
+    [LayoutAttribute(Size = 24)]
+    public  partial class DecoratorGroupBlock : DecoratorGroupBlockBase
     {
-        Moonfish.Tags.ByteBlockIndex1 decoratorSet;
-        DecoratorType decoratorType;
-        byte shaderIndex;
-        byte compressedRadius;
-        short cluster;
-        Moonfish.Tags.ShortBlockIndex1 cacheBlock;
-        short decoratorStartIndex;
-        short decoratorCount;
-        short vertexStartOffset;
-        short vertexCount;
-        short indexStartOffset;
-        short indexCount;
-        int compressedBoundingCenter;
-        internal  DecoratorGroupBlock(BinaryReader binaryReader)
+        public  DecoratorGroupBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class DecoratorGroupBlockBase
+    {
+        internal Moonfish.Tags.ByteBlockIndex1 decoratorSet;
+        internal DecoratorType decoratorType;
+        internal byte shaderIndex;
+        internal byte compressedRadius;
+        internal short cluster;
+        internal Moonfish.Tags.ShortBlockIndex1 cacheBlock;
+        internal short decoratorStartIndex;
+        internal short decoratorCount;
+        internal short vertexStartOffset;
+        internal short vertexCount;
+        internal short indexStartOffset;
+        internal short indexCount;
+        internal int compressedBoundingCenter;
+        internal  DecoratorGroupBlockBase(BinaryReader binaryReader)
         {
             this.decoratorSet = binaryReader.ReadByteBlockIndex1();
             this.decoratorType = (DecoratorType)binaryReader.ReadByte();
@@ -38,7 +47,7 @@ namespace Moonfish.Guerilla.Tags
             this.indexCount = binaryReader.ReadInt16();
             this.compressedBoundingCenter = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -55,11 +64,11 @@ namespace Moonfish.Guerilla.Tags
         internal enum DecoratorType : byte
         {
             Model = 0,
-            FloatingDecal = 0,
-            ProjectedDecal = 0,
-            ScreenFacingQuad = 0,
-            AxisRotatingQuad = 0,
-            CrossQuad = 0,
+            FloatingDecal = 1,
+            ProjectedDecal = 2,
+            ScreenFacingQuad = 3,
+            AxisRotatingQuad = 4,
+            CrossQuad = 5,
         };
     };
 }

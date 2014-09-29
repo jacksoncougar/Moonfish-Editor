@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintBlock
+    [LayoutAttribute(Size = 72)]
+    public  partial class UserHintBlock : UserHintBlockBase
     {
-        UserHintPointBlock[] pointGeometry;
-        UserHintRayBlock[] rayGeometry;
-        UserHintLineSegmentBlock[] lineSegmentGeometry;
-        UserHintParallelogramBlock[] parallelogramGeometry;
-        UserHintPolygonBlock[] polygonGeometry;
-        UserHintJumpBlock[] jumpHints;
-        UserHintClimbBlock[] climbHints;
-        UserHintWellBlock[] wellHints;
-        UserHintFlightBlock[] flightHints;
-        internal  UserHintBlock(BinaryReader binaryReader)
+        public  UserHintBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 72)]
+    public class UserHintBlockBase
+    {
+        internal UserHintPointBlock[] pointGeometry;
+        internal UserHintRayBlock[] rayGeometry;
+        internal UserHintLineSegmentBlock[] lineSegmentGeometry;
+        internal UserHintParallelogramBlock[] parallelogramGeometry;
+        internal UserHintPolygonBlock[] polygonGeometry;
+        internal UserHintJumpBlock[] jumpHints;
+        internal UserHintClimbBlock[] climbHints;
+        internal UserHintWellBlock[] wellHints;
+        internal UserHintFlightBlock[] flightHints;
+        internal  UserHintBlockBase(BinaryReader binaryReader)
         {
             this.pointGeometry = ReadUserHintPointBlockArray(binaryReader);
             this.rayGeometry = ReadUserHintRayBlockArray(binaryReader);
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             this.wellHints = ReadUserHintWellBlockArray(binaryReader);
             this.flightHints = ReadUserHintFlightBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -44,7 +53,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        UserHintPointBlock[] ReadUserHintPointBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintPointBlock[] ReadUserHintPointBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintPointBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -59,7 +68,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintRayBlock[] ReadUserHintRayBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintRayBlock[] ReadUserHintRayBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintRayBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -74,7 +83,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintLineSegmentBlock[] ReadUserHintLineSegmentBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintLineSegmentBlock[] ReadUserHintLineSegmentBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintLineSegmentBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -89,7 +98,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintParallelogramBlock[] ReadUserHintParallelogramBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintParallelogramBlock[] ReadUserHintParallelogramBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintParallelogramBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -104,7 +113,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintPolygonBlock[] ReadUserHintPolygonBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintPolygonBlock[] ReadUserHintPolygonBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintPolygonBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -119,7 +128,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintJumpBlock[] ReadUserHintJumpBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintJumpBlock[] ReadUserHintJumpBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintJumpBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -134,7 +143,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintClimbBlock[] ReadUserHintClimbBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintClimbBlock[] ReadUserHintClimbBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintClimbBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -149,7 +158,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintWellBlock[] ReadUserHintWellBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintWellBlock[] ReadUserHintWellBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintWellBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -164,7 +173,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintFlightBlock[] ReadUserHintFlightBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintFlightBlock[] ReadUserHintFlightBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintFlightBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

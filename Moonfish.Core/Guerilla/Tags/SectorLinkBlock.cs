@@ -7,17 +7,26 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class SectorLinkBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class SectorLinkBlock : SectorLinkBlockBase
     {
-        short vertex1;
-        short vertex2;
-        LinkFlags linkFlags;
-        short hintIndex;
-        short forwardLink;
-        short reverseLink;
-        short leftSector;
-        short rightSector;
-        internal  SectorLinkBlock(BinaryReader binaryReader)
+        public  SectorLinkBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class SectorLinkBlockBase
+    {
+        internal short vertex1;
+        internal short vertex2;
+        internal LinkFlags linkFlags;
+        internal short hintIndex;
+        internal short forwardLink;
+        internal short reverseLink;
+        internal short leftSector;
+        internal short rightSector;
+        internal  SectorLinkBlockBase(BinaryReader binaryReader)
         {
             this.vertex1 = binaryReader.ReadInt16();
             this.vertex2 = binaryReader.ReadInt16();
@@ -28,7 +37,7 @@ namespace Moonfish.Guerilla.Tags
             this.leftSector = binaryReader.ReadInt16();
             this.rightSector = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

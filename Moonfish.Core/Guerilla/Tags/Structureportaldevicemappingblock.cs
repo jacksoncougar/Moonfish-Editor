@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructurePortalDeviceMappingBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class StructurePortalDeviceMappingBlock : StructurePortalDeviceMappingBlockBase
     {
-        StructureDevicePortalAssociationBlock[] devicePortalAssociations;
-        GamePortalToportalMappingBlock[] gamePortalToPortalMap;
-        internal  StructurePortalDeviceMappingBlock(BinaryReader binaryReader)
+        public  StructurePortalDeviceMappingBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class StructurePortalDeviceMappingBlockBase
+    {
+        internal StructureDevicePortalAssociationBlock[] devicePortalAssociations;
+        internal GamePortalToPortalMappingBlock[] gamePortalToPortalMap;
+        internal  StructurePortalDeviceMappingBlockBase(BinaryReader binaryReader)
         {
             this.devicePortalAssociations = ReadStructureDevicePortalAssociationBlockArray(binaryReader);
-            this.gamePortalToPortalMap = ReadGamePortalToportalMappingBlockArray(binaryReader);
+            this.gamePortalToPortalMap = ReadGamePortalToPortalMappingBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        StructureDevicePortalAssociationBlock[] ReadStructureDevicePortalAssociationBlockArray(BinaryReader binaryReader)
+        internal  virtual StructureDevicePortalAssociationBlock[] ReadStructureDevicePortalAssociationBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(StructureDevicePortalAssociationBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -45,17 +54,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        GamePortalToportalMappingBlock[] ReadGamePortalToportalMappingBlockArray(BinaryReader binaryReader)
+        internal  virtual GamePortalToPortalMappingBlock[] ReadGamePortalToPortalMappingBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GamePortalToportalMappingBlock));
+            var elementSize = Deserializer.SizeOf(typeof(GamePortalToPortalMappingBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GamePortalToportalMappingBlock[blamPointer.Count];
+            var array = new GamePortalToPortalMappingBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GamePortalToportalMappingBlock(binaryReader);
+                    array[i] = new GamePortalToPortalMappingBlock(binaryReader);
                 }
             }
             return array;

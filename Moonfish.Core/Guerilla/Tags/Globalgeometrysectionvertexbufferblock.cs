@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometrySectionVertexBufferblock
+    [LayoutAttribute(Size = 32)]
+    public  partial class GlobalGeometrySectionVertexBufferBlock : GlobalGeometrySectionVertexBufferBlockBase
     {
-        Moonfish.Tags.VertexBuffer vertexBuffer;
-        internal  GlobalgeometrySectionVertexBufferblock(BinaryReader binaryReader)
+        public  GlobalGeometrySectionVertexBufferBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 32)]
+    public class GlobalGeometrySectionVertexBufferBlockBase
+    {
+        internal Moonfish.Tags.VertexBuffer vertexBuffer;
+        internal  GlobalGeometrySectionVertexBufferBlockBase(BinaryReader binaryReader)
         {
             this.vertexBuffer = binaryReader.ReadVertexBuffer();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

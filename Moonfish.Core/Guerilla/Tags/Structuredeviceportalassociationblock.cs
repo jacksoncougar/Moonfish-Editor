@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureDevicePortalAssociationBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class StructureDevicePortalAssociationBlock : StructureDevicePortalAssociationBlockBase
     {
-        ScenarioObjectIdstructBlock deviceId;
-        short firstGamePortalIndex;
-        short gamePortalCount;
-        internal  StructureDevicePortalAssociationBlock(BinaryReader binaryReader)
+        public  StructureDevicePortalAssociationBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.deviceId = new ScenarioObjectIdstructBlock(binaryReader);
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class StructureDevicePortalAssociationBlockBase
+    {
+        internal ScenarioObjectIdStructBlock deviceId;
+        internal short firstGamePortalIndex;
+        internal short gamePortalCount;
+        internal  StructureDevicePortalAssociationBlockBase(BinaryReader binaryReader)
+        {
+            this.deviceId = new ScenarioObjectIdStructBlock(binaryReader);
             this.firstGamePortalIndex = binaryReader.ReadInt16();
             this.gamePortalCount = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

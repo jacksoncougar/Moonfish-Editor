@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspsurfaceReferenceblock
+    [LayoutAttribute(Size = 8)]
+    public  partial class StructureBspSurfaceReferenceBlock : StructureBspSurfaceReferenceBlockBase
     {
-        short stripIndex;
-        short lightmapTriangleIndex;
-        int bSPNodeIndex;
-        internal  StructureBspsurfaceReferenceblock(BinaryReader binaryReader)
+        public  StructureBspSurfaceReferenceBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class StructureBspSurfaceReferenceBlockBase
+    {
+        internal short stripIndex;
+        internal short lightmapTriangleIndex;
+        internal int bSPNodeIndex;
+        internal  StructureBspSurfaceReferenceBlockBase(BinaryReader binaryReader)
         {
             this.stripIndex = binaryReader.ReadInt16();
             this.lightmapTriangleIndex = binaryReader.ReadInt16();
             this.bSPNodeIndex = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

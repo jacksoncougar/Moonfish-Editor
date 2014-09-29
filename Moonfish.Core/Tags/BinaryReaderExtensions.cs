@@ -84,7 +84,38 @@ namespace Moonfish.Tags
         {
             public static BlamPointer ReadBlamPointer(this BinaryReader binaryReader, int elementSize)
             {
-                return new BlamPointer(binaryReader.ReadInt32(), binaryReader.ReadInt32(), elementSize);
+                var resourceStream = binaryReader.BaseStream as Moonfish.ResourceManagement.ResourceStream;
+                if( resourceStream == null )
+                {
+                    return new BlamPointer( binaryReader.ReadInt32( ), binaryReader.ReadInt32( ), elementSize );
+                }
+                else
+                {
+                    var offset = resourceStream.Position;
+                    binaryReader.BaseStream.Seek( 8, SeekOrigin.Current );
+                    var resource = resourceStream.Resources.Where( x => x.primaryLocator == offset && x.type != Guerilla.Tags.GlobalGeometryBlockResourceBlockBase.Type.VertexBuffer ).SingleOrDefault( );
+                    if( resource == null )
+                    {
+                        return new BlamPointer( 0, 0, elementSize );
+                    }
+                    else
+                    {
+                        if( resource.type == Guerilla.Tags.GlobalGeometryBlockResourceBlockBase.Type.TagData )
+                        {
+                            var count = resource.resourceDataSize;
+                            var address = resource.resourceDataOffset + resourceStream.HeaderSize;
+                            var size = 1;
+                            return new BlamPointer( count, address, elementSize );
+                        }
+                        else
+                        {
+                            var count = resource.resourceDataSize / resource.secondaryLocator;
+                            var address = resource.resourceDataOffset + resourceStream.HeaderSize;
+                            var size = resource.secondaryLocator;
+                            return new BlamPointer( count, address, elementSize );
+                        }
+                    }
+                }
             }
         }
     }

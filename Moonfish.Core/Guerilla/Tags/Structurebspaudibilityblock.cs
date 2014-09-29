@@ -7,26 +7,35 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspAudibilityblock
+    [LayoutAttribute(Size = 52)]
+    public  partial class StructureBspAudibilityBlock : StructureBspAudibilityBlockBase
     {
-        int doorPortalCount;
-        Moonfish.Model.Range clusterDistanceBounds;
-        DoorEncodedPasBlock[] encodedDoorPas;
-        ClusterDoorPortalEncodedpasBlock[] clusterDoorPortalEncodedPas;
-        AiDeafeningEncodedPasBlock[] aiDeafeningPas;
-        EncodedClusterDistancesBlock[] clusterDistances;
-        OccluderToMachineDoormapping[] machineDoorMapping;
-        internal  StructureBspAudibilityblock(BinaryReader binaryReader)
+        public  StructureBspAudibilityBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 52)]
+    public class StructureBspAudibilityBlockBase
+    {
+        internal int doorPortalCount;
+        internal Moonfish.Model.Range clusterDistanceBounds;
+        internal DoorEncodedPasBlock[] encodedDoorPas;
+        internal ClusterDoorPortalEncodedPasBlock[] clusterDoorPortalEncodedPas;
+        internal AiDeafeningEncodedPasBlock[] aiDeafeningPas;
+        internal EncodedClusterDistancesBlock[] clusterDistances;
+        internal OccluderToMachineDoorMapping[] machineDoorMapping;
+        internal  StructureBspAudibilityBlockBase(BinaryReader binaryReader)
         {
             this.doorPortalCount = binaryReader.ReadInt32();
             this.clusterDistanceBounds = binaryReader.ReadRange();
             this.encodedDoorPas = ReadDoorEncodedPasBlockArray(binaryReader);
-            this.clusterDoorPortalEncodedPas = ReadClusterDoorPortalEncodedpasBlockArray(binaryReader);
+            this.clusterDoorPortalEncodedPas = ReadClusterDoorPortalEncodedPasBlockArray(binaryReader);
             this.aiDeafeningPas = ReadAiDeafeningEncodedPasBlockArray(binaryReader);
             this.clusterDistances = ReadEncodedClusterDistancesBlockArray(binaryReader);
-            this.machineDoorMapping = ReadOccluderToMachineDoormappingArray(binaryReader);
+            this.machineDoorMapping = ReadOccluderToMachineDoorMappingArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -40,7 +49,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        DoorEncodedPasBlock[] ReadDoorEncodedPasBlockArray(BinaryReader binaryReader)
+        internal  virtual DoorEncodedPasBlock[] ReadDoorEncodedPasBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(DoorEncodedPasBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -55,22 +64,22 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ClusterDoorPortalEncodedpasBlock[] ReadClusterDoorPortalEncodedpasBlockArray(BinaryReader binaryReader)
+        internal  virtual ClusterDoorPortalEncodedPasBlock[] ReadClusterDoorPortalEncodedPasBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(ClusterDoorPortalEncodedpasBlock));
+            var elementSize = Deserializer.SizeOf(typeof(ClusterDoorPortalEncodedPasBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new ClusterDoorPortalEncodedpasBlock[blamPointer.Count];
+            var array = new ClusterDoorPortalEncodedPasBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new ClusterDoorPortalEncodedpasBlock(binaryReader);
+                    array[i] = new ClusterDoorPortalEncodedPasBlock(binaryReader);
                 }
             }
             return array;
         }
-        AiDeafeningEncodedPasBlock[] ReadAiDeafeningEncodedPasBlockArray(BinaryReader binaryReader)
+        internal  virtual AiDeafeningEncodedPasBlock[] ReadAiDeafeningEncodedPasBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(AiDeafeningEncodedPasBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -85,7 +94,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        EncodedClusterDistancesBlock[] ReadEncodedClusterDistancesBlockArray(BinaryReader binaryReader)
+        internal  virtual EncodedClusterDistancesBlock[] ReadEncodedClusterDistancesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(EncodedClusterDistancesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -100,17 +109,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        OccluderToMachineDoormapping[] ReadOccluderToMachineDoormappingArray(BinaryReader binaryReader)
+        internal  virtual OccluderToMachineDoorMapping[] ReadOccluderToMachineDoorMappingArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(OccluderToMachineDoormapping));
+            var elementSize = Deserializer.SizeOf(typeof(OccluderToMachineDoorMapping));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new OccluderToMachineDoormapping[blamPointer.Count];
+            var array = new OccluderToMachineDoorMapping[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new OccluderToMachineDoormapping(binaryReader);
+                    array[i] = new OccluderToMachineDoorMapping(binaryReader);
                 }
             }
             return array;

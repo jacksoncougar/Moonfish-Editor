@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspEnvironmentObjectPaletteblock
+    [LayoutAttribute(Size = 20)]
+    public  partial class StructureBspEnvironmentObjectPaletteBlock : StructureBspEnvironmentObjectPaletteBlockBase
+    {
+        public  StructureBspEnvironmentObjectPaletteBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 20)]
+    public class StructureBspEnvironmentObjectPaletteBlockBase
     {
         [TagReference("scen")]
-        Moonfish.Tags.TagReference definition;
+        internal Moonfish.Tags.TagReference definition;
         [TagReference("mode")]
-        Moonfish.Tags.TagReference model;
-        byte[] invalidName_;
-        internal  StructureBspEnvironmentObjectPaletteblock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference model;
+        internal byte[] invalidName_;
+        internal  StructureBspEnvironmentObjectPaletteBlockBase(BinaryReader binaryReader)
         {
             this.definition = binaryReader.ReadTagReference();
             this.model = binaryReader.ReadTagReference();
             this.invalidName_ = binaryReader.ReadBytes(4);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

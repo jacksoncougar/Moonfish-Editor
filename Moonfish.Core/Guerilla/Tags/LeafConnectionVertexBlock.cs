@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class LeafConnectionVertexBlock
+    [LayoutAttribute(Size = 12)]
+    public  partial class LeafConnectionVertexBlock : LeafConnectionVertexBlockBase
     {
-        OpenTK.Vector3 vertex;
-        internal  LeafConnectionVertexBlock(BinaryReader binaryReader)
+        public  LeafConnectionVertexBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 12)]
+    public class LeafConnectionVertexBlockBase
+    {
+        internal OpenTK.Vector3 vertex;
+        internal  LeafConnectionVertexBlockBase(BinaryReader binaryReader)
         {
             this.vertex = binaryReader.ReadVector3();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

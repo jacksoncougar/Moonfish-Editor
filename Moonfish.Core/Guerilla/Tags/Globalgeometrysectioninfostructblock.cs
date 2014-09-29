@@ -7,28 +7,37 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometrySectionInfostructBlock
+    [LayoutAttribute(Size = 40)]
+    public  partial class GlobalGeometrySectionInfoStructBlock : GlobalGeometrySectionInfoStructBlockBase
     {
-        short totalVertexCount;
-        short totalTriangleCount;
-        short totalPartCount;
-        short shadowCastingTriangleCount;
-        short shadowCastingPartCount;
-        short opaquePointCount;
-        short opaqueVertexCount;
-        short opaquePartCount;
-        byte opaqueMaxNodesVertex;
-        byte transparentMaxNodesVertex;
-        short shadowCastingRigidTriangleCount;
-        GeometryClassification geometryClassification;
-        GeometryCompressionFlags geometryCompressionFlags;
-        GlobalgeometryCompressionInfoBlock[] eMPTYSTRING;
-        byte hardwareNodeCount;
-        byte nodeMapSize;
-        short softwarePlaneCount;
-        short totalSubpartCont;
-        SectionLightingFlags sectionLightingFlags;
-        internal  GlobalgeometrySectionInfostructBlock(BinaryReader binaryReader)
+        public  GlobalGeometrySectionInfoStructBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 40)]
+    public class GlobalGeometrySectionInfoStructBlockBase
+    {
+        internal short totalVertexCount;
+        internal short totalTriangleCount;
+        internal short totalPartCount;
+        internal short shadowCastingTriangleCount;
+        internal short shadowCastingPartCount;
+        internal short opaquePointCount;
+        internal short opaqueVertexCount;
+        internal short opaquePartCount;
+        internal byte opaqueMaxNodesVertex;
+        internal byte transparentMaxNodesVertex;
+        internal short shadowCastingRigidTriangleCount;
+        internal GeometryClassification geometryClassification;
+        internal GeometryCompressionFlags geometryCompressionFlags;
+        internal GlobalGeometryCompressionInfoBlock[] eMPTYSTRING;
+        internal byte hardwareNodeCount;
+        internal byte nodeMapSize;
+        internal short softwarePlaneCount;
+        internal short totalSubpartCont;
+        internal SectionLightingFlags sectionLightingFlags;
+        internal  GlobalGeometrySectionInfoStructBlockBase(BinaryReader binaryReader)
         {
             this.totalVertexCount = binaryReader.ReadInt16();
             this.totalTriangleCount = binaryReader.ReadInt16();
@@ -43,14 +52,14 @@ namespace Moonfish.Guerilla.Tags
             this.shadowCastingRigidTriangleCount = binaryReader.ReadInt16();
             this.geometryClassification = (GeometryClassification)binaryReader.ReadInt16();
             this.geometryCompressionFlags = (GeometryCompressionFlags)binaryReader.ReadInt16();
-            this.eMPTYSTRING = ReadGlobalgeometryCompressionInfoBlockArray(binaryReader);
+            this.eMPTYSTRING = ReadGlobalGeometryCompressionInfoBlockArray(binaryReader);
             this.hardwareNodeCount = binaryReader.ReadByte();
             this.nodeMapSize = binaryReader.ReadByte();
             this.softwarePlaneCount = binaryReader.ReadInt16();
             this.totalSubpartCont = binaryReader.ReadInt16();
             this.sectionLightingFlags = (SectionLightingFlags)binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -64,17 +73,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        GlobalgeometryCompressionInfoBlock[] ReadGlobalgeometryCompressionInfoBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometryCompressionInfoBlock[] ReadGlobalGeometryCompressionInfoBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometryCompressionInfoBlock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometryCompressionInfoBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometryCompressionInfoBlock[blamPointer.Count];
+            var array = new GlobalGeometryCompressionInfoBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometryCompressionInfoBlock(binaryReader);
+                    array[i] = new GlobalGeometryCompressionInfoBlock(binaryReader);
                 }
             }
             return array;
@@ -82,10 +91,10 @@ namespace Moonfish.Guerilla.Tags
         internal enum GeometryClassification : short
         {
             Worldspace = 0,
-            Rigid = 0,
-            RigidBoned = 0,
-            Skinned = 0,
-            UnsupportedReimport = 0,
+            Rigid = 1,
+            RigidBoned = 2,
+            Skinned = 3,
+            UnsupportedReimport = 4,
         };
         internal enum GeometryCompressionFlags : short
         {

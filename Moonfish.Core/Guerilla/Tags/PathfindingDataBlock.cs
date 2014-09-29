@@ -7,26 +7,35 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class PathfindingDataBlock
+    [LayoutAttribute(Size = 116)]
+    public  partial class PathfindingDataBlock : PathfindingDataBlockBase
     {
-        SectorBlock[] sectors;
-        SectorLinkBlock[] links;
-        RefBlock[] refs;
-        SectorBsp2dNodesblock[] bsp2dNodes;
-        SurfaceFlagsBlock[] surfaceFlags;
-        SectorVertexBlock[] vertices;
-        EnvironmentObjectRefs[] objectRefs;
-        PathfindingHintsBlock[] pathfindingHints;
-        InstancedGeometryReferenceBlock[] instancedGeometryRefs;
-        int structureChecksum;
-        byte[] invalidName_;
-        UserHintBlock[] userPlacedHints;
-        internal  PathfindingDataBlock(BinaryReader binaryReader)
+        public  PathfindingDataBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 116)]
+    public class PathfindingDataBlockBase
+    {
+        internal SectorBlock[] sectors;
+        internal SectorLinkBlock[] links;
+        internal RefBlock[] refs;
+        internal SectorBsp2dNodesBlock[] bsp2dNodes;
+        internal SurfaceFlagsBlock[] surfaceFlags;
+        internal SectorVertexBlock[] vertices;
+        internal EnvironmentObjectRefs[] objectRefs;
+        internal PathfindingHintsBlock[] pathfindingHints;
+        internal InstancedGeometryReferenceBlock[] instancedGeometryRefs;
+        internal int structureChecksum;
+        internal byte[] invalidName_;
+        internal UserHintBlock[] userPlacedHints;
+        internal  PathfindingDataBlockBase(BinaryReader binaryReader)
         {
             this.sectors = ReadSectorBlockArray(binaryReader);
             this.links = ReadSectorLinkBlockArray(binaryReader);
             this.refs = ReadRefBlockArray(binaryReader);
-            this.bsp2dNodes = ReadSectorBsp2dNodesblockArray(binaryReader);
+            this.bsp2dNodes = ReadSectorBsp2dNodesBlockArray(binaryReader);
             this.surfaceFlags = ReadSurfaceFlagsBlockArray(binaryReader);
             this.vertices = ReadSectorVertexBlockArray(binaryReader);
             this.objectRefs = ReadEnvironmentObjectRefsArray(binaryReader);
@@ -36,7 +45,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_ = binaryReader.ReadBytes(32);
             this.userPlacedHints = ReadUserHintBlockArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -50,7 +59,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        SectorBlock[] ReadSectorBlockArray(BinaryReader binaryReader)
+        internal  virtual SectorBlock[] ReadSectorBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SectorBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -65,7 +74,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        SectorLinkBlock[] ReadSectorLinkBlockArray(BinaryReader binaryReader)
+        internal  virtual SectorLinkBlock[] ReadSectorLinkBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SectorLinkBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -80,7 +89,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        RefBlock[] ReadRefBlockArray(BinaryReader binaryReader)
+        internal  virtual RefBlock[] ReadRefBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(RefBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -95,22 +104,22 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        SectorBsp2dNodesblock[] ReadSectorBsp2dNodesblockArray(BinaryReader binaryReader)
+        internal  virtual SectorBsp2dNodesBlock[] ReadSectorBsp2dNodesBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(SectorBsp2dNodesblock));
+            var elementSize = Deserializer.SizeOf(typeof(SectorBsp2dNodesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new SectorBsp2dNodesblock[blamPointer.Count];
+            var array = new SectorBsp2dNodesBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new SectorBsp2dNodesblock(binaryReader);
+                    array[i] = new SectorBsp2dNodesBlock(binaryReader);
                 }
             }
             return array;
         }
-        SurfaceFlagsBlock[] ReadSurfaceFlagsBlockArray(BinaryReader binaryReader)
+        internal  virtual SurfaceFlagsBlock[] ReadSurfaceFlagsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SurfaceFlagsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -125,7 +134,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        SectorVertexBlock[] ReadSectorVertexBlockArray(BinaryReader binaryReader)
+        internal  virtual SectorVertexBlock[] ReadSectorVertexBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SectorVertexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -140,7 +149,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        EnvironmentObjectRefs[] ReadEnvironmentObjectRefsArray(BinaryReader binaryReader)
+        internal  virtual EnvironmentObjectRefs[] ReadEnvironmentObjectRefsArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(EnvironmentObjectRefs));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -155,7 +164,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        PathfindingHintsBlock[] ReadPathfindingHintsBlockArray(BinaryReader binaryReader)
+        internal  virtual PathfindingHintsBlock[] ReadPathfindingHintsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(PathfindingHintsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -170,7 +179,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        InstancedGeometryReferenceBlock[] ReadInstancedGeometryReferenceBlockArray(BinaryReader binaryReader)
+        internal  virtual InstancedGeometryReferenceBlock[] ReadInstancedGeometryReferenceBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(InstancedGeometryReferenceBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -185,7 +194,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        UserHintBlock[] ReadUserHintBlockArray(BinaryReader binaryReader)
+        internal  virtual UserHintBlock[] ReadUserHintBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(UserHintBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

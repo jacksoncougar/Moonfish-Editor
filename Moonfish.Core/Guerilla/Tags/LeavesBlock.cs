@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class LeavesBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class LeavesBlock : LeavesBlockBase
     {
-        Flags flags;
-        byte bSP2DReferenceCount;
-        short firstBSP2DReference;
-        internal  LeavesBlock(BinaryReader binaryReader)
+        public  LeavesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class LeavesBlockBase
+    {
+        internal Flags flags;
+        internal byte bSP2DReferenceCount;
+        internal short firstBSP2DReference;
+        internal  LeavesBlockBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadByte();
             this.bSP2DReferenceCount = binaryReader.ReadByte();
             this.firstBSP2DReference = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

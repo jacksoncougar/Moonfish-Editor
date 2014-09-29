@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspPrecomputedLightingblock
+    [LayoutAttribute(Size = 48)]
+    public  partial class StructureBspPrecomputedLightingBlock : StructureBspPrecomputedLightingBlockBase
     {
-        int index;
-        LightType lightType;
-        byte attachmentIndex;
-        byte objectType;
-        VisibilityStructBlock visibility;
-        internal  StructureBspPrecomputedLightingblock(BinaryReader binaryReader)
+        public  StructureBspPrecomputedLightingBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 48)]
+    public class StructureBspPrecomputedLightingBlockBase
+    {
+        internal int index;
+        internal LightType lightType;
+        internal byte attachmentIndex;
+        internal byte objectType;
+        internal VisibilityStructBlock visibility;
+        internal  StructureBspPrecomputedLightingBlockBase(BinaryReader binaryReader)
         {
             this.index = binaryReader.ReadInt32();
             this.lightType = (LightType)binaryReader.ReadInt16();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.objectType = binaryReader.ReadByte();
             this.visibility = new VisibilityStructBlock(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -39,8 +48,8 @@ namespace Moonfish.Guerilla.Tags
         internal enum LightType : short
         {
             FreeStanding = 0,
-            AttachedToEditorObject = 0,
-            AttachedToStructureObject = 0,
+            AttachedToEditorObject = 1,
+            AttachedToStructureObject = 2,
         };
     };
 }

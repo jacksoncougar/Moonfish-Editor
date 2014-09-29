@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspPathfindingEdgesblock
+    [LayoutAttribute(Size = 1)]
+    public  partial class StructureBspPathfindingEdgesBlock : StructureBspPathfindingEdgesBlockBase
     {
-        byte midpoint;
-        internal  StructureBspPathfindingEdgesblock(BinaryReader binaryReader)
+        public  StructureBspPathfindingEdgesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 1)]
+    public class StructureBspPathfindingEdgesBlockBase
+    {
+        internal byte midpoint;
+        internal  StructureBspPathfindingEdgesBlockBase(BinaryReader binaryReader)
         {
             this.midpoint = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

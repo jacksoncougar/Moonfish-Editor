@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspLeafblock
+    [LayoutAttribute(Size = 8)]
+    public  partial class StructureBspLeafBlock : StructureBspLeafBlockBase
     {
-        short cluster;
-        short surfaceReferenceCount;
-        int firstSurfaceReferenceIndex;
-        internal  StructureBspLeafblock(BinaryReader binaryReader)
+        public  StructureBspLeafBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class StructureBspLeafBlockBase
+    {
+        internal short cluster;
+        internal short surfaceReferenceCount;
+        internal int firstSurfaceReferenceIndex;
+        internal  StructureBspLeafBlockBase(BinaryReader binaryReader)
         {
             this.cluster = binaryReader.ReadInt16();
             this.surfaceReferenceCount = binaryReader.ReadInt16();
             this.firstSurfaceReferenceIndex = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

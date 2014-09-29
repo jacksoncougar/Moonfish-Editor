@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class OccluderToMachineDoormapping
+    [LayoutAttribute(Size = 1)]
+    public  partial class OccluderToMachineDoorMapping : OccluderToMachineDoorMappingBase
     {
-        byte machineDoorIndex;
-        internal  OccluderToMachineDoormapping(BinaryReader binaryReader)
+        public  OccluderToMachineDoorMapping(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 1)]
+    public class OccluderToMachineDoorMappingBase
+    {
+        internal byte machineDoorIndex;
+        internal  OccluderToMachineDoorMappingBase(BinaryReader binaryReader)
         {
             this.machineDoorIndex = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

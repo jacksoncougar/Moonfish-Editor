@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class TransparentPlanesBlock
+    [LayoutAttribute(Size = 20)]
+    public  partial class TransparentPlanesBlock : TransparentPlanesBlockBase
     {
-        short sectionIndex;
-        short partIndex;
-        OpenTK.Vector4 plane;
-        internal  TransparentPlanesBlock(BinaryReader binaryReader)
+        public  TransparentPlanesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 20)]
+    public class TransparentPlanesBlockBase
+    {
+        internal short sectionIndex;
+        internal short partIndex;
+        internal OpenTK.Vector4 plane;
+        internal  TransparentPlanesBlockBase(BinaryReader binaryReader)
         {
             this.sectionIndex = binaryReader.ReadInt16();
             this.partIndex = binaryReader.ReadInt16();
             this.plane = binaryReader.ReadVector4();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

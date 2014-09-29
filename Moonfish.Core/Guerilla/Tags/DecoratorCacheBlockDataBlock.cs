@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorCacheBlockdatablock
+    [LayoutAttribute(Size = 136)]
+    public  partial class DecoratorCacheBlockDataBlock : DecoratorCacheBlockDataBlockBase
     {
-        DecoratorPlacementBlock[] placements;
-        DecalVerticesBlock[] decalVertices;
-        IndicesBlock[] decalIndices;
-        Moonfish.Tags.VertexBuffer decalVertexBuffer;
-        byte[] invalidName_;
-        SpriteVerticesBlock[] spriteVertices;
-        IndicesBlock[] spriteIndices;
-        Moonfish.Tags.VertexBuffer spriteVertexBuffer;
-        byte[] invalidName_0;
-        internal  DecoratorCacheBlockdatablock(BinaryReader binaryReader)
+        public  DecoratorCacheBlockDataBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 136)]
+    public class DecoratorCacheBlockDataBlockBase
+    {
+        internal DecoratorPlacementBlock[] placements;
+        internal DecalVerticesBlock[] decalVertices;
+        internal IndicesBlock[] decalIndices;
+        internal Moonfish.Tags.VertexBuffer decalVertexBuffer;
+        internal byte[] invalidName_;
+        internal SpriteVerticesBlock[] spriteVertices;
+        internal IndicesBlock[] spriteIndices;
+        internal Moonfish.Tags.VertexBuffer spriteVertexBuffer;
+        internal byte[] invalidName_0;
+        internal  DecoratorCacheBlockDataBlockBase(BinaryReader binaryReader)
         {
             this.placements = ReadDecoratorPlacementBlockArray(binaryReader);
             this.decalVertices = ReadDecalVerticesBlockArray(binaryReader);
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             this.spriteVertexBuffer = binaryReader.ReadVertexBuffer();
             this.invalidName_0 = binaryReader.ReadBytes(16);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -44,7 +53,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        DecoratorPlacementBlock[] ReadDecoratorPlacementBlockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorPlacementBlock[] ReadDecoratorPlacementBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(DecoratorPlacementBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -59,7 +68,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        DecalVerticesBlock[] ReadDecalVerticesBlockArray(BinaryReader binaryReader)
+        internal  virtual DecalVerticesBlock[] ReadDecalVerticesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(DecalVerticesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -74,7 +83,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        IndicesBlock[] ReadIndicesBlockArray(BinaryReader binaryReader)
+        internal  virtual IndicesBlock[] ReadIndicesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(IndicesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -89,7 +98,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        SpriteVerticesBlock[] ReadSpriteVerticesBlockArray(BinaryReader binaryReader)
+        internal  virtual SpriteVerticesBlock[] ReadSpriteVerticesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(SpriteVerticesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

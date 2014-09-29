@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class DecoratorCacheBlockblock
+    [LayoutAttribute(Size = 44)]
+    public  partial class DecoratorCacheBlockBlock : DecoratorCacheBlockBlockBase
     {
-        GlobalgeometryBlockInfoStructblock geometryBlockInfo;
-        DecoratorCacheBlockdatablock[] cacheBlockData;
-        internal  DecoratorCacheBlockblock(BinaryReader binaryReader)
+        public  DecoratorCacheBlockBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.geometryBlockInfo = new GlobalgeometryBlockInfoStructblock(binaryReader);
-            this.cacheBlockData = ReadDecoratorCacheBlockdatablockArray(binaryReader);
+            
         }
-        byte[] ReadData(BinaryReader binaryReader)
+    };
+    [LayoutAttribute(Size = 44)]
+    public class DecoratorCacheBlockBlockBase
+    {
+        internal GlobalGeometryBlockInfoStructBlock geometryBlockInfo;
+        internal DecoratorCacheBlockDataBlock[] cacheBlockData;
+        internal  DecoratorCacheBlockBlockBase(BinaryReader binaryReader)
+        {
+            this.geometryBlockInfo = new GlobalGeometryBlockInfoStructBlock(binaryReader);
+            this.cacheBlockData = ReadDecoratorCacheBlockDataBlockArray(binaryReader);
+        }
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -30,17 +39,17 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        DecoratorCacheBlockdatablock[] ReadDecoratorCacheBlockdatablockArray(BinaryReader binaryReader)
+        internal  virtual DecoratorCacheBlockDataBlock[] ReadDecoratorCacheBlockDataBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(DecoratorCacheBlockdatablock));
+            var elementSize = Deserializer.SizeOf(typeof(DecoratorCacheBlockDataBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new DecoratorCacheBlockdatablock[blamPointer.Count];
+            var array = new DecoratorCacheBlockDataBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new DecoratorCacheBlockdatablock(binaryReader);
+                    array[i] = new DecoratorCacheBlockDataBlock(binaryReader);
                 }
             }
             return array;

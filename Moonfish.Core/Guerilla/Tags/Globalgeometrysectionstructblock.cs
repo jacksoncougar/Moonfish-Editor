@@ -7,30 +7,39 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalgeometrySectionstructBlock
+    [LayoutAttribute(Size = 68)]
+    public  partial class GlobalGeometrySectionStructBlock : GlobalGeometrySectionStructBlockBase
     {
-        GlobalgeometryPartBlockNew[] parts;
-        GlobalSubpartsBlock[] subparts;
-        GlobalVisibilityBoundsblock[] visibilityBounds;
-        GlobalgeometrySectionRawVertexBlock[] rawVertices;
-        GlobalgeometrySectionstripIndexBlock[] stripIndices;
-        byte[] visibilityMoppCode;
-        GlobalgeometrySectionstripIndexBlock[] moppReorderTable;
-        GlobalgeometrySectionVertexBufferblock[] vertexBuffers;
-        byte[] invalidName_;
-        internal  GlobalgeometrySectionstructBlock(BinaryReader binaryReader)
+        public  GlobalGeometrySectionStructBlock(BinaryReader binaryReader): base(binaryReader)
         {
-            this.parts = ReadGlobalgeometryPartBlockNewArray(binaryReader);
+            
+        }
+    };
+    [LayoutAttribute(Size = 68)]
+    public class GlobalGeometrySectionStructBlockBase
+    {
+        internal GlobalGeometryPartBlockNew[] parts;
+        internal GlobalSubpartsBlock[] subparts;
+        internal GlobalVisibilityBoundsBlock[] visibilityBounds;
+        internal GlobalGeometrySectionRawVertexBlock[] rawVertices;
+        internal GlobalGeometrySectionStripIndexBlock[] stripIndices;
+        internal byte[] visibilityMoppCode;
+        internal GlobalGeometrySectionStripIndexBlock[] moppReorderTable;
+        internal GlobalGeometrySectionVertexBufferBlock[] vertexBuffers;
+        internal byte[] invalidName_;
+        internal  GlobalGeometrySectionStructBlockBase(BinaryReader binaryReader)
+        {
+            this.parts = ReadGlobalGeometryPartBlockNewArray(binaryReader);
             this.subparts = ReadGlobalSubpartsBlockArray(binaryReader);
-            this.visibilityBounds = ReadGlobalVisibilityBoundsblockArray(binaryReader);
-            this.rawVertices = ReadGlobalgeometrySectionRawVertexBlockArray(binaryReader);
-            this.stripIndices = ReadGlobalgeometrySectionstripIndexBlockArray(binaryReader);
+            this.visibilityBounds = ReadGlobalVisibilityBoundsBlockArray(binaryReader);
+            this.rawVertices = ReadGlobalGeometrySectionRawVertexBlockArray(binaryReader);
+            this.stripIndices = ReadGlobalGeometrySectionStripIndexBlockArray(binaryReader);
             this.visibilityMoppCode = ReadData(binaryReader);
-            this.moppReorderTable = ReadGlobalgeometrySectionstripIndexBlockArray(binaryReader);
-            this.vertexBuffers = ReadGlobalgeometrySectionVertexBufferblockArray(binaryReader);
+            this.moppReorderTable = ReadGlobalGeometrySectionStripIndexBlockArray(binaryReader);
+            this.vertexBuffers = ReadGlobalGeometrySectionVertexBufferBlockArray(binaryReader);
             this.invalidName_ = binaryReader.ReadBytes(4);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -44,22 +53,22 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        GlobalgeometryPartBlockNew[] ReadGlobalgeometryPartBlockNewArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometryPartBlockNew[] ReadGlobalGeometryPartBlockNewArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometryPartBlockNew));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometryPartBlockNew));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometryPartBlockNew[blamPointer.Count];
+            var array = new GlobalGeometryPartBlockNew[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometryPartBlockNew(binaryReader);
+                    array[i] = new GlobalGeometryPartBlockNew(binaryReader);
                 }
             }
             return array;
         }
-        GlobalSubpartsBlock[] ReadGlobalSubpartsBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalSubpartsBlock[] ReadGlobalSubpartsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(GlobalSubpartsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -74,62 +83,62 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        GlobalVisibilityBoundsblock[] ReadGlobalVisibilityBoundsblockArray(BinaryReader binaryReader)
+        internal  virtual GlobalVisibilityBoundsBlock[] ReadGlobalVisibilityBoundsBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalVisibilityBoundsblock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalVisibilityBoundsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalVisibilityBoundsblock[blamPointer.Count];
+            var array = new GlobalVisibilityBoundsBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalVisibilityBoundsblock(binaryReader);
+                    array[i] = new GlobalVisibilityBoundsBlock(binaryReader);
                 }
             }
             return array;
         }
-        GlobalgeometrySectionRawVertexBlock[] ReadGlobalgeometrySectionRawVertexBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometrySectionRawVertexBlock[] ReadGlobalGeometrySectionRawVertexBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometrySectionRawVertexBlock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometrySectionRawVertexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometrySectionRawVertexBlock[blamPointer.Count];
+            var array = new GlobalGeometrySectionRawVertexBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometrySectionRawVertexBlock(binaryReader);
+                    array[i] = new GlobalGeometrySectionRawVertexBlock(binaryReader);
                 }
             }
             return array;
         }
-        GlobalgeometrySectionstripIndexBlock[] ReadGlobalgeometrySectionstripIndexBlockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometrySectionStripIndexBlock[] ReadGlobalGeometrySectionStripIndexBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometrySectionstripIndexBlock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometrySectionStripIndexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometrySectionstripIndexBlock[blamPointer.Count];
+            var array = new GlobalGeometrySectionStripIndexBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometrySectionstripIndexBlock(binaryReader);
+                    array[i] = new GlobalGeometrySectionStripIndexBlock(binaryReader);
                 }
             }
             return array;
         }
-        GlobalgeometrySectionVertexBufferblock[] ReadGlobalgeometrySectionVertexBufferblockArray(BinaryReader binaryReader)
+        internal  virtual GlobalGeometrySectionVertexBufferBlock[] ReadGlobalGeometrySectionVertexBufferBlockArray(BinaryReader binaryReader)
         {
-            var elementSize = Deserializer.SizeOf(typeof(GlobalgeometrySectionVertexBufferblock));
+            var elementSize = Deserializer.SizeOf(typeof(GlobalGeometrySectionVertexBufferBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
-            var array = new GlobalgeometrySectionVertexBufferblock[blamPointer.Count];
+            var array = new GlobalGeometrySectionVertexBufferBlock[blamPointer.Count];
             using (binaryReader.BaseStream.Pin())
             {
                 for (int i = 0; i < blamPointer.Count; ++i)
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new GlobalgeometrySectionVertexBufferblock(binaryReader);
+                    array[i] = new GlobalGeometrySectionVertexBufferBlock(binaryReader);
                 }
             }
             return array;

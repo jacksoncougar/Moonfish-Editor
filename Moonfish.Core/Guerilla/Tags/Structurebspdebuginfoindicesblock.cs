@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspDebugInfoindicesblock
+    [LayoutAttribute(Size = 4)]
+    public  partial class StructureBspDebugInfoIndicesBlock : StructureBspDebugInfoIndicesBlockBase
     {
-        int index;
-        internal  StructureBspDebugInfoindicesblock(BinaryReader binaryReader)
+        public  StructureBspDebugInfoIndicesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class StructureBspDebugInfoIndicesBlockBase
+    {
+        internal int index;
+        internal  StructureBspDebugInfoIndicesBlockBase(BinaryReader binaryReader)
         {
             this.index = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

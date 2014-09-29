@@ -1,6 +1,5 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Tags;
-using Moonfish.Tags.BSP;
 using OpenTK;
 using OpenTK.Graphics.ES30;
 using System;
@@ -55,18 +54,6 @@ namespace Moonfish.Graphics
         public RenderObject()
         {
             sectionBuffers = new List<Mesh>();
-        }
-
-        public RenderObject(StructureInstancedGeometryRenderInfoStruct geometryInfo)
-            : this()
-        {
-            sectionBuffers.Add(new Mesh(geometryInfo));
-        }
-
-        public RenderObject(StructureBspClusterBlock x)
-            : this()
-        {
-            sectionBuffers.Add(new Mesh(x));
         }
 
         public void Render(Program program)

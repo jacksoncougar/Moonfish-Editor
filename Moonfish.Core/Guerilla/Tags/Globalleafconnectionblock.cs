@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalLeafConnectionBlock
+    [LayoutAttribute(Size = 24)]
+    public  partial class GlobalLeafConnectionBlock : GlobalLeafConnectionBlockBase
     {
-        int planeIndex;
-        int backLeafIndex;
-        int frontLeafIndex;
-        LeafConnectionVertexBlock[] vertices;
-        float area;
-        internal  GlobalLeafConnectionBlock(BinaryReader binaryReader)
+        public  GlobalLeafConnectionBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class GlobalLeafConnectionBlockBase
+    {
+        internal int planeIndex;
+        internal int backLeafIndex;
+        internal int frontLeafIndex;
+        internal LeafConnectionVertexBlock[] vertices;
+        internal float area;
+        internal  GlobalLeafConnectionBlockBase(BinaryReader binaryReader)
         {
             this.planeIndex = binaryReader.ReadInt32();
             this.backLeafIndex = binaryReader.ReadInt32();
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.vertices = ReadLeafConnectionVertexBlockArray(binaryReader);
             this.area = binaryReader.ReadSingle();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -36,7 +45,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        LeafConnectionVertexBlock[] ReadLeafConnectionVertexBlockArray(BinaryReader binaryReader)
+        internal  virtual LeafConnectionVertexBlock[] ReadLeafConnectionVertexBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(LeafConnectionVertexBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

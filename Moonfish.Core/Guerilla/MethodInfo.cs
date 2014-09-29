@@ -40,6 +40,7 @@ namespace Moonfish.Guerilla
         Abstract = 16,
         Virtual = 32,
         Partial = 64,
+        Any = Private | Protected | Internal | Public | Abstract | Virtual | Partial
     }
 
     public class ClassInfo
@@ -65,6 +66,7 @@ namespace Moonfish.Guerilla
         }
 
         public List<string> Usings { get; set; }
+        public string BaseClass { get; set; }
         public string Namespace { get; set; }
         public List<AttributeInfo> Attributes { get; set; }
         public AccessModifiers AccessModifiers { get; set; }
@@ -83,7 +85,11 @@ namespace Moonfish.Guerilla
         }
         public string ClassDeclaration
         {
-            get { return string.Format( "{0} class {1}", AccessModifiersExtensions.ToString( AccessModifiers ), Value.Name ).Trim( ); }
+            get { return string.Format( "{0} class {1} {2}", AccessModifiersExtensions.ToString( AccessModifiers ), Value.Name, BaseClassDeclaration ).Trim( ); }
+        }
+        public string BaseClassDeclaration
+        {
+            get { return ( String.IsNullOrWhiteSpace( BaseClass ) ? "" : string.Format( ": {0}", BaseClass ) ).Trim( ); }
         }
 
         internal class TokenDictionary
@@ -160,9 +166,29 @@ namespace Moonfish.Guerilla
 
         public void Generate( )
         {
+            MethodsTemplates.Clear( );
+            Methods.Clear( );
+            Constructors.Clear( );
+
             GenerateReadBlockTemplateMethod( );
             GenerateReadDataMethod( );
             GenerateBinaryReaderConstructor( );
+        }
+
+        public ClassInfo GenerateWrapper( string wrapperName, string baseName )
+        {
+            ClassInfo wrapperClassInfo = new ClassInfo( )
+            {
+                AccessModifiers = AccessModifiers.Public | AccessModifiers.Partial,
+                Attributes = this.Attributes,
+                Constructors = this.Constructors.Select( x => x.MakeWrapper( wrapperName ) ).ToList( ),
+                Namespace = this.Namespace,
+                Usings = this.Usings,
+                Value = new GuerillaName( this.Value ),
+                BaseClass = baseName,
+            };
+            wrapperClassInfo.Value.Name = wrapperName;
+            return wrapperClassInfo;
         }
 
         public void GenerateReadBlockTemplateMethod( )
@@ -284,7 +310,7 @@ return data;",
     {
         public static string ToString( this AccessModifiers items )
         {
-            if( !Enum.IsDefined( typeof( AccessModifiers ), items ) ) return "";
+            if( ( items & AccessModifiers.Any ) == 0 ) return "";
             var value = new StringBuilder( );
             var values = items.ToString( ).Split( ',' ).ToList( );
             values.TakeWhile( x => x != values.Last( ) ).ToList( ).ForEach( x => value.Append( string.Format( "{0} ", x.ToLower( ) ) ) );
@@ -377,7 +403,7 @@ return data;",
             {
                 if( item.HasDescription ) stringBuilder.AppendSummary( item.Description );
                 stringBuilder.AppendLine( string.Format( "{0} = {1},", GuerillaCs.ToTypeName( item.Name ), value ) );
-                value = isFlags ? value << 1 : value++;
+                value = isFlags ? value << 1 : ++value;
             }
             stringBuilder.AppendLine( "};" );
             return stringBuilder.ToString( ).Trim( );
@@ -419,12 +445,13 @@ return data;",
                 }
                 if( hasParameters && NamedParameters.Count > 0 )
                 {
-                    NamedParameters.TakeWhile( x => NamedParameters.Last( ) != x ).ToList( ).ForEach( x => parametersString.Append( string.Format( "{0}, ", x ) ) );
-                    parametersString.Append( NamedParameters.Last( ) );
+                    NamedParameters.TakeWhile( x => NamedParameters.Last( ) != x ).ToList( ).ForEach( x => parametersString.Append( string.Format( "{0} = {1}, ", x.Item1, x.Item2 ) ) );
+                    parametersString.Append( string.Format( "{0} = {1}", NamedParameters.Last( ).Item1, NamedParameters.Last( ).Item2 ) );
                 }
 
-                return string.Format( "[{0}{1}]", AttributeType.Name,
+                var retval = string.Format( "[{0}{1}]", AttributeType.Name,
                     hasParameters ? string.Format( "({0})", parametersString ) : "" );
+                return retval;
             }
         }
     }
@@ -454,7 +481,7 @@ return data;",
             var typeString = GetTypeOutput( );
 
             // write Field
-            stringBuilder.AppendLine( string.Format( "{0}{1} {2};",
+            stringBuilder.AppendLine( string.Format( "{0} {1}{2} {3};", AccessModifiersExtensions.ToString(AccessModifiers),
                 typeString, IsArray ? "[]" : "", this.Value.Name ) );
 
             return stringBuilder.ToString( ).Trim( );
@@ -485,6 +512,7 @@ return data;",
         public List<string> Arguments { get; set; }
         public string Body { get; set; }
         public string Returns { get; set; }
+        public bool Wrapper { get; set; }
 
         public string GetMethodCallSignature( params string[] arguments )
         {
@@ -504,13 +532,19 @@ return data;",
         public string GetMethodCallSignatureFormat( string methodName, params string[] arguments )
         {
 
+            var argumentStringBuilder = GetArguments( arguments );
+            return string.Format( "{0}{1}", String.Format( ClassName, methodName ), string.Format( "({0})", arguments.Any( ) ? argumentStringBuilder.ToString( ) : "" ) );
+        }
+
+        private static StringBuilder GetArguments( string[] arguments )
+        {
             var argumentStringBuilder = new StringBuilder( );
             if( arguments.Any( ) )
             {
                 arguments.TakeWhile( x => x != arguments.Last( ) ).ToList( ).ForEach( x => argumentStringBuilder.AppendFormat( "{0}, ", x ) );
                 argumentStringBuilder.Append( arguments.Last( ) );
             }
-            return string.Format( "{0}{1}", String.Format( ClassName, methodName ), string.Format( "({0})", arguments.Any( ) ? argumentStringBuilder.ToString( ) : "" ) );
+            return argumentStringBuilder;
         }
 
         public MethodInfo MakeFromTemplate( params string[] args )
@@ -530,12 +564,30 @@ return data;",
             StringBuilder methodStringBuilder = new StringBuilder( );
             var modifiersString = AccessModifiersExtensions.ToString( AccessModifiers );
             methodStringBuilder.AppendFormat( "{0} {1} {2}", modifiersString, Returns, GetMethodSignature( ) );
+            if( Wrapper )
+            {
+                var arguments = this.Arguments.SelectMany( x => x.Split( ' ' ) ).Where( ( x, i ) => i % 2 == 1 ).ToArray( );
+                methodStringBuilder.AppendFormat( ": base({0})", GetArguments( arguments ) );
+            }
             methodStringBuilder.AppendLine( );
             methodStringBuilder.AppendLine( "{" );
             methodStringBuilder.Append( this.Body );
             methodStringBuilder.AppendLine( );
             methodStringBuilder.AppendLine( "}" );
             return methodStringBuilder.ToString( ).Trim( );
+        }
+
+        internal MethodInfo MakeWrapper( string className )
+        {
+            return new MethodInfo( )
+            {
+                Arguments = this.Arguments,
+                AccessModifiers = AccessModifiers.Public,
+                Wrapper = true,
+                ClassName = className,
+                Body = "",
+                Returns = this.Returns,
+            };
         }
     }
 }

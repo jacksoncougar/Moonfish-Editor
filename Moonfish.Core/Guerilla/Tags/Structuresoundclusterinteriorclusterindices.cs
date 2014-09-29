@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructuresoundClusterInteriorclusterindices
+    [LayoutAttribute(Size = 2)]
+    public  partial class StructureSoundClusterInteriorClusterIndices : StructureSoundClusterInteriorClusterIndicesBase
     {
-        short interiorClusterIndex;
-        internal  StructuresoundClusterInteriorclusterindices(BinaryReader binaryReader)
+        public  StructureSoundClusterInteriorClusterIndices(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class StructureSoundClusterInteriorClusterIndicesBase
+    {
+        internal short interiorClusterIndex;
+        internal  StructureSoundClusterInteriorClusterIndicesBase(BinaryReader binaryReader)
         {
             this.interiorClusterIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

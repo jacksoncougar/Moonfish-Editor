@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ClusterDoorPortalEncodedpasBlock
+    [LayoutAttribute(Size = 4)]
+    public  partial class ClusterDoorPortalEncodedPasBlock : ClusterDoorPortalEncodedPasBlockBase
     {
-        int invalidName_;
-        internal  ClusterDoorPortalEncodedpasBlock(BinaryReader binaryReader)
+        public  ClusterDoorPortalEncodedPasBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 4)]
+    public class ClusterDoorPortalEncodedPasBlockBase
+    {
+        internal int invalidName_;
+        internal  ClusterDoorPortalEncodedPasBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadInt32();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

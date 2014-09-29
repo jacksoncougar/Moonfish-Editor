@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspsoundEnvironmentPaletteblock
+    [LayoutAttribute(Size = 72)]
+    public  partial class StructureBspSoundEnvironmentPaletteBlock : StructureBspSoundEnvironmentPaletteBlockBase
     {
-        Moonfish.Tags.String32 name;
+        public  StructureBspSoundEnvironmentPaletteBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 72)]
+    public class StructureBspSoundEnvironmentPaletteBlockBase
+    {
+        internal Moonfish.Tags.String32 name;
         [TagReference("snde")]
-        Moonfish.Tags.TagReference soundEnvironment;
-        float cutoffDistance;
-        float interpolationSpeed1Sec;
-        byte[] invalidName_;
-        internal  StructureBspsoundEnvironmentPaletteblock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference soundEnvironment;
+        internal float cutoffDistance;
+        internal float interpolationSpeed1Sec;
+        internal byte[] invalidName_;
+        internal  StructureBspSoundEnvironmentPaletteBlockBase(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadString32();
             this.soundEnvironment = binaryReader.ReadTagReference();
@@ -23,7 +32,7 @@ namespace Moonfish.Guerilla.Tags
             this.interpolationSpeed1Sec = binaryReader.ReadSingle();
             this.invalidName_ = binaryReader.ReadBytes(24);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

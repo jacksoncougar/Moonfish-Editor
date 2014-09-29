@@ -7,16 +7,25 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class UserHintWellPointBlock
+    [LayoutAttribute(Size = 32)]
+    public  partial class UserHintWellPointBlock : UserHintWellPointBlockBase
     {
-        Type type;
-        byte[] invalidName_;
-        OpenTK.Vector3 point;
-        short referenceFrame;
-        byte[] invalidName_0;
-        int sectorIndex;
-        OpenTK.Vector2 normal;
-        internal  UserHintWellPointBlock(BinaryReader binaryReader)
+        public  UserHintWellPointBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 32)]
+    public class UserHintWellPointBlockBase
+    {
+        internal Type type;
+        internal byte[] invalidName_;
+        internal OpenTK.Vector3 point;
+        internal short referenceFrame;
+        internal byte[] invalidName_0;
+        internal int sectorIndex;
+        internal OpenTK.Vector2 normal;
+        internal  UserHintWellPointBlockBase(BinaryReader binaryReader)
         {
             this.type = (Type)binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
@@ -26,7 +35,7 @@ namespace Moonfish.Guerilla.Tags
             this.sectorIndex = binaryReader.ReadInt32();
             this.normal = binaryReader.ReadVector2();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -43,8 +52,8 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : short
         {
             Jump = 0,
-            Climb = 0,
-            Hoist = 0,
+            Climb = 1,
+            Hoist = 2,
         };
     };
 }

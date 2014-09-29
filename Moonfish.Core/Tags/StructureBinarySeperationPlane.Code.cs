@@ -9,58 +9,73 @@ using Fasterflect;
 using System.Runtime.InteropServices;
 using Moonfish.ResourceManagement;
 
-namespace Moonfish.Tags.BSP
+namespace Moonfish.Tags
 {
-    partial class StructureInstancedGeometryRenderInfoStruct
-    {
-        public void LoadSectionData()
-        {
-            ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
-            BinaryReader reader = new BinaryReader(source);
-            this.renderData = new[] { new StructureBspClusterDataBlockNew(reader) };
-        }
-
-    }
-
-    partial class StructureBspClusterBlock
-    {
-        public void LoadSectionData()
-        {
-            ResourceStream source = Halo2.GetResourceBlock(this.geometryBlockInfo);
-            BinaryReader reader = new BinaryReader(source);
-            this.clusterData = new[] { new StructureBspClusterDataBlockNew(reader) };
-        }
-    }
+    #region Halo 2 Xbox => Vista Remapping
     partial class StructureBinarySeperationPlane
     {
-        [GuerillaPreProcessMethod(BlockName = "scenario_structure_bsp_block")]
-        protected static void GuerillaPreProcessMethod(BinaryReader binaryReader, IList<tag_field> fields)
+        [GuerillaPreProcessMethod( BlockName = "scenario_structure_bsp_block" )]
+        protected static void GuerillaPreProcessMethod( BinaryReader binaryReader, IList<tag_field> fields )
         {
-            fields.Insert(0, new tag_field() { type = field_type._field_long_integer, Name = "Block Length" });
-            fields.Insert(1, new tag_field() { type = field_type._field_long_integer, Name = "SBSP virtual start address" });
-            fields.Insert(2, new tag_field() { type = field_type._field_long_integer, Name = "LTMP virtual start address" });
-            fields.Insert(3, new tag_field() { type = field_type._field_tag, Name = "SBSP class" });
+            //fields.Insert( 0, new tag_field( ) { type = field_type._field_long_integer, Name = "Block Length" } );
+            //fields.Insert( 1, new tag_field( ) { type = field_type._field_long_integer, Name = "SBSP virtual start address" } );
+            //fields.Insert( 2, new tag_field( ) { type = field_type._field_long_integer, Name = "LTMP virtual start address" } );
+            //fields.Insert( 3, new tag_field( ) { type = field_type._field_tag, Name = "SBSP class" } );
         }
     }
     public partial class CollisionBSPPhysicsBlock
     {
-        [GuerillaPreProcessMethod(BlockName = "collision_bsp_physics_block")]
-        protected static void GuerillaPreProcessMethod(BinaryReader binaryReader, IList<tag_field> fields)
+        [GuerillaPreProcessMethod( BlockName = "collision_bsp_physics_block" )]
+        protected static void GuerillaPreProcessMethod( BinaryReader binaryReader, IList<tag_field> fields )
         {
-            var field = fields.Last(x => x.type != field_type._field_terminator);
-            fields.Remove(field);
-            fields.Insert(fields.IndexOf(fields.Last()), new tag_field() { type = field_type._field_pad, Name = "padding", definition = 4 });
+            var field = fields.Last( x => x.type != field_type._field_terminator );
+            fields.Remove( field );
+            fields.Insert( fields.IndexOf( fields.Last( ) ), new tag_field( ) { type = field_type._field_pad, Name = "padding", definition = 4 } );
         }
     }
     public partial class DecoratorCacheBlockBlock
     {
-        [GuerillaPreProcessMethod(BlockName = "decorator_cache_block_block")]
-        protected static void GuerillaPreProcessMethod(BinaryReader binaryReader, IList<tag_field> fields)
+        [GuerillaPreProcessMethod( BlockName = "decorator_cache_block_block" )]
+        protected static void GuerillaPreProcessMethod( BinaryReader binaryReader, IList<tag_field> fields )
         {
-            var field = fields.Last(x => x.type != field_type._field_terminator);
-            fields.Remove(field);
-            field = fields.Last(x => x.type != field_type._field_terminator);
-            fields.Remove(field);
+            var field = fields.Last( x => x.type != field_type._field_terminator );
+            fields.Remove( field );
+            field = fields.Last( x => x.type != field_type._field_terminator );
+            fields.Remove( field );
         }
     }
+    #endregion
+
+    [TagClass( "sbsp" )]
+    partial class ScenarioStructureBSP : Moonfish.Guerilla.Tags.ScenarioStructureBspBlock
+    {
+        public ScenarioStructureBSP( BinaryReader binaryReader )
+            : base( binaryReader )
+        {
+        }
+    }
+}
+
+namespace Moonfish.Guerilla.Tags
+{
+    partial class StructureBspClusterBlock
+    {
+        internal override StructureBspClusterDataBlockNew[] ReadStructureBspClusterDataBlockNewArray( BinaryReader binaryReader )
+        {
+            binaryReader.ReadBytes( 8 );
+            using( binaryReader.BaseStream.Pin( ) )
+            {
+                ResourceStream source = Halo2.GetResourceBlock( this.geometryBlockInfo );
+                BinaryReader reader = new BinaryReader( source );
+                return new[] { new StructureBspClusterDataBlockNew( reader ) };
+            }
+        }
+    }
+
+    public partial class GlobalGeometryBlockInfoStructBlock
+    {
+        public int ResourceOffset { get { return (int)(base.blockOffset & ~0xC0000000); } }
+
+        public Halo2.ResourceSource ResourceLocation { get { return (Halo2.ResourceSource)( base.blockOffset & 0xC0000000 ); } }
+    };
 }

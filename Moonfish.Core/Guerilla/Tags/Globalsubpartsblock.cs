@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalSubpartsBlock
+    [LayoutAttribute(Size = 8)]
+    public  partial class GlobalSubpartsBlock : GlobalSubpartsBlockBase
     {
-        short indicesStartIndex;
-        short indicesLength;
-        short visibilityBoundsIndex;
-        short partIndex;
-        internal  GlobalSubpartsBlock(BinaryReader binaryReader)
+        public  GlobalSubpartsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 8)]
+    public class GlobalSubpartsBlockBase
+    {
+        internal short indicesStartIndex;
+        internal short indicesLength;
+        internal short visibilityBoundsIndex;
+        internal short partIndex;
+        internal  GlobalSubpartsBlockBase(BinaryReader binaryReader)
         {
             this.indicesStartIndex = binaryReader.ReadInt16();
             this.indicesLength = binaryReader.ReadInt16();
             this.visibilityBoundsIndex = binaryReader.ReadInt16();
             this.partIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

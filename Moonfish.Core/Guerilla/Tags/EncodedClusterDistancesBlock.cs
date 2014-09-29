@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class EncodedClusterDistancesBlock
+    [LayoutAttribute(Size = 1)]
+    public  partial class EncodedClusterDistancesBlock : EncodedClusterDistancesBlockBase
     {
-        byte invalidName_;
-        internal  EncodedClusterDistancesBlock(BinaryReader binaryReader)
+        public  EncodedClusterDistancesBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 1)]
+    public class EncodedClusterDistancesBlockBase
+    {
+        internal byte invalidName_;
+        internal  EncodedClusterDistancesBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadByte();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

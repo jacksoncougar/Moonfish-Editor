@@ -288,7 +288,12 @@ namespace Moonfish.Guerilla
         protected static string ToTypeName(string value)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-            var indices = value.Where(x => Char.IsUpper(x)).Select(x=>value.IndexOf(x)).ToList();
+            var indices = new List<int>();
+            for(int i = 0; i < value.Length; ++i)
+            {
+                if( Char.IsUpper( value[i] ) ) indices.Add( i );
+            }
+            value.Where(x => Char.IsUpper(x)).Select(x=>value.IndexOf(x)).ToList();
             var typeName = new StringBuilder(value.Replace('_', ' '));
             typeName = typeName.Replace('-', ' ');
             typeName = new StringBuilder(textInfo.ToTitleCase(typeName.ToString()));

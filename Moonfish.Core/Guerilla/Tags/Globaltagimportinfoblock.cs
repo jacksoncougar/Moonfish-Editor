@@ -7,18 +7,27 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalTagImportinfoBlock
+    [LayoutAttribute(Size = 592)]
+    public  partial class GlobalTagImportInfoBlock : GlobalTagImportInfoBlockBase
     {
-        int build;
-        Moonfish.Tags.String256 version;
-        Moonfish.Tags.String32 importDate;
-        Moonfish.Tags.String32 culprit;
-        byte[] invalidName_;
-        Moonfish.Tags.String32 importTime;
-        byte[] invalidName_0;
-        TagImportFileBlock[] files;
-        byte[] invalidName_1;
-        internal  GlobalTagImportinfoBlock(BinaryReader binaryReader)
+        public  GlobalTagImportInfoBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 592)]
+    public class GlobalTagImportInfoBlockBase
+    {
+        internal int build;
+        internal Moonfish.Tags.String256 version;
+        internal Moonfish.Tags.String32 importDate;
+        internal Moonfish.Tags.String32 culprit;
+        internal byte[] invalidName_;
+        internal Moonfish.Tags.String32 importTime;
+        internal byte[] invalidName_0;
+        internal TagImportFileBlock[] files;
+        internal byte[] invalidName_1;
+        internal  GlobalTagImportInfoBlockBase(BinaryReader binaryReader)
         {
             this.build = binaryReader.ReadInt32();
             this.version = binaryReader.ReadString256();
@@ -30,7 +39,7 @@ namespace Moonfish.Guerilla.Tags
             this.files = ReadTagImportFileBlockArray(binaryReader);
             this.invalidName_1 = binaryReader.ReadBytes(128);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -44,7 +53,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        TagImportFileBlock[] ReadTagImportFileBlockArray(BinaryReader binaryReader)
+        internal  virtual TagImportFileBlock[] ReadTagImportFileBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(TagImportFileBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

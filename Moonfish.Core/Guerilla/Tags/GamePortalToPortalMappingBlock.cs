@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GamePortalToportalMappingBlock
+    [LayoutAttribute(Size = 2)]
+    public  partial class GamePortalToPortalMappingBlock : GamePortalToPortalMappingBlockBase
     {
-        short portalIndex;
-        internal  GamePortalToportalMappingBlock(BinaryReader binaryReader)
+        public  GamePortalToPortalMappingBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 2)]
+    public class GamePortalToPortalMappingBlockBase
+    {
+        internal short portalIndex;
+        internal  GamePortalToPortalMappingBlockBase(BinaryReader binaryReader)
         {
             this.portalIndex = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

@@ -7,28 +7,37 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class ErrorReportsBlock
+    [LayoutAttribute(Size = 608)]
+    public  partial class ErrorReportsBlock : ErrorReportsBlockBase
     {
-        Type type;
-        Flags flags;
-        byte[] text;
-        Moonfish.Tags.String32 sourceFilename;
-        int sourceLineNumber;
-        ErrorReportVerticesBlock[] vertices;
-        ErrorReportVectorsBlock[] vectors;
-        ErrorReportLinesBlock[] lines;
-        ErrorReportTrianglesBlock[] triangles;
-        ErrorReportQuadsBlock[] quads;
-        ErrorReportCommentsBlock[] comments;
-        byte[] invalidName_;
-        int reportKey;
-        int nodeIndex;
-        Moonfish.Model.Range boundsX;
-        Moonfish.Model.Range boundsY;
-        Moonfish.Model.Range boundsZ;
-        OpenTK.Vector4 color;
-        byte[] invalidName_0;
-        internal  ErrorReportsBlock(BinaryReader binaryReader)
+        public  ErrorReportsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 608)]
+    public class ErrorReportsBlockBase
+    {
+        internal Type type;
+        internal Flags flags;
+        internal byte[] text;
+        internal Moonfish.Tags.String32 sourceFilename;
+        internal int sourceLineNumber;
+        internal ErrorReportVerticesBlock[] vertices;
+        internal ErrorReportVectorsBlock[] vectors;
+        internal ErrorReportLinesBlock[] lines;
+        internal ErrorReportTrianglesBlock[] triangles;
+        internal ErrorReportQuadsBlock[] quads;
+        internal ErrorReportCommentsBlock[] comments;
+        internal byte[] invalidName_;
+        internal int reportKey;
+        internal int nodeIndex;
+        internal Moonfish.Model.Range boundsX;
+        internal Moonfish.Model.Range boundsY;
+        internal Moonfish.Model.Range boundsZ;
+        internal OpenTK.Vector4 color;
+        internal byte[] invalidName_0;
+        internal  ErrorReportsBlockBase(BinaryReader binaryReader)
         {
             this.type = (Type)binaryReader.ReadInt16();
             this.flags = (Flags)binaryReader.ReadInt16();
@@ -50,7 +59,7 @@ namespace Moonfish.Guerilla.Tags
             this.color = binaryReader.ReadVector4();
             this.invalidName_0 = binaryReader.ReadBytes(84);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -64,7 +73,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        ErrorReportVerticesBlock[] ReadErrorReportVerticesBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportVerticesBlock[] ReadErrorReportVerticesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportVerticesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -79,7 +88,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ErrorReportVectorsBlock[] ReadErrorReportVectorsBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportVectorsBlock[] ReadErrorReportVectorsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportVectorsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -94,7 +103,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ErrorReportLinesBlock[] ReadErrorReportLinesBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportLinesBlock[] ReadErrorReportLinesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportLinesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -109,7 +118,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ErrorReportTrianglesBlock[] ReadErrorReportTrianglesBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportTrianglesBlock[] ReadErrorReportTrianglesBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportTrianglesBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -124,7 +133,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ErrorReportQuadsBlock[] ReadErrorReportQuadsBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportQuadsBlock[] ReadErrorReportQuadsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportQuadsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -139,7 +148,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        ErrorReportCommentsBlock[] ReadErrorReportCommentsBlockArray(BinaryReader binaryReader)
+        internal  virtual ErrorReportCommentsBlock[] ReadErrorReportCommentsBlockArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(ErrorReportCommentsBlock));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -157,9 +166,9 @@ namespace Moonfish.Guerilla.Tags
         internal enum Type : short
         {
             Silent = 0,
-            Comment = 0,
-            Warning = 0,
-            Error = 0,
+            Comment = 1,
+            Warning = 2,
+            Error = 3,
         };
         internal enum Flags : short
         {

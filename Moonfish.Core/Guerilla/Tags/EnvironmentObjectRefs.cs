@@ -7,15 +7,24 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class EnvironmentObjectRefs
+    [LayoutAttribute(Size = 28)]
+    public  partial class EnvironmentObjectRefs : EnvironmentObjectRefsBase
     {
-        Flags flags;
-        byte[] invalidName_;
-        int firstSector;
-        int lastSector;
-        EnvironmentObjectBspRefs[] bsps;
-        EnvironmentObjectNodes[] nodes;
-        internal  EnvironmentObjectRefs(BinaryReader binaryReader)
+        public  EnvironmentObjectRefs(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 28)]
+    public class EnvironmentObjectRefsBase
+    {
+        internal Flags flags;
+        internal byte[] invalidName_;
+        internal int firstSector;
+        internal int lastSector;
+        internal EnvironmentObjectBspRefs[] bsps;
+        internal EnvironmentObjectNodes[] nodes;
+        internal  EnvironmentObjectRefsBase(BinaryReader binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
@@ -24,7 +33,7 @@ namespace Moonfish.Guerilla.Tags
             this.bsps = ReadEnvironmentObjectBspRefsArray(binaryReader);
             this.nodes = ReadEnvironmentObjectNodesArray(binaryReader);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -38,7 +47,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
-        EnvironmentObjectBspRefs[] ReadEnvironmentObjectBspRefsArray(BinaryReader binaryReader)
+        internal  virtual EnvironmentObjectBspRefs[] ReadEnvironmentObjectBspRefsArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(EnvironmentObjectBspRefs));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);
@@ -53,7 +62,7 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
-        EnvironmentObjectNodes[] ReadEnvironmentObjectNodesArray(BinaryReader binaryReader)
+        internal  virtual EnvironmentObjectNodes[] ReadEnvironmentObjectNodesArray(BinaryReader binaryReader)
         {
             var elementSize = Deserializer.SizeOf(typeof(EnvironmentObjectNodes));
             var blamPointer = binaryReader.ReadBlamPointer(elementSize);

@@ -7,25 +7,34 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspbackgroundsoundPaletteblock
+    [LayoutAttribute(Size = 100)]
+    public  partial class StructureBspBackgroundSoundPaletteBlock : StructureBspBackgroundSoundPaletteBlockBase
     {
-        Moonfish.Tags.String32 name;
+        public  StructureBspBackgroundSoundPaletteBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 100)]
+    public class StructureBspBackgroundSoundPaletteBlockBase
+    {
+        internal Moonfish.Tags.String32 name;
         [TagReference("lsnd")]
-        Moonfish.Tags.TagReference backgroundSound;
+        internal Moonfish.Tags.TagReference backgroundSound;
         /// <summary>
         /// Play only when player is inside cluster.
         /// </summary>
         [TagReference("lsnd")]
-        Moonfish.Tags.TagReference insideClusterSound;
-        byte[] invalidName_;
-        float cutoffDistance;
-        ScaleFlags scaleFlags;
-        float interiorScale;
-        float portalScale;
-        float exteriorScale;
-        float interpolationSpeed1Sec;
-        byte[] invalidName_0;
-        internal  StructureBspbackgroundsoundPaletteblock(BinaryReader binaryReader)
+        internal Moonfish.Tags.TagReference insideClusterSound;
+        internal byte[] invalidName_;
+        internal float cutoffDistance;
+        internal ScaleFlags scaleFlags;
+        internal float interiorScale;
+        internal float portalScale;
+        internal float exteriorScale;
+        internal float interpolationSpeed1Sec;
+        internal byte[] invalidName_0;
+        internal  StructureBspBackgroundSoundPaletteBlockBase(BinaryReader binaryReader)
         {
             this.name = binaryReader.ReadString32();
             this.backgroundSound = binaryReader.ReadTagReference();
@@ -39,7 +48,7 @@ namespace Moonfish.Guerilla.Tags
             this.interpolationSpeed1Sec = binaryReader.ReadSingle();
             this.invalidName_0 = binaryReader.ReadBytes(8);
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

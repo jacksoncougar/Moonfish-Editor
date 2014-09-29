@@ -7,14 +7,23 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class StructureBspFogPlaneblock
+    [LayoutAttribute(Size = 24)]
+    public  partial class StructureBspFogPlaneBlock : StructureBspFogPlaneBlockBase
     {
-        short scenarioPlanarFogIndex;
-        byte[] invalidName_;
-        OpenTK.Vector4 plane;
-        Flags flags;
-        short priority;
-        internal  StructureBspFogPlaneblock(BinaryReader binaryReader)
+        public  StructureBspFogPlaneBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 24)]
+    public class StructureBspFogPlaneBlockBase
+    {
+        internal short scenarioPlanarFogIndex;
+        internal byte[] invalidName_;
+        internal OpenTK.Vector4 plane;
+        internal Flags flags;
+        internal short priority;
+        internal  StructureBspFogPlaneBlockBase(BinaryReader binaryReader)
         {
             this.scenarioPlanarFogIndex = binaryReader.ReadInt16();
             this.invalidName_ = binaryReader.ReadBytes(2);
@@ -22,7 +31,7 @@ namespace Moonfish.Guerilla.Tags
             this.flags = (Flags)binaryReader.ReadInt16();
             this.priority = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

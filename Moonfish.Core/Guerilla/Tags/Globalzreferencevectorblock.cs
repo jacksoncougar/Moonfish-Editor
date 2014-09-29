@@ -7,20 +7,29 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class GlobalZReferenceVectorBlock
+    [LayoutAttribute(Size = 16)]
+    public  partial class GlobalZReferenceVectorBlock : GlobalZReferenceVectorBlockBase
     {
-        float invalidName_;
-        float invalidName_0;
-        float invalidName_1;
-        float invalidName_2;
-        internal  GlobalZReferenceVectorBlock(BinaryReader binaryReader)
+        public  GlobalZReferenceVectorBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 16)]
+    public class GlobalZReferenceVectorBlockBase
+    {
+        internal float invalidName_;
+        internal float invalidName_0;
+        internal float invalidName_1;
+        internal float invalidName_2;
+        internal  GlobalZReferenceVectorBlockBase(BinaryReader binaryReader)
         {
             this.invalidName_ = binaryReader.ReadSingle();
             this.invalidName_0 = binaryReader.ReadSingle();
             this.invalidName_1 = binaryReader.ReadSingle();
             this.invalidName_2 = binaryReader.ReadSingle();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];

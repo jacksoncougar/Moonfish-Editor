@@ -7,19 +7,28 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    class PathfindingHintsBlock
+    [LayoutAttribute(Size = 20)]
+    public  partial class PathfindingHintsBlock : PathfindingHintsBlockBase
     {
-        HintType hintType;
-        short nextHintIndex;
-        short hintData0;
-        short hintData1;
-        short hintData2;
-        short hintData3;
-        short hintData4;
-        short hintData5;
-        short hintData6;
-        short hintData7;
-        internal  PathfindingHintsBlock(BinaryReader binaryReader)
+        public  PathfindingHintsBlock(BinaryReader binaryReader): base(binaryReader)
+        {
+            
+        }
+    };
+    [LayoutAttribute(Size = 20)]
+    public class PathfindingHintsBlockBase
+    {
+        internal HintType hintType;
+        internal short nextHintIndex;
+        internal short hintData0;
+        internal short hintData1;
+        internal short hintData2;
+        internal short hintData3;
+        internal short hintData4;
+        internal short hintData5;
+        internal short hintData6;
+        internal short hintData7;
+        internal  PathfindingHintsBlockBase(BinaryReader binaryReader)
         {
             this.hintType = (HintType)binaryReader.ReadInt16();
             this.nextHintIndex = binaryReader.ReadInt16();
@@ -32,7 +41,7 @@ namespace Moonfish.Guerilla.Tags
             this.hintData6 = binaryReader.ReadInt16();
             this.hintData7 = binaryReader.ReadInt16();
         }
-        byte[] ReadData(BinaryReader binaryReader)
+        internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
             var blamPointer = binaryReader.ReadBlamPointer(1);
             var data = new byte[blamPointer.Count];
@@ -49,13 +58,13 @@ namespace Moonfish.Guerilla.Tags
         internal enum HintType : short
         {
             IntersectionLink = 0,
-            JumpLink = 0,
-            ClimbLink = 0,
-            VaultLink = 0,
-            MountLink = 0,
-            HoistLink = 0,
-            WallJumpLink = 0,
-            BreakableFloor = 0,
+            JumpLink = 1,
+            ClimbLink = 2,
+            VaultLink = 3,
+            MountLink = 4,
+            HoistLink = 5,
+            WallJumpLink = 6,
+            BreakableFloor = 7,
         };
     };
 }
