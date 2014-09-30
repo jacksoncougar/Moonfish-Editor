@@ -5,7 +5,6 @@ using System.Text;
 using System.IO;
 using Moonfish.Model;
 using OpenTK;
-using Moonfish.Definitions;
 using Moonfish.Tags;
 
 namespace Moonfish
@@ -67,17 +66,6 @@ namespace Moonfish
         //{
         //    return new Vector3T(binary_reader.ReadUInt32());
         //}
-
-        public static void Write(this BinaryWriter binary_writer, IDefinition definition)
-        {
-            binary_writer.Write(definition.ToArray());
-        }
-        public static T ReadDefinition<T>(this BinaryReader binary_reader) where T : IDefinition, new()
-        {
-            var item = new T();
-            item.FromArray(binary_reader.ReadBytes(item.Size));
-            return item;
-        }
 
         public static void Write(this BinaryWriter binary_writer, Quaternion quaternion)
         {

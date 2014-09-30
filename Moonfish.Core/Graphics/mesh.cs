@@ -1,7 +1,5 @@
-﻿using Moonfish.Definitions;
-using Moonfish.Guerilla.Tags;
+﻿using Moonfish.Guerilla.Tags;
 using Moonfish.Model;
-using Moonfish.Structures;
 using Moonfish.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;

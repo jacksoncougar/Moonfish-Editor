@@ -126,7 +126,7 @@ namespace Moonfish
         /// <param name="source">TagBlock object which to perform parsing on and copying from</param>
         /// <param name="stream">Destination stream for copied data</param>
         /// <returns>true</returns>
-        public static bool Map(TagBlock source, Stream stream)
+        public static bool Map(object source, Stream stream)
         {
             /* Intent: Using the TagBlock which is passed in, calculate all Pointers—count and address—
              * values for the new position in the stream. Copy all the bytes from the TagBlocks
@@ -141,7 +141,7 @@ namespace Moonfish
             (source as IPointable).CopyTo(stream);                                          /* This method is a recursive two-pass into the TagBlock which 
                                                                                              * will update internal properties before copying to the stream */
             stream.Position = start_offset;                                                 // Move the stream back to our stored offset
-            stream.Write(source.GetMemory().ToArray(), 0, block_size);                      // Write the TagBlock internal memory to the stream
+            //tream.Write(source.GetMemory().ToArray(), 0, block_size);                      // Write the TagBlock internal memory to the stream
             return true;
         }
 

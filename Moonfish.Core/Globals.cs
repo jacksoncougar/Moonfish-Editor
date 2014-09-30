@@ -132,12 +132,6 @@ namespace Moonfish
             return definedTagGroupsDictionary[className];
         }
 
-        public static TagBlock CreateInstance( TagClass className )
-        {
-            Type tagblock_type = definedTagGroupsDictionary[className];
-            return Activator.CreateInstance( tagblock_type ) as TagBlock;
-        }
-
         internal static void ActiveMap( MapStream mapstream )
         {
             mapStream = mapstream;
