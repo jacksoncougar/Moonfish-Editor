@@ -24,7 +24,7 @@ namespace Moonfish.Graphics
             set
             {
                 base.Position = value;
-                CalculateViewProjectionMatrix();
+                CalculateViewProjectionMatrix( );
             }
         }
         public new Quaternion Rotation
@@ -36,7 +36,7 @@ namespace Moonfish.Graphics
             set
             {
                 base.Rotation = value;
-                CalculateViewProjectionMatrix();
+                CalculateViewProjectionMatrix( );
             }
         }
 
@@ -47,56 +47,59 @@ namespace Moonfish.Graphics
 
         #region Public Methods
 
-        public void Update()
+        public void Update( )
         {
-            Position = track.WorldMatrix.ExtractTranslation();
-            Rotation = track.WorldMatrix.ExtractRotation();
-            if (CameraUpdated != null) CameraUpdated(this, new CameraEventArgs(this));
+            Position = track.WorldMatrix.ExtractTranslation( );
+            Rotation = track.WorldMatrix.ExtractRotation( );
+            if( CameraUpdated != null ) CameraUpdated( this, new CameraEventArgs( this ) );
         }
 
         Vector2 previousMouseCoordinate;
-        public void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseDown( object sender, System.Windows.Forms.MouseEventArgs e )
         {
-            if (this.MouseDown != null) this.MouseDown(this, e);
+            if( this.MouseDown != null ) this.MouseDown( this, e );
         }
-        public void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseUp( object sender, System.Windows.Forms.MouseEventArgs e )
         {
-            if (this.MouseUp != null) MouseUp(this, e);
+            if( this.MouseUp != null ) MouseUp( this, e );
         }
-        public void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void OnMouseMove( object sender, System.Windows.Forms.MouseEventArgs e )
         {
-            var mouseState = Mouse.GetState();
-            var keyboardState = Keyboard.GetState();
-            var currentMouseCoordinate = new Vector2(e.X, e.Y);
-            if (keyboardState.IsKeyDown(Key.ShiftLeft) && (mouseState[MouseButton.Middle] || (mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft])))
+            var mouseState = Mouse.GetState( );
+            var keyboardState = Keyboard.GetState( );
+            var currentMouseCoordinate = new Vector2( e.X, e.Y );
+            if( keyboardState.IsKeyDown( Key.ShiftLeft ) && ( mouseState[MouseButton.Middle]
+                || ( mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft] ) ) )
             {
-                var d = 5;
-                var previousMouseWorldCoordinate = Maths.Project(ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
-                var mouseWorldCoordinate = Maths.Project(ViewMatrix, ProjectionMatrix, currentMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
+                var dd = ( this.Position - Vector3.Zero ).Length;
+                var d = dd;
+                var previousMouseWorldCoordinate = Maths.Project( ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View );
+                var mouseWorldCoordinate = Maths.Project( ViewMatrix, ProjectionMatrix, currentMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View );
                 var delta = mouseWorldCoordinate - previousMouseWorldCoordinate;
                 delta *= d;
-                panTrack.Update(delta.X, delta.Y);
+                panTrack.Update( delta.X, delta.Y );
             }
-            else if (keyboardState.IsKeyDown(Key.AltLeft) && (mouseState[MouseButton.Middle] || (mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft])))
+            else if( keyboardState.IsKeyDown( Key.AltLeft ) && ( mouseState[MouseButton.Middle]
+                || ( mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft] ) ) )
             {
-                var previousMouseWorldCoordinate = Maths.Project(ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
-                var mouseWorldCoordinate = Maths.Project(ViewMatrix, ProjectionMatrix, currentMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View);
+                var previousMouseWorldCoordinate = Maths.Project( ViewMatrix, Viewport.ProjectionMatrix, previousMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View );
+                var mouseWorldCoordinate = Maths.Project( ViewMatrix, ProjectionMatrix, currentMouseCoordinate, (Rectangle)Viewport, Maths.ProjectionTarget.View );
                 var delta = mouseWorldCoordinate - previousMouseWorldCoordinate;
                 delta *= 10;
-                zoomTrack.Update(delta.Y);
+                zoomTrack.Update( delta.Y, keyboardState[Key.ControlLeft] ? 2.5f : 1.0f );
             }
-            else if (mouseState[MouseButton.Middle] || (mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft]))
+            else if( mouseState[MouseButton.Middle] || ( mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft] ) )
             {
                 var delta = currentMouseCoordinate - previousMouseCoordinate;
                 //delta *= 10;
-                orbitTrack.Update(delta.X, delta.Y);
+                orbitTrack.Update( delta.X, delta.Y);
             }
-            if (this.MouseMove != null) this.MouseMove(this, new MouseEventArgs(this, new Vector2(e.X, e.Y), default(Vector3), e.Button));
+            if( this.MouseMove != null ) this.MouseMove( this, new MouseEventArgs( this, new Vector2( e.X, e.Y ), default( Vector3 ), e.Button ) );
             previousMouseCoordinate = currentMouseCoordinate;
         }
-        public void OnMouseCaptureChanged(object sender, EventArgs e)
+        public void OnMouseCaptureChanged( object sender, EventArgs e )
         {
-            if (this.MouseCaptureChanged != null) this.MouseCaptureChanged(this, e);
+            if( this.MouseCaptureChanged != null ) this.MouseCaptureChanged( this, e );
         }
 
         #endregion
@@ -113,57 +116,57 @@ namespace Moonfish.Graphics
 
         #region Private Methods
 
-        void CalculateViewProjectionMatrix()
+        void CalculateViewProjectionMatrix( )
         {
-            var view_matrix = Matrix4.Invert(track.WorldMatrix);
+            var view_matrix = Matrix4.Invert( track.WorldMatrix );
             var projection_matrix = viewport.ProjectionMatrix;
 
             this.ViewMatrix = view_matrix;
             this.ProjectionMatrix = projection_matrix;
 
             Matrix4 view_projection_matrix;
-            Matrix4.Mult(ref view_matrix, ref projection_matrix, out view_projection_matrix);
-            OnViewProjectionMatrixChanged(new MatrixChangedEventArgs(ref view_projection_matrix));
-            OnViewMatrixChanged(new MatrixChangedEventArgs(ref view_matrix));
+            Matrix4.Mult( ref view_matrix, ref projection_matrix, out view_projection_matrix );
+            OnViewProjectionMatrixChanged( new MatrixChangedEventArgs( ref view_projection_matrix ) );
+            OnViewMatrixChanged( new MatrixChangedEventArgs( ref view_matrix ) );
         }
 
-        void viewport_ProjectionChanged(object sender, MatrixChangedEventArgs e)
+        void viewport_ProjectionChanged( object sender, MatrixChangedEventArgs e )
         {
-            CalculateViewProjectionMatrix();
+            CalculateViewProjectionMatrix( );
         }
 
-        void OnViewProjectionMatrixChanged(MatrixChangedEventArgs e)
+        void OnViewProjectionMatrixChanged( MatrixChangedEventArgs e )
         {
-            if (ViewProjectionMatrixChanged != null)
-                ViewProjectionMatrixChanged(this, e);
+            if( ViewProjectionMatrixChanged != null )
+                ViewProjectionMatrixChanged( this, e );
         }
 
-        void OnViewMatrixChanged(MatrixChangedEventArgs e)
+        void OnViewMatrixChanged( MatrixChangedEventArgs e )
         {
-            if (ViewMatrixChanged != null)
-                ViewMatrixChanged(this, e);
+            if( ViewMatrixChanged != null )
+                ViewMatrixChanged( this, e );
         }
 
         #endregion
 
         #region Constructors
-        public Camera()
+        public Camera( )
         {
-            viewport = new Viewport();
-            track = new Track();
+            viewport = new Viewport( );
+            track = new Track( );
 
-            track.Parent = panTrack = new PanTrack(track);
-            track.Parent.Parent = orbitTrack = new OrbitTrack(track);
-            track.Parent.Parent.Parent = zoomTrack = new ZoomTrack(track);
+            track.Parent = panTrack = new PanTrack( track );
+            track.Parent.Parent = orbitTrack = new OrbitTrack( track );
+            track.Parent.Parent.Parent = zoomTrack = new ZoomTrack( track );
 
-            zoomTrack.Zoom(-5f);
+            zoomTrack.Zoom( -5f );
 
             viewport.ProjectionChanged += viewport_ProjectionChanged;
 
-            orbitTrack.Update(70, 60);
-            zoomTrack.Update(-5);
+            orbitTrack.Update( 70, 60 );
+            zoomTrack.Update( -5 );
 
-            this.Update();
+            this.Update( );
         }
         #endregion
 
@@ -185,13 +188,13 @@ namespace Moonfish.Graphics
 
         #endregion
 
-        internal float CreateScale(Vector3 origin, float halfExtents, float pixelSize)
+        internal float CreateScale( Vector3 origin, float halfExtents, float pixelSize )
         {
             var pointA = origin;
             var pointB = origin + this.WorldMatrix.Row0.Xyz * halfExtents;
-            var screenPointA = this.UnProject(pointA, Maths.ProjectionTarget.View);
-            var screenPointB = this.UnProject(pointB, Maths.ProjectionTarget.View);
-            var currentPixelSize = (screenPointB - screenPointA).Length;
+            var screenPointA = this.UnProject( pointA, Maths.ProjectionTarget.View );
+            var screenPointB = this.UnProject( pointB, Maths.ProjectionTarget.View );
+            var currentPixelSize = ( screenPointB - screenPointA ).Length;
 
             var scale = pixelSize / currentPixelSize;
             return scale;
@@ -201,7 +204,7 @@ namespace Moonfish.Graphics
     {
         public Camera Camera;
 
-        public CameraEventArgs(Camera camera)
+        public CameraEventArgs( Camera camera )
         {
             this.Camera = camera;
         }
@@ -222,11 +225,11 @@ namespace Moonfish.Graphics
             get { return width; }
             set
             {
-                if (isValidWidth(value))
+                if( isValidWidth( value ) )
                 {
                     width = value;
-                    CalculateProjectionMatrix();
-                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
+                    CalculateProjectionMatrix( );
+                    if( this.ViewportChanged != null ) this.ViewportChanged( this, new ViewportEventArgs( (Rectangle)this ) );
                 }
             }
         }
@@ -235,25 +238,25 @@ namespace Moonfish.Graphics
             get { return height; }
             set
             {
-                if (isValidHeight(value))
+                if( isValidHeight( value ) )
                 {
                     height = value;
-                    CalculateProjectionMatrix();
-                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
+                    CalculateProjectionMatrix( );
+                    if( this.ViewportChanged != null ) this.ViewportChanged( this, new ViewportEventArgs( (Rectangle)this ) );
                 }
             }
         }
         public Size Size
         {
-            get { return new Size(width, height); }
+            get { return new Size( width, height ); }
             set
             {
-                if (isValidWidth(value.Width) && isValidHeight(value.Height))
+                if( isValidWidth( value.Width ) && isValidHeight( value.Height ) )
                 {
                     width = value.Width;
                     height = value.Height;
-                    CalculateProjectionMatrix();
-                    if (this.ViewportChanged != null) this.ViewportChanged(this, new ViewportEventArgs((Rectangle)this));
+                    CalculateProjectionMatrix( );
+                    if( this.ViewportChanged != null ) this.ViewportChanged( this, new ViewportEventArgs( (Rectangle)this ) );
                 }
             }
         }
@@ -275,15 +278,15 @@ namespace Moonfish.Graphics
         #endregion
 
         #region Private Methods
-        bool isValidWidth(int value)
+        bool isValidWidth( int value )
         {
-            return (value > 0 && value <= max_width_8k);
+            return ( value > 0 && value <= max_width_8k );
         }
-        bool isValidHeight(int value)
+        bool isValidHeight( int value )
         {
-            return (value > 0 && value <= max_height_8k);
+            return ( value > 0 && value <= max_height_8k );
         }
-        void CalculateProjectionMatrix()
+        void CalculateProjectionMatrix( )
         {
             var aspect_ratio = (float)Width / (float)Height;
             Matrix4.CreatePerspectiveFieldOfView(
@@ -291,18 +294,18 @@ namespace Moonfish.Graphics
                 aspect_ratio,
                 z_near,
                 z_far,
-                out projection_matrix);
-            OnProjectionChanged(new MatrixChangedEventArgs(ref projection_matrix));
+                out projection_matrix );
+            OnProjectionChanged( new MatrixChangedEventArgs( ref projection_matrix ) );
         }
-        void OnProjectionChanged(MatrixChangedEventArgs e)
+        void OnProjectionChanged( MatrixChangedEventArgs e )
         {
-            if (ProjectionChanged != null)
-                ProjectionChanged(this, e);
+            if( ProjectionChanged != null )
+                ProjectionChanged( this, e );
         }
         #endregion
 
         #region Constructors
-        public Viewport()
+        public Viewport( )
         {
             ProjectionChanged = null;
             width = default_width;
@@ -311,14 +314,14 @@ namespace Moonfish.Graphics
             z_far = 500.0f;
             field_of_view = (float)Math.PI / 4;
             projection_matrix = Matrix4.Identity;
-            CalculateProjectionMatrix();
+            CalculateProjectionMatrix( );
         }
         #endregion
 
         #region Conversion Operator
-        public static explicit operator Rectangle(Viewport viewport)
+        public static explicit operator Rectangle( Viewport viewport )
         {
-            var rectangle = new Rectangle(0, 0, viewport.width, viewport.height);
+            var rectangle = new Rectangle( 0, 0, viewport.width, viewport.height );
             return rectangle;
         }
         #endregion
@@ -331,7 +334,7 @@ namespace Moonfish.Graphics
         {
             public Rectangle Viewport;
 
-            public ViewportEventArgs(Rectangle viewport)
+            public ViewportEventArgs( Rectangle viewport )
             {
                 this.Viewport = viewport;
             }
@@ -343,22 +346,22 @@ namespace Moonfish.Graphics
     {
         public Matrix4 Delta;
         public Matrix4 Matrix;
-        public MatrixChangedEventArgs(ref Matrix4 view_projection_matrix)
+        public MatrixChangedEventArgs( ref Matrix4 view_projection_matrix )
         {
             Matrix = view_projection_matrix;
         }
 
-        public MatrixChangedEventArgs(Matrix4 beforeMatrix, Matrix4 afterMatrix)
+        public MatrixChangedEventArgs( Matrix4 beforeMatrix, Matrix4 afterMatrix )
         {
-            Delta = beforeMatrix.Inverted() * afterMatrix;
+            Delta = beforeMatrix.Inverted( ) * afterMatrix;
             Matrix = afterMatrix;
         }
     }
 
-    public delegate void ProjectionMatrixChangedEventHandler(object sender, MatrixChangedEventArgs e);
+    public delegate void ProjectionMatrixChangedEventHandler( object sender, MatrixChangedEventArgs e );
 
-    public delegate void ViewMatrixChangedEventHandler(object sender, MatrixChangedEventArgs e);
+    public delegate void ViewMatrixChangedEventHandler( object sender, MatrixChangedEventArgs e );
 
-    public delegate void ViewProjectionMatrixChangedEventHandler(object sender, MatrixChangedEventArgs e);
+    public delegate void ViewProjectionMatrixChangedEventHandler( object sender, MatrixChangedEventArgs e );
 
 }

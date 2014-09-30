@@ -7,8 +7,14 @@ in int compressedNormal;
 uniform mat4 objectExtents;
 uniform mat4 objectWorldMatrix;
 uniform mat4 viewProjectionMatrix;
+uniform mat4 viewMatrix;
 
-smooth out vec4 frag_diffuse_color;
+uniform vec4 diffuseColourUniform;
+uniform vec3 LightPositionUniform;
+
+smooth out vec4 lightPosition;
+smooth out vec4 diffuseColour;
+smooth out vec3 normal;
 smooth out vec3 vertexPosition;
 
 vec3 decompress(in int compressedNormal)
@@ -41,9 +47,13 @@ vec3 decompress(in int compressedNormal)
 
 void main()
 {
-	mat3 normalMatrix = mat3(viewProjectionMatrix);
-    gl_Position = viewProjectionMatrix  * objectWorldMatrix * objectExtents * position;
+	mat3 normalMatrix = mat3(viewMatrix);	
 	
-	vertexPosition = gl_Position.xyz;
-	frag_diffuse_color = vec4(normalMatrix * decompress(compressedNormal), 1.0);
+	diffuseColour = diffuseColourUniform;
+	vertexPosition = vec3(viewMatrix  * objectWorldMatrix * objectExtents * position);
+	normal = normalize(normalMatrix * decompress(compressedNormal));
+	
+	lightPosition = viewMatrix * vec4(LightPositionUniform, 1);
+	
+    gl_Position = viewProjectionMatrix  * objectWorldMatrix * objectExtents * position;
 }

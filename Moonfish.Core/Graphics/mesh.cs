@@ -26,127 +26,130 @@ namespace Moonfish.Graphics
         int mVAO_id;
         List<int> mVBO_ids;
 
-        public int VertexCount { get { return sectionBlock.sectionInfo.totalVertexCount; } }
-        public int IndexCount { get { return sectionBlock.sectionData[0].section.stripIndices.Length; } }
         public GlobalGeometryPartBlockNew[] Parts
         {
-            get
-            {
-                if (sectionBlock != null)
-                {
-                    var sectionData = sectionBlock.sectionData;
-                    return sectionData.Count() > 0 ? sectionData[0].section.parts : new GlobalGeometryPartBlockNew[0];
-                }
-                else
-                {
-                    return new GlobalGeometryPartBlockNew[0];
-                }
-            }
+            get;
+            private set;
         }
 
-        public Mesh(RenderModelSectionBlock sectionBlock)
+        public Mesh( RenderModelSectionBlock section )
+            : this( section.sectionData[0].section.parts,
+                    section.sectionData[0].section.stripIndices.Select( x => x.index ).ToArray( ),
+                    section.sectionData[0].section.vertexBuffers.Select( x => x.vertexBuffer ).ToArray( ) )
         {
-            this.sectionBlock = sectionBlock;
-            BufferMeshResources(sectionBlock);
         }
 
-        public IDisposable Bind()
+        public Mesh( GlobalGeometryPartBlockNew[] parts, short[] indices, VertexBuffer[] vertexArrayBufferData )
+        {
+            this.Parts = parts;
+            mVBO_ids = new List<int>( );
+            mVAO_id = GL.GenVertexArray( );
+            GL.BindVertexArray( mVAO_id );
+
+            BufferElementArrayData( indices );
+            BufferVertexAttributeData( vertexArrayBufferData );
+
+            GL.BindVertexArray( 0 );
+        }
+
+        public Mesh( StructureBspClusterBlock cluster )
+
+            : this( cluster.clusterData[0].section.parts,
+                    cluster.clusterData[0].section.stripIndices.Select( x => x.index ).ToArray( ),
+                    cluster.clusterData[0].section.vertexBuffers.Select( x => x.vertexBuffer ).ToArray( ) )
+        {
+        }
+
+        public IDisposable Bind( )
         {
             GL.BindVertexArray( mVAO_id ); OpenGL.ReportError( );
-            return new Handle(0);
+            return new Handle( 0 );
         }
 
-        private void BufferMeshResources(RenderModelSectionBlock section)
+        private void BufferMeshResources( RenderModelSectionBlock section )
         {
-            if (section.sectionData.Count() > 0)
+            if( section.sectionData.Count( ) > 0 )
             {
-                mVBO_ids = new List<int>();
-                mVAO_id = GL.GenVertexArray();
-                GL.BindVertexArray(mVAO_id);
+               
 
-                BufferElementArrayData(section.sectionData[0].section.stripIndices.Select(x => x.index).ToArray());
-
-                BufferVertexAttributeData(section.sectionData[0].section.vertexBuffers.Select(x => x.vertexBuffer).ToArray());
-
-                GL.BindVertexArray(0);
             }
         }
 
-        private void BufferVertexAttributeData(VertexBuffer[] vertexBuffers)
+        private void BufferVertexAttributeData( VertexBuffer[] vertexBuffers )
         {
-            for (int i = 0; i < vertexBuffers.Length; ++i)
+            for( int i = 0; i < vertexBuffers.Length; ++i )
             {
-                if (!Enum.IsDefined(typeof(VertexAttributeType), vertexBuffers[i].Type)) continue;
-                mVBO_ids.Add(GL.GenBuffer());
+                if( !Enum.IsDefined( typeof( VertexAttributeType ), vertexBuffers[i].Type ) ) continue;
+                mVBO_ids.Add( GL.GenBuffer( ) );
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mVBO_ids.Last()); OpenGL.ReportError();
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)vertexBuffers[i].Data.Length, vertexBuffers[i].Data, BufferUsageHint.StaticDraw); OpenGL.ReportError();
-                GL.EnableVertexAttribArray(i); OpenGL.ReportError();
+                GL.BindBuffer( BufferTarget.ArrayBuffer, mVBO_ids.Last( ) ); OpenGL.ReportError( );
+                GL.BufferData( BufferTarget.ArrayBuffer, (IntPtr)vertexBuffers[i].Data.Length, vertexBuffers[i].Data, BufferUsageHint.StaticDraw ); OpenGL.ReportError( );
+                GL.EnableVertexAttribArray( i ); OpenGL.ReportError( );
 
                 var attribute_type = vertexBuffers[i].Type;
-                var attribute_size = attribute_type.GetSize();
-                switch (attribute_type)
+                var attribute_size = attribute_type.GetSize( );
+                switch( attribute_type )
                 {
                     case VertexAttributeType.coordinate_compressed:
-                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 3, VertexAttribPointerType.Short, true, attribute_size, 0 );
                         break;
                     case VertexAttributeType.coordinate_with_single_node:
-                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 3, VertexAttribPointerType.Short, true, attribute_size, 0 );
                         break;
                     case VertexAttributeType.coordinate_with_double_node:
-                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 3, VertexAttribPointerType.Short, true, attribute_size, 0 );
                         break;
                     case VertexAttributeType.coordinate_with_triple_node:
-                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Short, true, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 3, VertexAttribPointerType.Short, true, attribute_size, 0 );
                         break;
                     case VertexAttributeType.texture_coordinate_compressed:
-                        GL.VertexAttribPointer(i, 2, VertexAttribPointerType.Short, true, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 2, VertexAttribPointerType.Short, true, attribute_size, 0 );
                         break;
                     case VertexAttributeType.tangent_space_unit_vectors_compressed:
-                        GL.VertexAttribIPointer(i, 3, VertexAttribIntegerType.Int, attribute_size, IntPtr.Zero);
+                        GL.VertexAttribIPointer( i, 3, VertexAttribIntegerType.Int, attribute_size, IntPtr.Zero );
                         break;
                     case VertexAttributeType.coordinate_float:
-                        GL.VertexAttribPointer(i, 3, VertexAttribPointerType.Float, false, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 3, VertexAttribPointerType.Float, false, attribute_size, 0 );
                         break;
                     case VertexAttributeType.texture_coordinate_float:
-                        GL.VertexAttribPointer(i, 2, VertexAttribPointerType.Float, false, attribute_size, 0);
+                        GL.VertexAttribPointer( i, 2, VertexAttribPointerType.Float, false, attribute_size, 0 );
                         break;
                     default: break;
                 }
-                OpenGL.ReportError();
+                OpenGL.ReportError( );
             }
         }
 
-        private void BufferElementArrayData(short[] indices)
+        private void BufferElementArrayData( short[] indices )
         {
-            mVBO_ids.Add(GL.GenBuffer());
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, mVBO_ids.Last());
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indices.Length * sizeof(short)), indices, BufferUsageHint.StaticDraw);
+            mVBO_ids.Add( GL.GenBuffer( ) );
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, mVBO_ids.Last( ) );
+            GL.BufferData( BufferTarget.ElementArrayBuffer, (IntPtr)( indices.Length * sizeof( short ) ), indices, BufferUsageHint.StaticDraw );
         }
 
-        public void Dispose()
+        public void Dispose( )
         {
             //  Bind default VBA
-            GL.BindVertexArray(0);
+            GL.BindVertexArray( 0 );
             //  Delete VBA buffer
-            GL.DeleteBuffer(mVAO_id);
+            GL.DeleteBuffer( mVAO_id );
             //  Delete VBO buffers
-            GL.DeleteBuffers(mVBO_ids.Count, mVBO_ids.ToArray());
+            GL.DeleteBuffers( mVBO_ids.Count, mVBO_ids.ToArray( ) );
         }
 
         private class Handle : IDisposable
         {
             int previousVAO;
 
-            public Handle(int in_previousVAO)
+            public Handle( int in_previousVAO )
             {
                 previousVAO = in_previousVAO;
             }
 
-            public void Dispose()
+            public void Dispose( )
             {
-                GL.BindVertexArray(previousVAO);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                GL.BindVertexArray( previousVAO );
+                GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
             }
         }
     }
@@ -160,91 +163,91 @@ namespace Moonfish.Graphics
 
         internal void Add( ModelBlock model, TagIdent id )
         {
-            objects[id] = new ScenarioObject(model);
+            objects[id] = new ScenarioObject( model );
         }
 
         public ScenarioObject this[TagIdent ident]
         {
-            get { return this.objects.ContainsKey(ident) ? objects[ident] : null; }
+            get { return this.objects.ContainsKey( ident ) ? objects[ident] : null; }
         }
 
-        public MeshManager(Program program, Program systemProgram)
+        public MeshManager( Program program, Program systemProgram )
         {
-            objects = new Dictionary<TagIdent, ScenarioObject>();
+            objects = new Dictionary<TagIdent, ScenarioObject>( );
             this.program = program;
             this.systemProgram = systemProgram;
         }
 
-        public void LoadScenario(MapStream map)
+        public void LoadScenario( MapStream map )
         {
-            this.scenario = map["scnr", ""].Deserialize();
-            var scenery = scenario.sceneryPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
+            this.scenario = map["scnr", ""].Deserialize( );
+            var scenery = scenario.sceneryPalette.Select( x => new { item = map[x.name.TagID].Deserialize( ), id = x.name.TagID } );
             //var weapons = scenario.weaponPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
             //var vehicles = scenario.vehiclePalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
             //var crates = scenario.cratesPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
             //var equipment = scenario.equipmentPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
 
-            var items = scenery.Select( x => new {Tag = (ObjectBlock)x.item, Ident = x.id} );
-                //.Concat(weapons)
-                //.Concat(vehicles)
-                //.Concat(crates)
-                //.Concat(equipment)
-                ;
+            var items = scenery.Select( x => new { Tag = (ObjectBlock)x.item, Ident = x.id } );
+            //.Concat(weapons)
+            //.Concat(vehicles)
+            //.Concat(crates)
+            //.Concat(equipment)
+            ;
 
-            foreach (var item in items)
+            foreach( var item in items )
             {
-                Add(Halo2.GetReferenceObject(item.Tag.model), item.Ident);
+                Add( Halo2.GetReferenceObject( item.Tag.model ), item.Ident );
             }
 
-            Log.Info(GL.GetError().ToString());
+            Log.Info( GL.GetError( ).ToString( ) );
         }
 
-        public void Draw()
+        public void Draw( )
         {
             if( scenario == null ) return;
-            using (program.Use())
+            using( program.Use( ) )
             {
-                RenderPalette(scenario.sceneryPalette, scenario.scenery);
+                RenderPalette( scenario.sceneryPalette, scenario.scenery );
                 //RenderPalette(scenario.vehiclePalette, scenario.vehicles);
                 //RenderPalette(scenario.equipmentPalette, scenario.equipment);
                 //RenderPalette(scenario.weaponPalette, scenario.weapons);
                 //RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
-        public void Add(TagIdent item)
+        public void Add( TagIdent item )
         {
-            var data = Halo2.GetReferenceObject(item);
+            var data = Halo2.GetReferenceObject( item );
             objects[item] = new ScenarioObject( (ModelBlock)data );
         }
-        public void Draw(TagIdent item)
+        public void Draw( TagIdent item )
         {
-            if (objects.ContainsKey(item))
+            if( objects.ContainsKey( item ) )
             {
                 IRenderable @object = objects[item] as IRenderable;
-                @object.Render(new[] { program, systemProgram });
+                @object.Render( new[] { program, systemProgram } );
             }
             else
             {
-                var data = Halo2.GetReferenceObject(item);
+                var data = Halo2.GetReferenceObject( item );
                 objects[item] = new ScenarioObject( (ModelBlock)data );
             }
         }
 
-        private void RenderPalette(IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances)
+        private void RenderPalette( IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances )
         {
-            foreach (var instance in instances)
+            foreach( var instance in instances )
             {
-                using (program.Use())
+                using( program.Use( ) )
                 {
-                    if ((int)instance.PaletteIndex < 0) continue;
+                    if( (int)instance.PaletteIndex < 0 ) continue;
                     program[Uniforms.WorldMatrix] = (Matrix4)instance.WorldMatrix;
                     IRenderable @object = objects[palette[(int)instance.PaletteIndex].ObjectReference.TagID];
-                    @object.Render(new[] { program });
+                    @object.Render( new[] { program } );
                 }
             }
         }
 
-        internal void LoadHierarchyModels(MapStream map)
+        internal void LoadHierarchyModels( MapStream map )
         {
             //var tags = map.Where(x => x.Type.ToString() == "hlmt").Select(x => new { item = map[x.Identifier].Deserialize(), id = x.Identifier });
             //foreach (var tag in tags)
@@ -253,31 +256,31 @@ namespace Moonfish.Graphics
             //}
         }
 
-        internal void Remove(TagIdent item)
+        internal void Remove( TagIdent item )
         {
-            this.objects.Remove(item);
+            this.objects.Remove( item );
         }
 
-        internal void Clear()
+        internal void Clear( )
         {
-            this.objects.Clear();
+            this.objects.Clear( );
         }
     }
 
     public static class VertexAttributeTypeExtensions
     {
-        public static byte GetSize(this VertexAttributeType attribute_type)
+        public static byte GetSize( this VertexAttributeType attribute_type )
         {
             var value = (short)attribute_type;
-            var size = (byte)(value & 0x00FF);
+            var size = (byte)( value & 0x00FF );
             return size;
         }
 
-        public static VertexAttributeType ReadVertexAttributeType(this BinaryReader binaryReader)
+        public static VertexAttributeType ReadVertexAttributeType( this BinaryReader binaryReader )
         {
-            byte msb = binaryReader.ReadByte();
-            byte lsb = binaryReader.ReadByte();
-            var type = (VertexAttributeType)(msb << 8 | lsb);
+            byte msb = binaryReader.ReadByte( );
+            byte lsb = binaryReader.ReadByte( );
+            var type = (VertexAttributeType)( msb << 8 | lsb );
             return type;
         }
     }

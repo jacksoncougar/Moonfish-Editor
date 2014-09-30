@@ -18,12 +18,12 @@ namespace Moonfish.Graphics
 
         public UniformBuffer UniformBuffer { get; private set; }
 
-        public void BindUniformBuffer(UniformBuffer buffer, int bindingIndex)
+        public void BindUniformBuffer( UniformBuffer buffer, int bindingIndex )
         {
             this.UniformBuffer = buffer;
-            var uniformBlockIndex = GL.GetUniformBlockIndex(program_id, buffer.Name);
-            GL.UniformBlockBinding(program_id, uniformBlockIndex, bindingIndex);
-            OpenGL.ReportError();
+            var uniformBlockIndex = GL.GetUniformBlockIndex( program_id, buffer.Name );
+            GL.UniformBlockBinding( program_id, uniformBlockIndex, bindingIndex );
+            OpenGL.ReportError( );
         }
 
         Dictionary<string, int> uniforms;
@@ -32,61 +32,61 @@ namespace Moonfish.Graphics
 
         public int ID { get { return program_id; } }
 
-        public Program(string name)
+        public Program( string name )
         {
             this.Name = name;
 
-            uniforms = new Dictionary<string, int>();
-            uniformStack = new Dictionary<string, Stack<object>>();
-            globalUniforms = new Dictionary<Uniforms, string>();
+            uniforms = new Dictionary<string, int>( );
+            uniformStack = new Dictionary<string, Stack<object>>( );
+            globalUniforms = new Dictionary<Uniforms, string>( );
             globalUniforms[Uniforms.WorldMatrix] = "objectWorldMatrix";
             globalUniforms[Uniforms.NormalizationMatrix] = "objectExtents";
             globalUniforms[Uniforms.ViewProjectionMatrix] = "viewProjectionMatrix";
 
-            program_id = GL.CreateProgram();
+            program_id = GL.CreateProgram( );
         }
 
-        public void Link(List<Shader> shader_list)
+        public void Link( List<Shader> shader_list )
         {
-            foreach (Shader shader in shader_list)
+            foreach( Shader shader in shader_list )
             {
-                GL.AttachShader(program_id, shader.ID);
+                GL.AttachShader( program_id, shader.ID );
             }
 
-            GL.LinkProgram(program_id);
+            GL.LinkProgram( program_id );
 
             int status;
-            GL.GetProgram(program_id, GetProgramParameterName.LinkStatus, out status);
-            if (status == 0)
+            GL.GetProgram( program_id, GetProgramParameterName.LinkStatus, out status );
+            if( status == 0 )
             {
-                string program_log = GL.GetProgramInfoLog(program_id);
-                MessageBox.Show(String.Format("Linker failure: {0}\n", program_log));
+                string program_log = GL.GetProgramInfoLog( program_id );
+                MessageBox.Show( String.Format( "Linker failure: {0}\n", program_log ) );
             }
-            GL.ValidateProgram(program_id);
+            GL.ValidateProgram( program_id );
             int valid;
-            GL.GetProgram(program_id, GetProgramParameterName.ValidateStatus, out valid);
-            if (valid == 0)
+            GL.GetProgram( program_id, GetProgramParameterName.ValidateStatus, out valid );
+            if( valid == 0 )
             {
-                string program_log = GL.GetProgramInfoLog(program_id);
-                MessageBox.Show(String.Format("Validation failure {0}", program_log));
+                string program_log = GL.GetProgramInfoLog( program_id );
+                MessageBox.Show( String.Format( "Validation failure {0}", program_log ) );
             }
 
-            foreach (Shader shader in shader_list)
+            foreach( Shader shader in shader_list )
             {
-                GL.DetachShader(program_id, shader.ID);
+                GL.DetachShader( program_id, shader.ID );
             }
-            Initialize();
+            Initialize( );
         }
 
-        private void Initialize()
+        private void Initialize( )
         {
         }
 
-        public IDisposable Using(string uniformName, object value)
+        public IDisposable Using( string uniformName, object value )
         {
-            uniformStack[uniformName].Push(value);
-            this[uniformName] = uniformStack[uniformName].Pop();
-            return new UniformHandle(uniformStack[uniformName].Peek(), GetUniformID(uniformName));
+            uniformStack[uniformName].Push( value );
+            this[uniformName] = uniformStack[uniformName].Pop( );
+            return new UniformHandle( uniformStack[uniformName].Peek( ), GetUniformID( uniformName ) );
         }
 
         private class UniformHandle : IDisposable
@@ -94,13 +94,13 @@ namespace Moonfish.Graphics
             Object previous_uniform_value;
             int uniform_id;
 
-            public UniformHandle(Object previousUniformValue, int uniformID)
+            public UniformHandle( Object previousUniformValue, int uniformID )
             {
                 previous_uniform_value = previousUniformValue;
                 uniform_id = uniformID;
             }
 
-            public void Dispose()
+            public void Dispose( )
             {
                 // Program.SetUniform(previous_uniform_value, uniform_id);
             }
@@ -111,19 +111,20 @@ namespace Moonfish.Graphics
             set
             {
                 int uid;
-                uid = GetUniformID(uniform_name);
-                if (!uniformStack.ContainsKey(uniform_name))
+                uid = GetUniformID( uniform_name );
+                if( uid == -1 ) return;
+                if( !uniformStack.ContainsKey( uniform_name ) )
                 {
-                    uniformStack[uniform_name] = new Stack<object>();
-                    uniformStack[uniform_name].Push(value);
+                    uniformStack[uniform_name] = new Stack<object>( );
+                    uniformStack[uniform_name].Push( value );
                 }
-                SetUniform(value, uid);
+                SetUniform( value, uid );
             }
             get
             {
-                if (uniformStack.ContainsKey(uniform_name))
+                if( uniformStack.ContainsKey( uniform_name ) )
                 {
-                    return uniformStack[uniform_name].Peek();
+                    return uniformStack[uniform_name].Peek( );
                 }
                 return null;
 
@@ -143,73 +144,90 @@ namespace Moonfish.Graphics
             }
         }
 
-        private int GetUniformID(string uniform_name)
+        private int GetUniformID( string uniform_name )
         {
             int uid;
-            if (uniforms.ContainsKey(uniform_name))
+            if( uniforms.ContainsKey( uniform_name ) )
                 uid = uniforms[uniform_name];
             else
             {
-                GL.UseProgram(this.program_id);
-                uid = uniforms[uniform_name] = GL.GetUniformLocation(ID, uniform_name);
+                GL.UseProgram( this.program_id );
+                uid = uniforms[uniform_name] = GL.GetUniformLocation( ID, uniform_name );
             }
             return uid;
         }
 
-        private void SetUniform(object value, int uid)
+        private void SetUniform( object value, int uid )
         {
-            Type t = value.GetType();
-            if (t == typeof(Matrix4))
+            Type t = value.GetType( );
+            if( t == typeof( Matrix4 ) )
             {
                 var temp = (Matrix4)value;
-                GL.UseProgram(this.program_id);
-                GL.UniformMatrix4(uid, false, ref temp);
+                GL.UseProgram( this.program_id );
+                GL.UniformMatrix4( uid, false, ref temp );
             }
-            else if (t == typeof(Matrix3))
+            else if( t == typeof( Matrix3 ) )
             {
                 var temp = (Matrix3)value;
-                GL.UseProgram(this.program_id);
-                GL.UniformMatrix3(uid, false, ref temp);
+                GL.UseProgram( this.program_id );
+                GL.UniformMatrix3( uid, false, ref temp );
             }
-            else if (t == typeof(Vector3))
+            else if( t == typeof( Vector3 ) )
             {
-                GL.UseProgram(this.program_id);
-                GL.Uniform3(uid, (Vector3)value);
+                GL.UseProgram( this.program_id );
+                GL.Uniform3( uid, (Vector3)value );
             }
-            else if (t == typeof(float))
+            else if( t == typeof( float ) )
             {
                 var temp = (float)value;
-                GL.UseProgram(this.program_id);
-                GL.Uniform1(uid, temp);
+                GL.UseProgram( this.program_id );
+                GL.Uniform1( uid, temp );
             }
-            else throw new InvalidDataException();
+            else if( t.IsArray && t.GetElementType( ) == typeof( float ) )
+            {
+                var temp = (float[])value;
+                GL.UseProgram( this.program_id );
+                switch( temp.Length )
+                {
+                    case 1:
+                        GL.Uniform1( uid, 1, temp ); break;
+                    case 2:
+                        GL.Uniform2( uid, 1, temp ); break;
+                    case 3:
+                        GL.Uniform3( uid, 1, temp ); break;
+                    case 4:
+                        GL.Uniform4( uid, 1, temp ); break;
+                }
+                OpenGL.ReportError( );
+            }
+            else throw new InvalidDataException( );
         }
 
-        public IDisposable Use()
+        public IDisposable Use( )
         {
-            GL.UseProgram(this.ID);
-            return new Handle(0);
+            GL.UseProgram( this.ID );
+            return new Handle( 0 );
         }
 
         private class Handle : IDisposable
         {
             int previous_program_id;
 
-            public Handle(int prev)
+            public Handle( int prev )
             {
                 previous_program_id = prev;
             }
 
-            public void Dispose()
+            public void Dispose( )
             {
-                GL.UseProgram(previous_program_id);
+                GL.UseProgram( previous_program_id );
             }
         }
 
-        public void Dispose()
+        public void Dispose( )
         {
-            GL.DeleteProgram(this.ID);
-            GL.UseProgram(0);
+            GL.DeleteProgram( this.ID );
+            GL.UseProgram( 0 );
         }
     }
 

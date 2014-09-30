@@ -14,64 +14,71 @@ namespace Moonfish.Graphics
 {
     public interface ISelectable
     {
-        void Select();
+        void Select( );
     }
 
     public interface IRenderable
     {
-        void Render(IEnumerable<Program> shaderPasses);
-        void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances);
+        void Render( IEnumerable<Program> shaderPasses );
+        void Render( IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances );
     }
 
     public class NodeCollection : List<RenderModelNodeBlock>
     {
-        public NodeCollection() : base() { }
-        public NodeCollection(int capacity)
-            : base(capacity)
+        public NodeCollection( ) : base( ) { }
+        public NodeCollection( int capacity )
+            : base( capacity )
         {
         }
-        public NodeCollection(IEnumerable<RenderModelNodeBlock> collection)
-            : base(collection)
+        public NodeCollection( IEnumerable<RenderModelNodeBlock> collection )
+            : base( collection )
         {
         }
-        public Matrix4 GetWorldMatrix(int nodeIndex)
+        public Matrix4 GetWorldMatrix( int nodeIndex )
         {
-            return GetWorldMatrix(this[nodeIndex]);
+            return GetWorldMatrix( this[nodeIndex] );
         }
-        public Matrix4 GetWorldMatrix(RenderModelNodeBlock node)
+        public Matrix4 GetWorldMatrix( RenderModelNodeBlock node )
         {
-            if (!this.Contains(node)) throw new ArgumentOutOfRangeException();
+            if( !this.Contains( node ) ) throw new ArgumentOutOfRangeException( );
 
             var worldMatrix = node.WorldMatrix;
-            if ((int)node.parentNode < 0) return worldMatrix;
-            return worldMatrix * GetWorldMatrix(this[(int)node.parentNode]);
+            if( (int)node.parentNode < 0 ) return worldMatrix;
+            return worldMatrix * GetWorldMatrix( this[(int)node.parentNode] );
         }
     }
 
     public class RenderObject
     {
+        public Color DiffuseColour { get; set; }
+
         List<Mesh> sectionBuffers;
 
-        public RenderObject()
+        public RenderObject( )
         {
-            sectionBuffers = new List<Mesh>();
+            sectionBuffers = new List<Mesh>( );
         }
 
-        public void Render(Program program)
+        public RenderObject( StructureBspClusterBlock x )
         {
-            if (sectionBuffers.Count == 0) return;
+            sectionBuffers = new List<Mesh>( new[] { new Mesh( x ) } );
+        }
+
+        public void Render( Program program )
+        {
+            if( sectionBuffers.Count == 0 ) return;
             program[Uniforms.WorldMatrix] = Matrix4.Identity;
-            using (program.Use())
+            using( program.Use( ) )
             {
                 program[Uniforms.WorldMatrix] = Matrix4.Identity;
                 program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
-                using (sectionBuffers.First().Bind())
+                program["diffuseColourUniform"] = DiffuseColour.ToFloatRgba( );
+                using( sectionBuffers.First( ).Bind( ) )
                 {
-                    GL.UseProgram(program.ID);
-                    foreach (var part in sectionBuffers.First().Parts)
+                    foreach( var part in sectionBuffers.First( ).Parts )
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, part.stripLength, DrawElementsType.UnsignedShort,
-                            (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); 
+                        GL.DrawElements( PrimitiveType.Triangles, part.stripLength, DrawElementsType.UnsignedShort,
+                            (IntPtr)( part.stripStartIndex * 2 ) ); OpenGL.ReportError( );
                     }
                 }
             }
@@ -89,169 +96,170 @@ namespace Moonfish.Graphics
         public StringID activePermuation;
 
         IList<object> selectedObjects;
+        private StructureBspClusterBlock x;
 
 
 
-        public ScenarioObject()
+        public ScenarioObject( )
         {
             activePermuation = StringID.Zero;
-            sectionBuffers = new List<Mesh>();
-            selectedObjects = new List<object>();
-            nodes = new NodeCollection();
+            sectionBuffers = new List<Mesh>( );
+            selectedObjects = new List<object>( );
+            nodes = new NodeCollection( );
         }
         public ScenarioObject( ModelBlock model )
-            : this()
+            : this( )
         {
             this.model = model;
-            foreach (var section in model.RenderModel.sections)
+            foreach( var section in model.RenderModel.sections )
             {
-                sectionBuffers.Add(new Mesh(section));
+                sectionBuffers.Add( new Mesh( section ) );
             }
-            this.nodes = new NodeCollection(model.RenderModel.nodes);
-            this.markers = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToDictionary(x => x, x => new MarkerWrapper(x, this.nodes));
+            this.nodes = new NodeCollection( model.RenderModel.nodes );
+            this.markers = model.RenderModel.markerGroups.SelectMany( x => x.Markers ).ToDictionary( x => x, x => new MarkerWrapper( x, this.nodes ) );
         }
 
         public IEnumerable<StringID> Permutations
         {
             get
             {
-                var query = model.RenderModel.regions.SelectMany(x => x.permutations).Select(x => x.name).Distinct();
+                var query = model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
                 return query;
             }
         }
 
-        void Render(IEnumerable<Program> shaderPasses)
+        void Render( IEnumerable<Program> shaderPasses )
         {
-            foreach (var program in shaderPasses)
+            foreach( var program in shaderPasses )
             {
-                RenderPass(program);
+                RenderPass( program );
             }
 
         }
 
-        private void RenderPass(Program program)
+        private void RenderPass( Program program )
         {
-            if (program.Name != "system")
+            if( program.Name != "system" )
             {
-                using (program.Use())
+                using( program.Use( ) )
                 {
-                    var extents = model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+                    var extents = model.RenderModel.compressionInfo[0].ToExtentsMatrix( );
                     program[Uniforms.NormalizationMatrix] = extents;
-                    foreach (var region in model.RenderModel.regions)
+                    foreach( var region in model.RenderModel.regions )
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
                         var mesh = sectionBuffers[section_index];
-                        using (mesh.Bind())
+                        using( mesh.Bind( ) )
                         {
-                            GL.UseProgram(program.ID);
-                            foreach (var part in mesh.Parts)
+                            GL.UseProgram( program.ID );
+                            foreach( var part in mesh.Parts )
                             {
-                                GL.DrawElements(PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
-                                    (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); 
+                                GL.DrawElements( PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
+                                    (IntPtr)( part.stripStartIndex * 2 ) ); OpenGL.ReportError( );
                             }
                         }
                     }
                 }
             }
-            if (program.Name == "system")
+            if( program.Name == "system" )
             {
-                using (program.Use())
-                using (OpenGL.Disable(EnableCap.DepthTest))
+                using( program.Use( ) )
+                using( OpenGL.Disable( EnableCap.DepthTest ) )
                 {
-                    foreach (var markerGroup in model.RenderModel.markerGroups)
+                    foreach( var markerGroup in model.RenderModel.markerGroups )
                     {
-                        foreach (var marker in markerGroup.markers)
+                        foreach( var marker in markerGroup.markers )
                         {
                             var nodeIndex = marker.nodeIndex;
                             var translation = marker.translation;
                             var rotation = marker.rotation;
                             var scale = marker.scale;
 
-                            var worldMatrix = this.nodes.GetWorldMatrix(nodeIndex);
+                            var worldMatrix = this.nodes.GetWorldMatrix( nodeIndex );
 
                             program[Uniforms.WorldMatrix] = worldMatrix;
 
-                            if (selectedObjects.Contains(marker))
+                            if( selectedObjects.Contains( marker ) )
                             {
-                                GL.VertexAttrib3(1, Color.Black.ToFloatRgba());
-                                DebugDrawer.DrawPoint(translation, 7);
-                                GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
-                                DebugDrawer.DrawPoint(translation, 4);
+                                GL.VertexAttrib3( 1, Color.Black.ToFloatRgba( ) );
+                                DebugDrawer.DrawPoint( translation, 7 );
+                                GL.VertexAttrib3( 1, Color.Tomato.ToFloatRgba( ) );
+                                DebugDrawer.DrawPoint( translation, 4 );
                             }
                             else
                             {
-                                GL.VertexAttrib3(1, Color.White.ToFloatRgba());
-                                DebugDrawer.DrawPoint(translation, 7);
-                                GL.VertexAttrib3(1, Color.SkyBlue.ToFloatRgba());
-                                DebugDrawer.DrawPoint(translation, 3);
+                                GL.VertexAttrib3( 1, Color.White.ToFloatRgba( ) );
+                                DebugDrawer.DrawPoint( translation, 7 );
+                                GL.VertexAttrib3( 1, Color.SkyBlue.ToFloatRgba( ) );
+                                DebugDrawer.DrawPoint( translation, 3 );
                             }
 
-                            DebugDrawer.DrawPoint(translation, 5);
+                            DebugDrawer.DrawPoint( translation, 5 );
                         }
                     }
                 }
             }
         }
 
-        void IRenderable.Render(IEnumerable<Program> shaderPasses)
+        void IRenderable.Render( IEnumerable<Program> shaderPasses )
         {
-            this.Render(shaderPasses);
+            this.Render( shaderPasses );
         }
 
-        void IRenderable.Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
+        void IRenderable.Render( IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances )
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException( );
         }
 
-        internal void Select(IEnumerable<object> collection)
+        internal void Select( IEnumerable<object> collection )
         {
-            selectedObjects.Clear();
-            foreach (var item in collection)
+            selectedObjects.Clear( );
+            foreach( var item in collection )
             {
-                selectedObjects.Add(item);
+                selectedObjects.Add( item );
             }
         }
 
-        IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator()
+        IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator( )
         {
 
-            foreach (var markerGroup in model.RenderModel.markerGroups)
+            foreach( var markerGroup in model.RenderModel.markerGroups )
             {
-                foreach (var marker in markerGroup.markers)
+                foreach( var marker in markerGroup.markers )
                 {
-                    var collisionObject = new BulletSharp.CollisionObject();
-                    collisionObject.CollisionShape = new BulletSharp.BoxShape(0.045f);
-                    collisionObject.WorldTransform = Matrix4.CreateTranslation(marker.translation) * this.nodes.GetWorldMatrix(marker.nodeIndex);
+                    var collisionObject = new BulletSharp.CollisionObject( );
+                    collisionObject.CollisionShape = new BulletSharp.BoxShape( 0.045f );
+                    collisionObject.WorldTransform = Matrix4.CreateTranslation( marker.translation ) * this.nodes.GetWorldMatrix( marker.nodeIndex );
                     collisionObject.UserObject = this.markers[marker];
                     yield return collisionObject;
 
-                    var setPropertyMethodInfo = typeof(BulletSharp.CollisionObject).GetProperty("WorldTransform").GetSetMethod();
-                    var setProperty = Delegate.CreateDelegate(typeof(Action<Matrix4>), collisionObject, setPropertyMethodInfo);
+                    var setPropertyMethodInfo = typeof( BulletSharp.CollisionObject ).GetProperty( "WorldTransform" ).GetSetMethod( );
+                    var setProperty = Delegate.CreateDelegate( typeof( Action<Matrix4> ), collisionObject, setPropertyMethodInfo );
 
                     this.markers[marker].MarkerUpdatedCallback += (Action<Matrix4>)setProperty;
                 }
             }
         }
 
-        void marker_MarkerUpdated(object sender, EventArgs e)
+        void marker_MarkerUpdated( object sender, EventArgs e )
         {
-            var markerQuery = model.RenderModel.markerGroups.SelectMany(x => x.markers).Where(x => x.Equals(sender)).FirstOrDefault();
-            if (markerQuery != null)
+            var markerQuery = model.RenderModel.markerGroups.SelectMany( x => x.markers ).Where( x => x.Equals( sender ) ).FirstOrDefault( );
+            if( markerQuery != null )
             {
 
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator( )
         {
             return null;
         }
 
-        internal void Save(MapStream map)
+        internal void Save( MapStream map )
         {
-            BinaryWriter binaryWriter = new BinaryWriter(map);
+            BinaryWriter binaryWriter = new BinaryWriter( map );
             //map[model.renderModel.TagID].Seek();
-           // this.model.RenderModel.Write(binaryWriter);
+            // this.model.RenderModel.Write(binaryWriter);
         }
     }
 
@@ -271,12 +279,12 @@ namespace Moonfish.Graphics
         {
             get
             {
-                var query = model.RenderModel.regions.SelectMany(x => x.permutations).Select(x => x.name).Distinct();
+                var query = model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
                 return query;
             }
         }
 
-        public void Draw()
+        public void Draw( )
         {
         }
     }
