@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 16)]
-    public class ObjectChangeColorsBase
+    public class ObjectChangeColors
     {
         internal ObjectChangeColorInitialPermutation[] initialPermutations;
         internal ObjectChangeColorFunction[] functions;

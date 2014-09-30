@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 24)]
-    public class ModelVariantStateBlockBase
+    public class ModelVariantStateBlock
     {
         internal Moonfish.Tags.StringID permutationName;
         internal byte[] invalidName_;

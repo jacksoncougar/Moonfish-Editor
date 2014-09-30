@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 16)]
-    public class ModelRegionBlockBase
+    public class ModelRegionBlock
     {
         internal Moonfish.Tags.StringID name;
         internal byte collisionRegionIndex;

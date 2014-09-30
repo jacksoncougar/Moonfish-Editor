@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 20)]
-    public class ModelMaterialBlockBase
+    public class ModelMaterialBlock
     {
         internal Moonfish.Tags.StringID materialName;
         internal MaterialType materialType;

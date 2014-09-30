@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class PredictedBitmapsBlockBase
+    public class PredictedBitmapsBlock
     {
         [TagReference("bitm")]
         internal Moonfish.Tags.TagReference bitmap;

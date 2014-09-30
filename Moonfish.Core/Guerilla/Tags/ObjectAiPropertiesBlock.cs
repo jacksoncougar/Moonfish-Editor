@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 16)]
-    public class ObjectAiPropertiesBlockBase
+    public class ObjectAiPropertiesBlock
     {
         internal AiFlags aiFlags;
         /// <summary>

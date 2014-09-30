@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 80)]
-    public class OldObjectFunctionBlockBase
+    public class OldObjectFunctionBlock
     {
         internal byte[] invalidName_;
         internal Moonfish.Tags.StringID invalidName_0;

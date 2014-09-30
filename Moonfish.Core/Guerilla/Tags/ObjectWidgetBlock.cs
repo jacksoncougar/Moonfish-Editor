@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class ObjectWidgetBlockBase
+    public class ObjectWidgetBlock
     {
         [TagReference("null")]
         internal Moonfish.Tags.TagReference type;

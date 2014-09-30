@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 20)]
-    public class DamageConstraintInfoBlockBase
+    public class DamageConstraintInfoBlock
     {
         internal Moonfish.Tags.StringID physicsModelConstraintName;
         internal Moonfish.Tags.StringID damageConstraintName;

@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 4)]
-    public class InstantaneousResponseDamageEffectMarkerStructBlockBase
+    public class InstantaneousResponseDamageEffectMarkerStructBlock
     {
         internal Moonfish.Tags.StringID damageEffectMarkerName;
         internal  InstantaneousResponseDamageEffectMarkerStructBlockBase(BinaryReader binaryReader)

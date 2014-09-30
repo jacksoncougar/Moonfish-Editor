@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 16)]
-    public class GlobalDamageNodesBlockBase
+    public class GlobalDamageNodesBlock
     {
         internal byte[] invalidName_;
         internal byte[] invalidName_0;

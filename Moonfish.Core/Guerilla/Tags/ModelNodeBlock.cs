@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 92)]
-    public class ModelNodeBlockBase
+    public class ModelNodeBlock
     {
         internal Moonfish.Tags.StringID name;
         internal Moonfish.Tags.ShortBlockIndex1 parentNode;

@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class ModelTargetLockOnDataStructBlockBase
+    public class ModelTargetLockOnDataStructBlock
     {
         internal Flags flags;
         internal float lockOnDistance;
