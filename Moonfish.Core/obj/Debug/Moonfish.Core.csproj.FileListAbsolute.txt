@@ -34,7 +34,6 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLContr
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Fasterflect.xml
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.xml
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.xml
-C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Graphics.Form1.resources
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csproj.GenerateResource.Cache
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.exe

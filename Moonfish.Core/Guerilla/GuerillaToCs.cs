@@ -160,6 +160,7 @@ namespace Moonfish.Guerilla
                 var wrapperClassInfo = classInfo.GenerateWrapper( classInfo.Value.Name, classInfo.Value.Name + "Base" );
                 classInfo.Value.Name += "Base";
                 classInfo.Generate( );
+                classInfo.Value.Name = classInfo.Value.Name.Remove( classInfo.Value.Name.LastIndexOf( "Base" ), 4 );
 
                 foreach( var item in classInfo.Usings )
                 {

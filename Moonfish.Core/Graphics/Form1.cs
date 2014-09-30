@@ -1,6 +1,7 @@
 ﻿using Moonfish.Collision;
 using Moonfish.Definitions;
 using Moonfish.Graphics.Input;
+using Moonfish.Guerilla.Tags;
 using Moonfish.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;

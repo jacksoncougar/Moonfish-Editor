@@ -151,417 +151,206 @@
     <Compile Include="Guerilla\GuerillaExtensions.cs" />
     <Compile Include="Guerilla\GuerillaFields.cs" />
     <Compile Include="Guerilla\MethodInfo.cs" />
-    <Compile Include="Guerilla\Tags\AiDeafeningEncodedPasBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\BreakableSurfaceKeyTableBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Bsp2dNodesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Bsp2dReferencesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Bsp3dNodesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ClusterDoorPortalEncodedPasBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\CollisionBspPhysicsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecalVerticesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorCacheBlockBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorCacheBlockDataBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorCellCollectionBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorGroupBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorPlacementBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorPlacementDefinitionBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DecoratorProjectedDecalBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\DoorEncodedPasBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\EdgesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\EncodedClusterDistancesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\EnvironmentObjectBspRefs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\EnvironmentObjectNodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\EnvironmentObjectRefs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportCommentsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportLinesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportQuadsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportTrianglesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportVectorsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ErrorReportVerticesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\GamePortalToPortalMappingBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalcollisionbspblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalcollisionbspstructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globaldetailobjectblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globaldetailobjectcellsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globaldetailobjectcountsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalerrorreportcategoriesblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometryblockinfostructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometryblockresourceblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrycompressioninfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrymaterialblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrymaterialpropertyblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrypartblocknew.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrysectioninfostructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrysectionrawvertexblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrysectionstripindexblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrysectionstructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalgeometrysectionvertexbufferblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalleafconnectionblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalmapleafblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalstructurephysicsstructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalsubpartsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globaltagimportinfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalvisibilityboundsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalwaterdefinitionsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Globalzreferencevectorblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\IndicesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\InstancedGeometryReferenceBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\LeafConnectionVertexBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\LeavesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\MapLeafConnectionIndexBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\MapLeafFaceBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\MapLeafFaceVertexBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\OccluderToMachineDoorMapping.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\PathfindingDataBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\PathfindingHintsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\PlanesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\PredictedResourceBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\RefBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\RenderLightingStructBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ScenarioObjectIdStructBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\ScenarioStructureBspBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SectorBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SectorBsp2dNodesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SectorLinkBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SectorVertexBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SpriteVerticesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspaudibilityblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspbackgroundsoundpaletteblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspbreakablesurfaceblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterdatablocknew.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterdebuginfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterinstancedgeometryindexblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterportalblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterportalindexblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspclusterportalvertexblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspconveyorsurfaceblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspdebuginfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspdebuginfoindicesblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspdebuginforenderlineblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspdetailobjectdatablock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspenvironmentobjectblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspenvironmentobjectpaletteblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspfakelightprobesblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspfogplaneblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspfogplanedebuginfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspfogzonedebuginfoblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspinstancedgeometrydefinitionblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspinstancedgeometryinstancesblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspleafblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebsplightmapdatablock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspmarkerblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebsppathfindingedgesblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspprecomputedlightingblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspruntimedecalblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspskyownerclusterblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspsoundclusterblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspsoundenvironmentpaletteblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspsurfacereferenceblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspweatherpaletteblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspweatherpolyhedronblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurebspweatherpolyhedronplaneblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structurecollisionmaterialsblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structuredeviceportalassociationblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structureinstancedgeometryrenderinfostructblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structureportaldevicemappingblock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structuresoundclusterinteriorclusterindices.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\Structuresoundclusterportaldesignators.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SurfaceFlagsBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\SurfacesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\TagImportFileBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\TransparentPlanesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UNUSEDStructureBspNodeBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintClimbBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintFlightBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintFlightPointBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintJumpBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintLineSegmentBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintParallelogramBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintPointBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintPolygonBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintRayBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintWellBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\UserHintWellPointBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\VerticesBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\VisibilityStructBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Guerilla\Tags\WaterGeometrySectionBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Guerilla\Tags\AiDeafeningEncodedPasBlock.cs" />
+    <Compile Include="Guerilla\Tags\BreakableSurfaceKeyTableBlock.cs" />
+    <Compile Include="Guerilla\Tags\Bsp2dNodesBlock.cs" />
+    <Compile Include="Guerilla\Tags\Bsp2dReferencesBlock.cs" />
+    <Compile Include="Guerilla\Tags\Bsp3dNodesBlock.cs" />
+    <Compile Include="Guerilla\Tags\BspLeafBlock.cs" />
+    <Compile Include="Guerilla\Tags\BspSurfaceReferenceBlock.cs" />
+    <Compile Include="Guerilla\Tags\ByteBlock.cs" />
+    <Compile Include="Guerilla\Tags\ClusterDoorPortalEncodedPasBlock.cs" />
+    <Compile Include="Guerilla\Tags\CollisionBspPhysicsBlock.cs" />
+    <Compile Include="Guerilla\Tags\DamageConstraintInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\DamageSeatInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecalVerticesBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorCacheBlockBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorCacheBlockDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorCellCollectionBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorGroupBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorPlacementBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorPlacementDefinitionBlock.cs" />
+    <Compile Include="Guerilla\Tags\DecoratorProjectedDecalBlock.cs" />
+    <Compile Include="Guerilla\Tags\DoorEncodedPasBlock.cs" />
+    <Compile Include="Guerilla\Tags\EdgesBlock.cs" />
+    <Compile Include="Guerilla\Tags\EncodedClusterDistancesBlock.cs" />
+    <Compile Include="Guerilla\Tags\EnvironmentObjectBspRefs.cs" />
+    <Compile Include="Guerilla\Tags\EnvironmentObjectNodes.cs" />
+    <Compile Include="Guerilla\Tags\EnvironmentObjectRefs.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportCommentsBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportLinesBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportQuadsBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportsBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportTrianglesBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportVectorsBlock.cs" />
+    <Compile Include="Guerilla\Tags\ErrorReportVerticesBlock.cs" />
+    <Compile Include="Guerilla\Tags\GamePortalToPortalMappingBlock.cs" />
+    <Compile Include="Guerilla\Tags\Globalcollisionbspblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalcollisionbspstructblock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalDamageInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalDamageNodesBlock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalDamageSectionBlock.cs" />
+    <Compile Include="Guerilla\Tags\Globaldetailobjectblock.cs" />
+    <Compile Include="Guerilla\Tags\Globaldetailobjectcellsblock.cs" />
+    <Compile Include="Guerilla\Tags\Globaldetailobjectcountsblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalerrorreportcategoriesblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometryblockinfostructblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometryblockresourceblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrycompressioninfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrymaterialblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrymaterialpropertyblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrypartblocknew.cs" />
+    <Compile Include="Guerilla\Tags\GlobalGeometryPointDataIndexBlock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalGeometryPointDataStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalGeometryRawPointBlock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalGeometryRigidPointGroupBlock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrysectioninfostructblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrysectionrawvertexblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrysectionstripindexblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrysectionstructblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalgeometrysectionvertexbufferblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalleafconnectionblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalmapleafblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalstructurephysicsstructblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalsubpartsblock.cs" />
+    <Compile Include="Guerilla\Tags\Globaltagimportinfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalvisibilityboundsblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalwaterdefinitionsblock.cs" />
+    <Compile Include="Guerilla\Tags\Globalzreferencevectorblock.cs" />
+    <Compile Include="Guerilla\Tags\GNullBlock.cs" />
+    <Compile Include="Guerilla\Tags\IndicesBlock.cs" />
+    <Compile Include="Guerilla\Tags\InstancedGeometryReferenceBlock.cs" />
+    <Compile Include="Guerilla\Tags\InstantaneousDamageRepsonseBlock.cs" />
+    <Compile Include="Guerilla\Tags\InstantaneousResponseDamageEffectMarkerStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\InstantaneousResponseDamageEffectStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\ItemBlock.cs" />
+    <Compile Include="Guerilla\Tags\LeafConnectionVertexBlock.cs" />
+    <Compile Include="Guerilla\Tags\LeavesBlock.cs" />
+    <Compile Include="Guerilla\Tags\MapLeafConnectionIndexBlock.cs" />
+    <Compile Include="Guerilla\Tags\MapLeafFaceBlock.cs" />
+    <Compile Include="Guerilla\Tags\MapLeafFaceVertexBlock.cs" />
+    <Compile Include="Guerilla\Tags\MappingFunctionBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelMaterialBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelNodeBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelObjectDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelPermutationBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelRegionBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelTargetBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelTargetLockOnDataStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelVariantBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelVariantObjectBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelVariantPermutationBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelVariantRegionBlock.cs" />
+    <Compile Include="Guerilla\Tags\ModelVariantStateBlock.cs" />
+    <Compile Include="Guerilla\Tags\NodeRenderLeavesBlock.cs" />
+    <Compile Include="Guerilla\Tags\ObjectAiPropertiesBlock.cs" />
+    <Compile Include="Guerilla\Tags\ObjectAttachmentBlock.cs" />
+    <Compile Include="Guerilla\Tags\ObjectBlock.cs" />
+    <Compile Include="Guerilla\Tags\ObjectChangeColorFunction.cs" />
+    <Compile Include="Guerilla\Tags\ObjectChangeColorInitialPermutation.cs" />
+    <Compile Include="Guerilla\Tags\ObjectChangeColors.cs" />
+    <Compile Include="Guerilla\Tags\ObjectFunctionBlock.cs" />
+    <Compile Include="Guerilla\Tags\ObjectWidgetBlock.cs" />
+    <Compile Include="Guerilla\Tags\OccluderToMachineDoorMapping.cs" />
+    <Compile Include="Guerilla\Tags\OldObjectFunctionBlock.cs" />
+    <Compile Include="Guerilla\Tags\PathfindingDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\PathfindingHintsBlock.cs" />
+    <Compile Include="Guerilla\Tags\PlanesBlock.cs" />
+    <Compile Include="Guerilla\Tags\PredictedBitmapsBlock.cs" />
+    <Compile Include="Guerilla\Tags\PredictedResourceBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtClusterBasisBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtLodInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtRawPcaDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtSectionInfoBlock.cs" />
+    <Compile Include="Guerilla\Tags\PrtVertexBuffersBlock.cs" />
+    <Compile Include="Guerilla\Tags\RefBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderLightingStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelCompoundNodeBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelInvalidSectionPairsBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelMarkerBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelMarkerGroupBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelNodeBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelNodeMapBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelNodeMapBlockOLD.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelPermutationBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelRegionBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelSectionBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelSectionDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderModelSectionGroupBlock.cs" />
+    <Compile Include="Guerilla\Tags\ScenarioObjectIdStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\ScenarioStructureBspBlock.cs" />
+    <Compile Include="Guerilla\Tags\SceneryBlock.cs" />
+    <Compile Include="Guerilla\Tags\SectionRenderLeavesBlock.cs" />
+    <Compile Include="Guerilla\Tags\SectorBlock.cs" />
+    <Compile Include="Guerilla\Tags\SectorBsp2dNodesBlock.cs" />
+    <Compile Include="Guerilla\Tags\SectorLinkBlock.cs" />
+    <Compile Include="Guerilla\Tags\SectorVertexBlock.cs" />
+    <Compile Include="Guerilla\Tags\SpriteVerticesBlock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspaudibilityblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspbackgroundsoundpaletteblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspbreakablesurfaceblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterdatablocknew.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterdebuginfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterinstancedgeometryindexblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterportalblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterportalindexblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspclusterportalvertexblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspconveyorsurfaceblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspdebuginfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspdebuginfoindicesblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspdebuginforenderlineblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspdetailobjectdatablock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspenvironmentobjectblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspenvironmentobjectpaletteblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspfakelightprobesblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspfogplaneblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspfogplanedebuginfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspfogzonedebuginfoblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspinstancedgeometrydefinitionblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspinstancedgeometryinstancesblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspleafblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebsplightmapdatablock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspmarkerblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebsppathfindingedgesblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspprecomputedlightingblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspruntimedecalblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspskyownerclusterblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspsoundclusterblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspsoundenvironmentpaletteblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspsurfacereferenceblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspweatherpaletteblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspweatherpolyhedronblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurebspweatherpolyhedronplaneblock.cs" />
+    <Compile Include="Guerilla\Tags\Structurecollisionmaterialsblock.cs" />
+    <Compile Include="Guerilla\Tags\Structuredeviceportalassociationblock.cs" />
+    <Compile Include="Guerilla\Tags\Structureinstancedgeometryrenderinfostructblock.cs" />
+    <Compile Include="Guerilla\Tags\Structureportaldevicemappingblock.cs" />
+    <Compile Include="Guerilla\Tags\Structuresoundclusterinteriorclusterindices.cs" />
+    <Compile Include="Guerilla\Tags\Structuresoundclusterportaldesignators.cs" />
+    <Compile Include="Guerilla\Tags\SurfaceFlagsBlock.cs" />
+    <Compile Include="Guerilla\Tags\SurfacesBlock.cs" />
+    <Compile Include="Guerilla\Tags\TagImportFileBlock.cs" />
+    <Compile Include="Guerilla\Tags\TransparentPlanesBlock.cs" />
+    <Compile Include="Guerilla\Tags\UNUSEDStructureBspNodeBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintClimbBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintFlightBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintFlightPointBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintJumpBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintLineSegmentBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintParallelogramBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintPointBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintPolygonBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintRayBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintWellBlock.cs" />
+    <Compile Include="Guerilla\Tags\UserHintWellPointBlock.cs" />
+    <Compile Include="Guerilla\Tags\VerticesBlock.cs" />
+    <Compile Include="Guerilla\Tags\VisibilityStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\WaterGeometrySectionBlock.cs" />
     <Compile Include="Guerilla\Validator.cs" />
     <Compile Include="Guerilla\VirtualMemoryStream.cs" />
     <Compile Include="IResource.cs" />
@@ -596,7 +385,6 @@
     <Compile Include="Tags\Sounds.Code.cs" />
     <Compile Include="Tags\StructureBinarySeperationPlane.Code.cs" />
     <Compile Include="Guerilla\TagGroups.cs" />
-    <Compile Include="Tags\StructureBinarySeperationPlane.cs" />
     <Compile Include="Tags\ValueTypes.cs" />
     <Compile Include="Tags\Vehicle.cs" />
     <Compile Include="Tags\Weapon.cs" />

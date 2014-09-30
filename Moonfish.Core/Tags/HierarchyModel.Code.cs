@@ -1,4 +1,5 @@
 ﻿using Moonfish.Guerilla;
+using Moonfish.Guerilla.Tags;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace Moonfish.Tags
             return null;
         }
 
-        public RenderModel RenderModel
+        public RenderModelBlock RenderModel
         {
             get { return Halo2.GetReferenceObject(this.renderModel); }
         }

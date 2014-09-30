@@ -1,4 +1,5 @@
 ﻿using Moonfish.Definitions;
+using Moonfish.Guerilla.Tags;
 using Moonfish.Model;
 using Moonfish.Structures;
 using Moonfish.Tags;
@@ -45,7 +46,7 @@ namespace Moonfish.Graphics
 
         public Mesh(RenderModelSectionBlock sectionBlock)
         {
-            if (sectionBlock.sectionData.Length == 0) sectionBlock.LoadSectionData();
+            if (sectionBlock.sectionData.Length == 0) //sectionBlock.LoadSectionData();
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
         }

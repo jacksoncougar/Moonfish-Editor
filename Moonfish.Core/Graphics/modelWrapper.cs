@@ -1,4 +1,5 @@
 ﻿using Moonfish.Collision;
+using Moonfish.Guerilla.Tags;
 using Moonfish.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;
@@ -249,7 +250,7 @@ namespace Moonfish.Graphics
         {
             BinaryWriter binaryWriter = new BinaryWriter(map);
             map[model.renderModel.TagID].Seek();
-            this.model.RenderModel.Write(binaryWriter);
+           // this.model.RenderModel.Write(binaryWriter);
         }
     }
 
