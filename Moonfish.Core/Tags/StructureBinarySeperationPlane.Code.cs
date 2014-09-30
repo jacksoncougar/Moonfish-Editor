@@ -76,6 +76,6 @@ namespace Moonfish.Guerilla.Tags
     {
         public int ResourceOffset { get { return (int)(base.blockOffset & ~0xC0000000); } }
 
-        public Halo2.ResourceSource ResourceLocation { get { return (Halo2.ResourceSource)( base.blockOffset & 0xC0000000 ); } }
+        public Halo2.ResourceSource ResourceLocation { get { return (Halo2.ResourceSource)( ( base.blockOffset & 0xC0000000 ) >> 30 ); } }
     };
 }

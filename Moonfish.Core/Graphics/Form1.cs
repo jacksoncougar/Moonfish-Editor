@@ -89,6 +89,7 @@ namespace Moonfish.Graphics
 
             if (activeObject.HasValue)
             {
+                program[Uniforms.WorldMatrix] = Matrix4.Identity;
                 manager.Draw(activeObject.Value);
             }
             foreach (var item in test)
@@ -125,7 +126,7 @@ namespace Moonfish.Graphics
             this.listView1.Items.AddRange(tags.ToArray());
             this.listView1.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             manager.Clear();
-            manager.LoadHierarchyModels(map);
+            //manager.LoadHierarchyModels(map);
         }
 
         private void Initialization(object sender, EventArgs e)
@@ -264,7 +265,7 @@ namespace Moonfish.Graphics
             StaticBenchmark.End();
             this.Text = string.Format("{0} - Moonfish Marker Viewer 2014 for Remnantmods", (this.map as FileStream).Name);
             LoadModels();
-            LoadScenarioStructureBSP();
+            //LoadScenarioStructureBSP();
             LoadScenario();
         }
 
@@ -365,7 +366,7 @@ namespace Moonfish.Graphics
         {
             if (activeObject != null)
             {
-                var model = (Halo2.GetReferenceObject(activeObject.Value) as HierarchyModel);
+                var model = ( Halo2.GetReferenceObject( activeObject.Value ) as ModelBlock );
                 if (model != null)
                 {
                     this.propertyGrid1.SelectedObject = model.RenderModel.markerGroups;

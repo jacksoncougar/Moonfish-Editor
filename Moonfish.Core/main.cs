@@ -21,7 +21,7 @@ namespace Moonfish
         static void Main()
         {
             //GuerillaCs ripper = new GuerillaCs( @"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe" );
-            //ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "scnr", "" );
+            //ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "obje", "" );
             //return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -134,12 +134,19 @@ namespace Moonfish.Guerilla
             using( var stream = new FileStream( Path.Combine( folder, info.Value.Name + ".cs" ), FileMode.Create,
                    FileAccess.Write, FileShare.ReadWrite ) )
             {
+                var parentTag = h2Tags.Where( x => x.Class == readTag.ParentClass );
+                if( parentTag.Any( ) )
+                {
+                    info.BaseClass = new ClassInfo.TokenDictionary( ).GenerateValidToken( 
+                        GuerillaCs.ToTypeName( parentTag.Single( ).Definition.Name ) );
+                }
                 var streamWriter = new StreamWriter( stream );
                 info.Generate( );
                 GenerateOutputForClass( info, streamWriter );
             }
 
             var localDefinitions = DefinitionsDictionary.Select( x => x.Value );
+
 
             foreach( var item in localDefinitions )
             {
@@ -448,7 +455,9 @@ namespace Moonfish.Guerilla
                             {
                                 Value = field.Name,
                                 AccessModifiers = Moonfish.Guerilla.AccessModifiers.Internal,
-                                FieldTypeName = @class.ClassDefinitions.Last( ).Value
+                                FieldTypeName = @class.ClassDefinitions.Last( ).Value,
+                                ArraySize = field.Definition,
+                                IsArray = true
                             };
 
                             @class.Fields.Add( fieldInfo );

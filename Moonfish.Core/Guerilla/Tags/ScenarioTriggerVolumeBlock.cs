@@ -22,7 +22,7 @@ namespace Moonfish.Guerilla.Tags
         internal Moonfish.Tags.ShortBlockIndex1 objectName;
         internal byte[] invalidName_;
         internal Moonfish.Tags.StringID nodeName;
-        internal EMPTYSTRING eMPTYSTRING;
+        internal EMPTYSTRING[] eMPTYSTRING;
         internal OpenTK.Vector3 position;
         internal OpenTK.Vector3 extents;
         internal byte[] invalidName_0;
@@ -34,7 +34,7 @@ namespace Moonfish.Guerilla.Tags
             this.objectName = binaryReader.ReadShortBlockIndex1();
             this.invalidName_ = binaryReader.ReadBytes(2);
             this.nodeName = binaryReader.ReadStringID();
-            this.eMPTYSTRING = new EMPTYSTRING(binaryReader);
+            this.eMPTYSTRING = new []{ new EMPTYSTRING(binaryReader), new EMPTYSTRING(binaryReader), new EMPTYSTRING(binaryReader), new EMPTYSTRING(binaryReader), new EMPTYSTRING(binaryReader), new EMPTYSTRING(binaryReader),  };
             this.position = binaryReader.ReadVector3();
             this.extents = binaryReader.ReadVector3();
             this.invalidName_0 = binaryReader.ReadBytes(4);

@@ -1,39 +1,20 @@
 ﻿using Moonfish.Guerilla;
 using Moonfish.Guerilla.Tags;
+using Moonfish.Tags;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Moonfish.Tags
+namespace Moonfish.Guerilla.Tags
 {
-    public partial class HierarchyModel
+    [TagClass("hlmt")]
+    public partial class ModelBlock
     {
         public void Initialize()
         {
             SelectedVariationIndex = 0;
-        }
-
-        public object[] RenderObjects()
-        {
-            // draw selected variation with selected permutation
-            var variantQuery = (from variant in this.variants
-                          where variant.name == SelectedVariation
-                          select variant.regions).Single();
-
-            //var permutationQuery = from region in variantQuery;
-                                   //where region.regionNameMustMatchRegionNameInRenderModel
-
-
-            // call draw on children objects
-
-            // draw nodes
-
-            // draw markers
-
-            // draw extras
-            return null;
         }
 
         public RenderModelBlock RenderModel
@@ -78,6 +59,7 @@ namespace Moonfish.Tags
             }
         }
     }
+
     public partial class ModelVariantObjectBlock
     {
         public object ChildObject { get { return Halo2.GetReferenceObject(this.childObject); } }

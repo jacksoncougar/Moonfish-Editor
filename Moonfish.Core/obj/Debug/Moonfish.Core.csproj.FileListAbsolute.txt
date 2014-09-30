@@ -46,3 +46,4 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\viewscree
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe.config
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.frag
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache

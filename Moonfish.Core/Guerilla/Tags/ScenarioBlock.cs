@@ -107,7 +107,7 @@ namespace Moonfish.Guerilla.Tags
         internal GNullBlock[] eMPTYSTRING2;
         internal GNullBlock[] eMPTYSTRING3;
         internal ScenarioClusterDataBlock[] scenarioClusterData;
-        internal ObjectSalts objectSalts;
+        internal ObjectSalts[] objectSalts;
         internal ScenarioSpawnDataBlock[] spawnData;
         [TagReference("sfx+")]
         internal Moonfish.Tags.TagReference soundEffectCollection;
@@ -225,7 +225,7 @@ namespace Moonfish.Guerilla.Tags
             this.eMPTYSTRING2 = ReadGNullBlockArray(binaryReader);
             this.eMPTYSTRING3 = ReadGNullBlockArray(binaryReader);
             this.scenarioClusterData = ReadScenarioClusterDataBlockArray(binaryReader);
-            this.objectSalts = new ObjectSalts(binaryReader);
+            this.objectSalts = new[] { new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), };
             this.spawnData = ReadScenarioSpawnDataBlockArray(binaryReader);
             this.soundEffectCollection = binaryReader.ReadTagReference();
             this.crates = ReadScenarioCrateBlockArray(binaryReader);

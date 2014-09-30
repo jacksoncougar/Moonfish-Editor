@@ -335,10 +335,6 @@ namespace Moonfish
             deserializedTags.Remove(ident);
         }
 
-
-
-
-
         dynamic IMap.Deserialize()
         {
             var tagQuery = (from tag in deserializedTags
@@ -513,7 +509,6 @@ namespace Moonfish
         {
             throw new NotImplementedException();
         }
-
 
         byte[] IMap.TagData
         {

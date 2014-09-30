@@ -80,7 +80,7 @@ namespace Moonfish.Graphics
 
     public class ScenarioObject : IRenderable, IEnumerable<BulletSharp.CollisionObject>
     {
-        HierarchyModel model;
+        ModelBlock model;
         List<Mesh> sectionBuffers;
         public NodeCollection nodes;
 
@@ -99,7 +99,7 @@ namespace Moonfish.Graphics
             selectedObjects = new List<object>();
             nodes = new NodeCollection();
         }
-        public ScenarioObject(HierarchyModel model)
+        public ScenarioObject( ModelBlock model )
             : this()
         {
             this.model = model;
@@ -135,7 +135,8 @@ namespace Moonfish.Graphics
             {
                 using (program.Use())
                 {
-                    program[Uniforms.NormalizationMatrix] = model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+                    var extents = model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+                    program[Uniforms.NormalizationMatrix] = extents;
                     foreach (var region in model.RenderModel.regions)
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
@@ -146,7 +147,7 @@ namespace Moonfish.Graphics
                             foreach (var part in mesh.Parts)
                             {
                                 GL.DrawElements(PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
-                                    (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); OpenGL.ReportError();
+                                    (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError(); 
                             }
                         }
                     }
@@ -249,16 +250,16 @@ namespace Moonfish.Graphics
         internal void Save(MapStream map)
         {
             BinaryWriter binaryWriter = new BinaryWriter(map);
-            map[model.renderModel.TagID].Seek();
+            //map[model.renderModel.TagID].Seek();
            // this.model.RenderModel.Write(binaryWriter);
         }
     }
 
     class ScenarioObjectd
     {
-        HierarchyModel model;
+        ModelBlock model;
 
-        public ScenarioObjectd(HierarchyModel test)
+        public ScenarioObjectd( ModelBlock test )
         {
             this.model = test;
             ActivePermutation = StringID.Zero;

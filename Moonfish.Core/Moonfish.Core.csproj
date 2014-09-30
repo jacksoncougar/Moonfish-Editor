@@ -146,6 +146,7 @@
     <Compile Include="Graphics\shader.cs" />
     <Compile Include="Graphics\Track.cs" />
     <Compile Include="Graphics\UniformBuffer.cs" />
+    <Compile Include="Guerilla\ClassInfo.cs" />
     <Compile Include="Guerilla\GuerillaAttributes.cs" />
     <Compile Include="Guerilla\GuerillaBase.cs" />
     <Compile Include="Guerilla\GuerillaExtensions.cs" />

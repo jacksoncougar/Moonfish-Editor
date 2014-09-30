@@ -46,14 +46,13 @@ namespace Moonfish.Graphics
 
         public Mesh(RenderModelSectionBlock sectionBlock)
         {
-            if (sectionBlock.sectionData.Length == 0) //sectionBlock.LoadSectionData();
             this.sectionBlock = sectionBlock;
             BufferMeshResources(sectionBlock);
         }
 
         public IDisposable Bind()
         {
-            GL.BindVertexArray(mVAO_id); OpenGL.ReportError();
+            GL.BindVertexArray( mVAO_id ); OpenGL.ReportError( );
             return new Handle(0);
         }
 
@@ -159,7 +158,7 @@ namespace Moonfish.Graphics
         Program systemProgram;
         Dictionary<TagIdent, ScenarioObject> objects;
 
-        internal void Add(HierarchyModel model, TagIdent id)
+        internal void Add( ModelBlock model, TagIdent id )
         {
             objects[id] = new ScenarioObject(model);
         }
@@ -180,20 +179,21 @@ namespace Moonfish.Graphics
         {
             this.scenario = map["scnr", ""].Deserialize();
             var scenery = scenario.sceneryPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
-            var weapons = scenario.weaponPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
-            var vehicles = scenario.vehiclePalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
-            var crates = scenario.cratesPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
-            var equipment = scenario.equipmentPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
+            //var weapons = scenario.weaponPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
+            //var vehicles = scenario.vehiclePalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
+            //var crates = scenario.cratesPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
+            //var equipment = scenario.equipmentPalette.Select(x => new { item = map[x.name.TagID].Deserialize(), id = x.name.TagID });
 
-            var items = scenery
-                .Concat(weapons)
-                .Concat(vehicles)
-                .Concat(crates)
-                .Concat(equipment);
+            var items = scenery.Select( x => new {Tag = (ObjectBlock)x.item, Ident = x.id} );
+                //.Concat(weapons)
+                //.Concat(vehicles)
+                //.Concat(crates)
+                //.Concat(equipment)
+                ;
 
             foreach (var item in items)
             {
-                Add(item.item.HierarchyModel, item.id);
+                Add(Halo2.GetReferenceObject(item.Tag.model), item.Ident);
             }
 
             Log.Info(GL.GetError().ToString());
@@ -205,16 +205,16 @@ namespace Moonfish.Graphics
             using (program.Use())
             {
                 RenderPalette(scenario.sceneryPalette, scenario.scenery);
-                RenderPalette(scenario.vehiclePalette, scenario.vehicles);
-                RenderPalette(scenario.equipmentPalette, scenario.equipment);
-                RenderPalette(scenario.weaponPalette, scenario.weapons);
-                RenderPalette(scenario.cratesPalette, scenario.crates);
+                //RenderPalette(scenario.vehiclePalette, scenario.vehicles);
+                //RenderPalette(scenario.equipmentPalette, scenario.equipment);
+                //RenderPalette(scenario.weaponPalette, scenario.weapons);
+                //RenderPalette(scenario.cratesPalette, scenario.crates);
             }
         }
         public void Add(TagIdent item)
         {
             var data = Halo2.GetReferenceObject(item);
-            objects[item] = new ScenarioObject((HierarchyModel)data);
+            objects[item] = new ScenarioObject( (ModelBlock)data );
         }
         public void Draw(TagIdent item)
         {
@@ -226,7 +226,7 @@ namespace Moonfish.Graphics
             else
             {
                 var data = Halo2.GetReferenceObject(item);
-                objects[item] = new ScenarioObject((HierarchyModel)data);
+                objects[item] = new ScenarioObject( (ModelBlock)data );
             }
         }
 

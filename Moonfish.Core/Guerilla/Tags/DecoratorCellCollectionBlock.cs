@@ -18,13 +18,13 @@ namespace Moonfish.Guerilla.Tags
     [LayoutAttribute(Size = 24)]
     public class DecoratorCellCollectionBlockBase
     {
-        internal ChildIndices childIndices;
+        internal ChildIndices[] childIndices;
         internal Moonfish.Tags.ShortBlockIndex1 cacheBlockIndex;
         internal short groupCount;
         internal int groupStartIndex;
         internal  DecoratorCellCollectionBlockBase(BinaryReader binaryReader)
         {
-            this.childIndices = new ChildIndices(binaryReader);
+            this.childIndices = new []{ new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader), new ChildIndices(binaryReader),  };
             this.cacheBlockIndex = binaryReader.ReadShortBlockIndex1();
             this.groupCount = binaryReader.ReadInt16();
             this.groupStartIndex = binaryReader.ReadInt32();

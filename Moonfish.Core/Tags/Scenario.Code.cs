@@ -31,6 +31,12 @@ namespace Moonfish.Guerilla.Tags
 
         object WorldMatrix { get; }
     }
+
+    [TagClass("scnr")]
+    public partial class ScenarioBlock
+    {
+    }
+
     public partial class ScenarioSceneryPaletteBlock : IH2ObjectPalette
     {
         TagReference IH2ObjectPalette.ObjectReference

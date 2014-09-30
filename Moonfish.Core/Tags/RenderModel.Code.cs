@@ -11,9 +11,14 @@ using System.Text;
 using Fasterflect;
 using Moonfish.Graphics;
 using Moonfish.ResourceManagement;
+using Moonfish.Tags;
 
 namespace Moonfish.Guerilla.Tags
 {
+    [Moonfish.Tags.TagClass( "mode" )]
+    public partial class RenderModelBlock
+    {
+    }
     public partial class GlobalGeometryCompressionInfoBlock
     {
         public Matrix4 ToExtentsMatrix( )
@@ -79,9 +84,34 @@ namespace Moonfish.Guerilla.Tags
             binaryReader.ReadBytes( 8 );
             using( binaryReader.BaseStream.Pin( ) )
             {
-                ResourceStream source = Halo2.GetResourceBlock( this.geometryBlockInfo );
+                var geometryBlockInfo = new GlobalGeometryBlockInfoStructBlock( binaryReader );
+                ResourceStream source = Halo2.GetResourceBlock( geometryBlockInfo );
                 BinaryReader reader = new BinaryReader( source );
                 return new[] { new RenderModelSectionDataBlock( reader ) };
+            }
+        }
+    }
+
+    partial class GlobalGeometrySectionStructBlock
+    {
+        internal override GlobalGeometrySectionVertexBufferBlock[] ReadGlobalGeometrySectionVertexBufferBlockArray( BinaryReader binaryReader )
+        {
+            var vertexBuffers = base.ReadGlobalGeometrySectionVertexBufferBlockArray( binaryReader );
+            using( binaryReader.BaseStream.Pin( ) )
+            {
+                if( binaryReader.BaseStream is ResourceStream )
+                {
+                    var stream = binaryReader.BaseStream as ResourceStream;
+
+                    var vertexBufferResources = stream.Resources.Where(
+                        x => x.type == GlobalGeometryBlockResourceBlockBase.Type.VertexBuffer ).ToArray( );
+
+                    for( int i = 0; i < vertexBuffers.Length; i++ )
+                    {
+                        vertexBuffers[i].vertexBuffer.Data = stream.GetResourceData( vertexBufferResources[i] );
+                    }
+                }
+                return vertexBuffers;
             }
         }
     }

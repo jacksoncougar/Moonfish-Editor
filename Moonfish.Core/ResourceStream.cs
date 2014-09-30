@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Moonfish.ResourceManagement
 {
     using Moonfish.Graphics;
+    using Moonfish.Guerilla.Tags;
     public static class ResourceStreamStaticMethods
     {
         public static BlamPointer ReadBlamPointer( this BinaryReader binaryReader, int elementSize )
@@ -42,7 +43,6 @@ namespace Moonfish.ResourceManagement
     {
         private Guerilla.Tags.GlobalGeometryBlockInfoStructBlock blockInfo;
 
-
         public IList<Guerilla.Tags.GlobalGeometryBlockResourceBlock> Resources { get; private set; }
 
         public int HeaderSize { get; private set; }
@@ -52,6 +52,14 @@ namespace Moonfish.ResourceManagement
         {
             HeaderSize = blockInfo.sectionDataSize;
             Resources = blockInfo.resources;
+        }
+
+        public byte[] GetResourceData( GlobalGeometryBlockResourceBlock resource )
+        {
+            this.Seek( resource.resourceDataOffset, SeekOrigin.Data );
+            var buffer = new byte[resource.resourceDataSize];
+            this.Read( buffer, 0, buffer.Length ); 
+            return buffer;
         }
 
         public new enum SeekOrigin
