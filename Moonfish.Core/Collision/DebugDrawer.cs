@@ -1,4 +1,5 @@
 ﻿using Moonfish.Graphics;
+using Moonfish.Guerilla.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;
 using System;
@@ -32,7 +33,7 @@ namespace Moonfish.Collision
             GL.DrawArrays(PrimitiveType.Points, 0, 1);
         }
 
-        public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
+        public void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
         {
             throw new NotImplementedException();
         }

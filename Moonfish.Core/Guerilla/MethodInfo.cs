@@ -103,19 +103,22 @@ namespace Moonfish.Guerilla
 
             public string GenerateValidToken( string token )
             {
-                var validToken = "";
-                var salt = 0;
-                do
+                using( var code = new Microsoft.CSharp.CSharpCodeProvider() )
                 {
-                    if( Tokens.Contains( token ) )
+                    var validToken = "";
+                    var salt = 0;
+                    do
                     {
-                        validToken = string.Format( "{0}{1}", token, salt );
-                    }
-                    else validToken = token;
-                    salt++;
-                } while( Tokens.Contains( validToken ) );
-                Tokens.Add( validToken );
-                return validToken;
+                        if( Tokens.Contains( token ) )
+                        {
+                            validToken =string.Format( "{0}{1}", token, salt );
+                        }
+                        else validToken =  code.CreateValidIdentifier(token);
+                        salt++;
+                    } while( Tokens.Contains( validToken ) );
+                    Tokens.Add( validToken );
+                    return validToken;
+                }
             }
         }
 

@@ -39,7 +39,7 @@ namespace Moonfish.Graphics
 
         MousePole2D mousePole;
 
-        Scenario Scenario;
+        ScenarioBlock Scenario;
         bool gl_loaded = false;
         UniformBuffer globalUniformBuffer;
 

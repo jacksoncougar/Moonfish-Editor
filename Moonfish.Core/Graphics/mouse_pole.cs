@@ -1,4 +1,5 @@
 ﻿using Moonfish.Collision;
+using Moonfish.Guerilla.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;
 using OpenTK.Input;
@@ -65,7 +66,7 @@ namespace Moonfish.Graphics
             GL.DrawElements(PrimitiveType.Lines, elementCount, DrawElementsType.UnsignedShort, IntPtr.Zero);
         }
 
-        public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
+        public void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
         {
             throw new NotImplementedException();
         }
@@ -248,7 +249,7 @@ namespace Moonfish.Graphics
             //GL.DrawElementsBaseVertex(PrimitiveType.TriangleFan, base.elementCount, DrawElementsType.UnsignedShort, (IntPtr)base.elementBufferOffset, base.elementBufferOffset / sizeof(ushort));
         }
 
-        public void Render(IEnumerable<Program> shaderPasses, IList<Tags.IH2ObjectInstance> instances)
+        public void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
         {
             throw new NotImplementedException();
         }

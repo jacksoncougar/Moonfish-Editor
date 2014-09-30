@@ -1,4 +1,5 @@
 ﻿using Moonfish.Guerilla;
+using Moonfish.Tags;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Moonfish.Tags
+namespace Moonfish.Guerilla.Tags
 {
     public interface IH2ObjectPalette
     {
@@ -25,7 +26,7 @@ namespace Moonfish.Tags
         /// <summary>
         /// contains instance data (orientation, spawning flags, uniqueID, etc...)
         /// </summary>
-        ScenarioObjectDatumStruct ObjectDatum { get; }
+        ScenarioObjectDatumStructBlock ObjectDatum { get; }
 
 
         object WorldMatrix { get; }
@@ -94,7 +95,7 @@ namespace Moonfish.Tags
             get { return this.type; }
         }
 
-        ScenarioObjectDatumStruct IH2ObjectInstance.ObjectDatum
+        ScenarioObjectDatumStructBlock IH2ObjectInstance.ObjectDatum
         {
             get { return this.objectData; }
         }
@@ -125,7 +126,7 @@ namespace Moonfish.Tags
             get { return this.type; }
         }
 
-        ScenarioObjectDatumStruct IH2ObjectInstance.ObjectDatum
+        ScenarioObjectDatumStructBlock IH2ObjectInstance.ObjectDatum
         {
             get { return this.objectData; }
         }
@@ -156,7 +157,7 @@ namespace Moonfish.Tags
             get { return this.type; }
         }
 
-        ScenarioObjectDatumStruct IH2ObjectInstance.ObjectDatum
+        ScenarioObjectDatumStructBlock IH2ObjectInstance.ObjectDatum
         {
             get { return this.objectData; }
         }
@@ -186,7 +187,7 @@ namespace Moonfish.Tags
             get { return this.type; }
         }
 
-        ScenarioObjectDatumStruct IH2ObjectInstance.ObjectDatum
+        ScenarioObjectDatumStructBlock IH2ObjectInstance.ObjectDatum
         {
             get { return this.objectData; }
         }
@@ -209,7 +210,7 @@ namespace Moonfish.Tags
     {
         ShortBlockIndex1 IH2ObjectInstance.NameIndex
         {
-            get { return this.name; }
+            get { return base.name; }
         }
 
         ShortBlockIndex1 IH2ObjectInstance.PaletteIndex
@@ -217,7 +218,7 @@ namespace Moonfish.Tags
             get { return this.type; }
         }
 
-        ScenarioObjectDatumStruct IH2ObjectInstance.ObjectDatum
+        ScenarioObjectDatumStructBlock IH2ObjectInstance.ObjectDatum
         {
             get { return this.objectData; }
         }
@@ -227,21 +228,13 @@ namespace Moonfish.Tags
             get
             {
                 var worldMatrix = Matrix4.Identity;
-                var translationMatrix = Matrix4.CreateTranslation(objectData.position);
-                var rotationXMatrix = Matrix4.CreateRotationZ(this.objectData.rotation.X);
-                var rotationYMatrix = Matrix4.CreateRotationY(this.objectData.rotation.Y);
-                var rotationZMatrix = Matrix4.CreateRotationX(this.objectData.rotation.Z);
-                var scaleMatrix = Matrix4.CreateScale(this.objectData.scale == 0 ? 1 : this.objectData.scale);
+                var translationMatrix = Matrix4.CreateTranslation( objectData.position );
+                var rotationXMatrix = Matrix4.CreateRotationZ( this.objectData.rotation.X );
+                var rotationYMatrix = Matrix4.CreateRotationY( this.objectData.rotation.Y );
+                var rotationZMatrix = Matrix4.CreateRotationX( this.objectData.rotation.Z );
+                var scaleMatrix = Matrix4.CreateScale( this.objectData.scale == 0 ? 1 : this.objectData.scale );
                 return worldMatrix *= rotationXMatrix * rotationYMatrix * rotationZMatrix * translationMatrix * scaleMatrix;
             }
         }
     };
-    partial class ScenarioCutsceneTitleBlock
-    {
-        [GuerillaPreProcessMethod(BlockName = "scenario_cutscene_title_block")]
-        protected static void GuerillaPreProcessMethod(BinaryReader binaryReader, IList<tag_field> fields)
-        {
-            fields.Insert(fields.Count, new tag_field() { type = field_type._field_pad, Name = "padding", definition = 2 });
-        }
-    }
 }

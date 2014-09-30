@@ -173,8 +173,8 @@ namespace Moonfish.Guerilla
             }
             classInfo.Attributes.ForEach( x => streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) ) );
             streamWriter.WriteLine( classInfo.ClassDeclaration.Tab( ref tabCount ) );
-            streamWriter.WriteLine( "{".Tab( ref tabCount ) ); 
-            
+            streamWriter.WriteLine( "{".Tab( ref tabCount ) );
+
             if( !subClass )
             {
                 classInfo.Value.Name = classInfo.Value.Name.Remove( classInfo.Value.Name.LastIndexOf( "Base" ), 4 );
@@ -272,9 +272,6 @@ namespace Moonfish.Guerilla
 
         public ClassInfo BeginProcessTagBlockDefinition( TagBlockDefinition block, int address, string group_tag = "", string className = "" )
         {
-            if( block.Name.Contains( "vertices" ) )
-            {
-            }
             var size = CalculateSizeOfFieldSet( block.LatestFieldSet.Fields );
 
             ClassInfo @class = new ClassInfo( )
@@ -440,8 +437,12 @@ namespace Moonfish.Guerilla
                         }
                     case field_type._field_array_start:
                         {
-                            var fieldSubSet = fields.GetRange( fields.IndexOf( field ), fields.Count - fields.IndexOf( field ) );
-                            @class.ClassDefinitions.Add( ProcessArrayFields( fieldSubSet ) );
+                            var startIndex = fields.IndexOf( field );
+                            var endIndex = fields.FindIndex(
+                                startIndex,
+                                x => x.type == field_type._field_array_end ) + 1;
+                            var arrayFieldSubSet = fields.GetRange( startIndex, endIndex - startIndex );
+                            @class.ClassDefinitions.Add( ProcessArrayFields( arrayFieldSubSet ) );
 
                             fieldInfo = new FieldInfo( )
                             {
@@ -451,7 +452,9 @@ namespace Moonfish.Guerilla
                             };
 
                             @class.Fields.Add( fieldInfo );
-                            break;
+                            var remainingFields = fields.GetRange( endIndex, fields.Count - endIndex );
+                            ProcessFields( remainingFields, @class );
+                            return;
                         }
                     case field_type._field_array_end:
                         {

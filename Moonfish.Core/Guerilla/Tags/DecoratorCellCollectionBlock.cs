@@ -19,11 +19,15 @@ namespace Moonfish.Guerilla.Tags
     public class DecoratorCellCollectionBlockBase
     {
         internal ChildIndices childIndices;
-        internal short childIndex;
+        internal Moonfish.Tags.ShortBlockIndex1 cacheBlockIndex;
+        internal short groupCount;
+        internal int groupStartIndex;
         internal  DecoratorCellCollectionBlockBase(BinaryReader binaryReader)
         {
             this.childIndices = new ChildIndices(binaryReader);
-            this.childIndex = binaryReader.ReadInt16();
+            this.cacheBlockIndex = binaryReader.ReadShortBlockIndex1();
+            this.groupCount = binaryReader.ReadInt16();
+            this.groupStartIndex = binaryReader.ReadInt32();
         }
         internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {

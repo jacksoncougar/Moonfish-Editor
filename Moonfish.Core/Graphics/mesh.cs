@@ -154,7 +154,7 @@ namespace Moonfish.Graphics
 
     public class MeshManager
     {
-        Scenario scenario;
+        ScenarioBlock scenario;
         Program program;
         Program systemProgram;
         Dictionary<TagIdent, ScenarioObject> objects;

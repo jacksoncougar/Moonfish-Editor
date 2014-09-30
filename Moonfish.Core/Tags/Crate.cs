@@ -6,9 +6,7 @@ using System.Text;
 namespace Moonfish.Tags
 {
     [TagClass("bloc")]
-    public class Crate
+    public class Crate //: ScenarioCrateBlock
     {
-        [TagReference("hlmt", Offset = 52)]
-        public HierarchyModel HierarchyModel;
     }
 }
