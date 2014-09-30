@@ -262,6 +262,8 @@
     <Compile Include="Guerilla\Tags\InstantaneousResponseDamageEffectMarkerStructBlock.cs" />
     <Compile Include="Guerilla\Tags\InstantaneousResponseDamageEffectStructBlock.cs" />
     <Compile Include="Guerilla\Tags\ItemBlock.cs" />
+    <Compile Include="Guerilla\Tags\ItemCollectionBlock.cs" />
+    <Compile Include="Guerilla\Tags\ItemPermutation.cs" />
     <Compile Include="Guerilla\Tags\LeafConnectionVertexBlock.cs" />
     <Compile Include="Guerilla\Tags\LeavesBlock.cs" />
     <Compile Include="Guerilla\Tags\MapLeafConnectionIndexBlock.cs" />
