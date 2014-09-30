@@ -70,17 +70,17 @@ namespace Moonfish.Guerilla.Tags
         internal enum SortOrderNegativeValuesMeanCloserToTheCamera : short
         {
             NoSorting = 0,
-            invalidName_5Closest = 1,
-            invalidName_4 = 2,
-            invalidName_3 = 3,
-            invalidName_2 = 4,
-            invalidName_1 = 5,
-            invalidName_0SameAsModel = 6,
-            invalidNuame_1 = 7,
-            invalidNiuiame_2 = 8,
-            invalidNauuume_3 = 9,
-            invalidNauume_4 = 10,
-            invalidName_5Farthest = 11,
+            Minus5Closest = 1,
+            Minus4 = 2,
+            Minus3 = 3,
+            Minus2 = 4,
+            Minus1 = 5,
+            NoBiasSameAsModel = 6,
+            Plus1 = 7,
+            Plus2 = 8,
+            Plus3 = 9,
+            Plus4 = 10,
+            Plus5Farthest = 11,
         };
     };
 }

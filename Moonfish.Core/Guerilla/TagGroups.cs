@@ -212,7 +212,7 @@ namespace Moonfish.Guerilla
         }
     }
 
-    public struct enum_definition : IReadDefinition
+    public class enum_definition : IReadDefinition
     {
         public int option_count;
         public int options_address;

@@ -134,6 +134,10 @@ namespace Moonfish.Guerilla
             }
 
             FormatFieldNames( tokenDictionary );
+            foreach( var item in EnumDefinitions )
+            {
+                item.Format( );
+            }
             foreach( var item in ClassDefinitions )
             {
                 item.Format( );
@@ -388,6 +392,15 @@ return data;",
             ValueNames = new List<GuerillaName>( );
         }
 
+        public void Format( )
+        {
+           var tokenDictionary = new ClassInfo.TokenDictionary( );
+            for( int i = 0; i < ValueNames.Count; i++ )
+            {
+                ValueNames[i] = tokenDictionary.GenerateValidToken( GuerillaCs.ToTypeName( ValueNames[i] ) );   
+            }
+        }
+
         public override string ToString( )
         {
             var stringBuilder = new StringBuilder
@@ -481,7 +494,7 @@ return data;",
             var typeString = GetTypeOutput( );
 
             // write Field
-            stringBuilder.AppendLine( string.Format( "{0} {1}{2} {3};", AccessModifiersExtensions.ToString(AccessModifiers),
+            stringBuilder.AppendLine( string.Format( "{0} {1}{2} {3};", AccessModifiersExtensions.ToString( AccessModifiers ),
                 typeString, IsArray ? "[]" : "", this.Value.Name ) );
 
             return stringBuilder.ToString( ).Trim( );

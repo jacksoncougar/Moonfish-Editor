@@ -49,14 +49,8 @@ namespace Moonfish.Guerilla.Tags
         }
         internal enum ScaleFlags : int
         {
-            /// <summary>
-            /// blends colors in hsv rather than rgb space
-            /// </summary>
-            BlendInHsv = 1,
-            /// <summary>
-            /// blends colors through more hues (goes the long way around the color wheel)
-            /// </summary>
-            MoreColors = 2,
+            BlendInHsvBlendsColorsInHsvRatherThanRgbSpace = 1,
+            MoreColorsBlendsColorsThroughMoreHuesGoesTheLongWayAroundTheColorWheel = 2,
         };
     };
 }

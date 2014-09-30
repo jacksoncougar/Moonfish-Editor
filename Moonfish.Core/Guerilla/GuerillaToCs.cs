@@ -160,7 +160,6 @@ namespace Moonfish.Guerilla
                 var wrapperClassInfo = classInfo.GenerateWrapper( classInfo.Value.Name, classInfo.Value.Name + "Base" );
                 classInfo.Value.Name += "Base";
                 classInfo.Generate( );
-                classInfo.Value.Name = classInfo.Value.Name.Remove( classInfo.Value.Name.LastIndexOf( "Base" ), 4 );
 
                 foreach( var item in classInfo.Usings )
                 {
@@ -174,7 +173,12 @@ namespace Moonfish.Guerilla
             }
             classInfo.Attributes.ForEach( x => streamWriter.WriteLine( x.ToString( ).Tab( ref tabCount ) ) );
             streamWriter.WriteLine( classInfo.ClassDeclaration.Tab( ref tabCount ) );
-            streamWriter.WriteLine( "{".Tab( ref tabCount ) );
+            streamWriter.WriteLine( "{".Tab( ref tabCount ) ); 
+            
+            if( !subClass )
+            {
+                classInfo.Value.Name = classInfo.Value.Name.Remove( classInfo.Value.Name.LastIndexOf( "Base" ), 4 );
+            }
 
             foreach( var item in classInfo.Fields )
             {

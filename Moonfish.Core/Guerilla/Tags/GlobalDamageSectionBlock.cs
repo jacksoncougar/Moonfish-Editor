@@ -98,7 +98,7 @@ namespace Moonfish.Guerilla.Tags
             TakesFullDmgWhenObjDstryd = 8,
             RestoredOnRessurection = 16,
             Unused = 32,
-            oUnused = 64,
+            Unused0 = 64,
             Heatshottable = 128,
             IgnoresShields = 256,
         };

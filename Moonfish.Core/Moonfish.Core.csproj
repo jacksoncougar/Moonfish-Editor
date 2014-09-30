@@ -151,6 +151,7 @@
     <Compile Include="Guerilla\GuerillaExtensions.cs" />
     <Compile Include="Guerilla\GuerillaFields.cs" />
     <Compile Include="Guerilla\MethodInfo.cs" />
+    <Compile Include="Guerilla\Preprocess\ModelVariantRegionBlockBase.cs" />
     <Compile Include="Guerilla\Tags\AiDeafeningEncodedPasBlock.cs" />
     <Compile Include="Guerilla\Tags\BreakableSurfaceKeyTableBlock.cs" />
     <Compile Include="Guerilla\Tags\Bsp2dNodesBlock.cs" />

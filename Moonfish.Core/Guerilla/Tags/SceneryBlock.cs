@@ -52,10 +52,7 @@ namespace Moonfish.Guerilla.Tags
         };
         internal enum Flags : short
         {
-            /// <summary>
-            /// stimulates?
-            /// </summary>
-            PhysicallySimulates = 1,
+            PhysicallySimulatesStimulates = 1,
         };
         internal enum LightmappingPolicy : short
         {

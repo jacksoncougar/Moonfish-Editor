@@ -257,24 +257,15 @@ namespace Moonfish.Guerilla.Tags
             SearchCardinalDirectionLightmapsOnFailure = 2,
             Unused = 4,
             NotAPathfindingObstacle = 8,
-            /// <summary>
-            /// object passes all function values to parent and uses parent's markers
-            /// </summary>
-            ExtensionOfParent = 16,
+            ExtensionOfParentObjectPassesAllFunctionValuesToParentAndUsesParentsMarkers = 16,
             DoesNotCauseCollisionDamage = 32,
             EarlyMover = 64,
             EarlyMoverLocalizedPhysics = 128,
-            /// <summary>
-            /// cast a ton of rays once and store the results for lighting
-            /// </summary>
-            UseStaticMassiveLightmapSample = 256,
+            UseStaticMassiveLightmapSampleCastATonOfRaysOnceAndStoreTheResultsForLighting = 256,
             ObjectScalesAttachments = 512,
             InheritsPlayersAppearance = 1024,
             DeadBipedsCantLocalize = 2048,
-            /// <summary>
-            /// use this for the mac gun on spacestation
-            /// </summary>
-            AttachToClustersByDynamicSphere = 4096,
+            AttachToClustersByDynamicSphereUseThisForTheMacGunOnSpacestation = 4096,
             EffectsCreatedByThisObjectDoNotSpawnObjectsInMultiplayer = 8192,
         };
         internal enum LightmapShadowMode : short

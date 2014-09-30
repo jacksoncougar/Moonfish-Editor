@@ -57,22 +57,10 @@ namespace Moonfish.Guerilla.Tags
         }
         internal enum Flags : int
         {
-            /// <summary>
-            /// result of function is one minus actual result
-            /// </summary>
-            Invert = 1,
-            /// <summary>
-            /// the curve mapping can make the function active/inactive
-            /// </summary>
-            MappingDoesNotControlsActive = 2,
-            /// <summary>
-            /// function does not deactivate when at or below lower bound
-            /// </summary>
-            AlwaysActive = 4,
-            /// <summary>
-            /// function offsets periodic function input by random value between 0 and 1
-            /// </summary>
-            RandomTimeOffset = 8,
+            InvertResultOfFunctionIsOneMinusActualResult = 1,
+            MappingDoesNotControlsActiveTheCurveMappingCanMakeTheFunctionActiveInactive = 2,
+            AlwaysActiveFunctionDoesNotDeactivateWhenAtOrBelowLowerBound = 4,
+            RandomTimeOffsetFunctionOffsetsPeriodicFunctionInputByRandomValueBetween0And1 = 8,
         };
     };
 }
