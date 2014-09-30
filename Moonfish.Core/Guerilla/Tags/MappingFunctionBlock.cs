@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class MappingFunctionBlock
+    public class MappingFunctionBlockBase
     {
         internal ByteBlock[] data;
         internal  MappingFunctionBlockBase(BinaryReader binaryReader)

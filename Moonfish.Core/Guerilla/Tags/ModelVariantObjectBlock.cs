@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 16)]
-    public class ModelVariantObjectBlock
+    public class ModelVariantObjectBlockBase
     {
         internal Moonfish.Tags.StringID parentMarker;
         internal Moonfish.Tags.StringID childMarker;

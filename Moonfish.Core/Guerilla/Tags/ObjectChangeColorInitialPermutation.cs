@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 32)]
-    public class ObjectChangeColorInitialPermutation
+    public class ObjectChangeColorInitialPermutationBase
     {
         internal float weight;
         internal Moonfish.Tags.ColorR8G8B8 colorLowerBound;

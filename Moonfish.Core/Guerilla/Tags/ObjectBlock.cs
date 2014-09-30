@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 188)]
-    public class ObjectBlock
+    public class ObjectBlockBase
     {
         internal byte[] invalidName_;
         internal Flags flags;

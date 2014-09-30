@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 32)]
-    public class ObjectFunctionBlock
+    public class ObjectFunctionBlockBase
     {
         internal Flags flags;
         internal Moonfish.Tags.StringID importName;

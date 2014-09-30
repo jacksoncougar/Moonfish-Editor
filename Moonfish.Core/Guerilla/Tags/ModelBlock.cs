@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 252)]
-    public class ModelBlock
+    public class ModelBlockBase
     {
         [TagReference("mode")]
         internal Moonfish.Tags.TagReference renderModel;

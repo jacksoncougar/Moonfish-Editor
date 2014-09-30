@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class SceneryBlock
+    public class SceneryBlockBase
     {
         internal PathfindingPolicy pathfindingPolicy;
         internal Flags flags;

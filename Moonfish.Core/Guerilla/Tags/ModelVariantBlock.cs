@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 56)]
-    public class ModelVariantBlock
+    public class ModelVariantBlockBase
     {
         internal Moonfish.Tags.StringID name;
         internal byte[] invalidName_;

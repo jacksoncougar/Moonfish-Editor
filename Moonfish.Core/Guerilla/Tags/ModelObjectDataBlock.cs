@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 20)]
-    public class ModelObjectDataBlock
+    public class ModelObjectDataBlockBase
     {
         internal Type type;
         internal byte[] invalidName_;

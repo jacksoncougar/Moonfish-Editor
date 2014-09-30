@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 80)]
-    public class InstantaneousDamageRepsonseBlock
+    public class InstantaneousDamageRepsonseBlockBase
     {
         internal ResponseType responseType;
         internal ConstraintDamageType constraintDamageType;

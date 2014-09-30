@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class ModelPermutationBlock
+    public class ModelPermutationBlockBase
     {
         internal Moonfish.Tags.StringID name;
         internal Flags flags;

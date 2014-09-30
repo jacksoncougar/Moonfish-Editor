@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class PredictedResourceBlock
+    public class PredictedResourceBlockBase
     {
         internal Type type;
         internal short resourceIndex;

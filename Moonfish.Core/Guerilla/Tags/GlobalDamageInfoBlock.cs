@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 248)]
-    public class GlobalDamageInfoBlock
+    public class GlobalDamageInfoBlockBase
     {
         internal Flags flags;
         /// <summary>

@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 20)]
-    public class ModelVariantRegionBlock
+    public class ModelVariantRegionBlockBase
     {
         internal Moonfish.Tags.StringID regionNameMustMatchRegionNameInRenderModel;
         internal byte[] invalidName_;
@@ -76,10 +76,10 @@ namespace Moonfish.Guerilla.Tags
             invalidName_2 = 4,
             invalidName_1 = 5,
             invalidName_0SameAsModel = 6,
-            invalidName_1 = 7,
-            invalidName_2 = 8,
-            invalidName_3 = 9,
-            invalidName_4 = 10,
+            invalidNuame_1 = 7,
+            invalidNiuiame_2 = 8,
+            invalidNauuume_3 = 9,
+            invalidNauume_4 = 10,
             invalidName_5Farthest = 11,
         };
     };

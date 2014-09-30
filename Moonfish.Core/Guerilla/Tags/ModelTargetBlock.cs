@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 28)]
-    public class ModelTargetBlock
+    public class ModelTargetBlockBase
     {
         /// <summary>
         /// multiple markers become multiple spheres of the same radius

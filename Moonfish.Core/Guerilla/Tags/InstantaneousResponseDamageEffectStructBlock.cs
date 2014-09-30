@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 8)]
-    public class InstantaneousResponseDamageEffectStructBlock
+    public class InstantaneousResponseDamageEffectStructBlockBase
     {
         [TagReference("jpt!")]
         internal Moonfish.Tags.TagReference transitionDamageEffect;

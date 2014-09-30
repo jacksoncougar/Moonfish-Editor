@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 1)]
-    public class ByteBlock
+    public class ByteBlockBase
     {
         internal byte value;
         internal  ByteBlockBase(BinaryReader binaryReader)

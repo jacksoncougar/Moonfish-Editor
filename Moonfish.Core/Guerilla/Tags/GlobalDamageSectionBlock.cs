@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 56)]
-    public class GlobalDamageSectionBlock
+    public class GlobalDamageSectionBlockBase
     {
         internal Moonfish.Tags.StringID name;
         internal Flags flags;
@@ -98,7 +98,7 @@ namespace Moonfish.Guerilla.Tags
             TakesFullDmgWhenObjDstryd = 8,
             RestoredOnRessurection = 16,
             Unused = 32,
-            Unused = 64,
+            oUnused = 64,
             Heatshottable = 128,
             IgnoresShields = 256,
         };

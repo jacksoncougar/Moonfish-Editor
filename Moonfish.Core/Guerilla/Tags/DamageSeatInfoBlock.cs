@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 20)]
-    public class DamageSeatInfoBlock
+    public class DamageSeatInfoBlockBase
     {
         internal Moonfish.Tags.StringID seatLabel;
         /// <summary>

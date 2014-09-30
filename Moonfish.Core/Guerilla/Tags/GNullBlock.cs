@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 0)]
-    public class GNullBlock
+    public class GNullBlockBase
     {
         internal  GNullBlockBase(BinaryReader binaryReader)
         {

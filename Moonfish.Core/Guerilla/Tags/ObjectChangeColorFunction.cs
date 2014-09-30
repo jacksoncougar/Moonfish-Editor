@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 40)]
-    public class ObjectChangeColorFunction
+    public class ObjectChangeColorFunctionBase
     {
         internal byte[] invalidName_;
         internal ScaleFlags scaleFlags;
