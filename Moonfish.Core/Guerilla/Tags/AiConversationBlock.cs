@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 104)]
     public  partial class AiConversationBlock : AiConversationBlockBase
     {
         public  AiConversationBlock(BinaryReader binaryReader): base(binaryReader)

@@ -15,12 +15,15 @@ namespace Moonfish.Graphics
         public static Color Selection = Color.FromArgb( 222, 204, 2 );
         public static Color ClearColour = Color.FromArgb( 33, 33, 33 );
 
-        static Random random = new Random( );
-        public static Color RandomDiffuseColor
+        static float seed = new Random( ).Next( 0, 255 ) / 255;
+        const float GoldenAngleConjugate = 0.618033988749895f;
+        public static Color LinearRandomDiffuseColor
         {
             get
             {
-                return Color.FromArgb( 0xFF, random.Next( 100, 200 ), random.Next( 100, 200 ), random.Next( 100, 200 ) );
+                seed += GoldenAngleConjugate;
+                seed %= 1;
+                return ColorFromHSV( seed * 360f, 0.681, 1 );
             }
         }
         public static Color ColorFromHSV( double hue, double saturation, double value )

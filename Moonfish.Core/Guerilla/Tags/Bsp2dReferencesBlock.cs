@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class Bsp2dReferencesBlock : Bsp2dReferencesBlockBase
     {
         public  Bsp2dReferencesBlock(BinaryReader binaryReader): base(binaryReader)

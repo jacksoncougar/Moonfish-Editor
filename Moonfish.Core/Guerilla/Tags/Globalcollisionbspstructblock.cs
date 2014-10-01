@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 64)]
     public  partial class GlobalCollisionBspStructBlock : GlobalCollisionBspStructBlockBase
     {
         public  GlobalCollisionBspStructBlock(BinaryReader binaryReader): base(binaryReader)

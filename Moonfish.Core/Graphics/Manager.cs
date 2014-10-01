@@ -1,4 +1,5 @@
-﻿using Moonfish.Guerilla.Tags;
+﻿using BulletSharp;
+using Moonfish.Guerilla.Tags;
 using Moonfish.Tags;
 using OpenTK;
 using OpenTK.Graphics.ES30;
@@ -10,6 +11,23 @@ using System.Text;
 
 namespace Moonfish.Graphics
 {
+    public class CollisionManager
+    {
+        public CollisionWorld World { get; private set; }
+
+        public CollisionManager( Program debug )
+        {
+            var defaultCollisionConfiguration = new DefaultCollisionConfiguration( );
+            var collisionDispatcher = new CollisionDispatcher( );
+            var worldAabbMin = new Vector3( -1000, -1000, -1000 );
+            var worldAabbMax = new Vector3( 1000, 1000, 1000 );
+            var broadphase = new AxisSweep3( worldAabbMin, worldAabbMax );
+            this.World = new CollisionWorld( collisionDispatcher, broadphase, defaultCollisionConfiguration );
+            if( debug != null )
+                this.World.DebugDrawer = new BulletDebugDrawer( debug );
+        }
+    }
+
     public class LevelManager
     {
         Program shaded, system;
@@ -31,7 +49,7 @@ namespace Moonfish.Graphics
             InstancedGeometryObjects = new List<RenderObject>( );
             foreach( var cluster in this.Level.clusters )
             {
-                ClusterObjects.Add( new RenderObject( cluster ) { DiffuseColour = Color.Tan } );
+                ClusterObjects.Add( new RenderObject( cluster ) { DiffuseColour = Colours.LinearRandomDiffuseColor } );
             }
             foreach( var item in this.Level.instancedGeometriesDefinitions )
             {
@@ -54,36 +72,57 @@ namespace Moonfish.Graphics
     }
     public class MeshManager
     {
+        CollisionManager Collision { get; set; }
         ScenarioBlock scenario;
         Program program;
         Program systemProgram;
-        Dictionary<TagIdent, ScenarioObject> objects;
+        Dictionary<TagIdent, List<ScenarioObject>> objects;
 
         internal void Add( ModelBlock model, TagIdent id )
         {
-            objects[id] = new ScenarioObject( model );
+            //objects.Contains
+         //   objects[id] = {new ScenarioObject( model )};
         }
 
-        public ScenarioObject this[TagIdent ident]
+        public List<ScenarioObject> this[TagIdent ident]
         {
             get { return this.objects.ContainsKey( ident ) ? objects[ident] : null; }
         }
 
         public MeshManager( Program program, Program systemProgram )
         {
-            objects = new Dictionary<TagIdent, ScenarioObject>( );
+            objects = new Dictionary<TagIdent, List<ScenarioObject>>( );
             this.program = program;
             this.systemProgram = systemProgram;
+        }
+
+        public void LoadCollision( CollisionManager collision )
+        {
+            this.Collision = collision;
+            foreach( var item in objects.SelectMany( x => x.Value ) )
+            {
+                Collision.World.AddCollisionObject( item.CollisionObject );
+            }
         }
 
         public void LoadScenario( MapStream map )
         {
             this.scenario = map["scnr", ""].Deserialize( );
-            var scenery = scenario.sceneryPalette.Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var weapons = scenario.weaponPalette.Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var vehicles = scenario.vehiclePalette.Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var crates = scenario.cratesPalette.Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var equipment = scenario.equipmentPalette.Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
+            var scenery = scenario.sceneryPalette
+                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
+                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
+            var weapons = scenario.weaponPalette
+                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
+                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
+            var vehicles = scenario.vehiclePalette
+                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
+                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
+            var crates = scenario.cratesPalette
+                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
+                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
+            var equipment = scenario.equipmentPalette
+                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
+                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
 
             var items = scenery
             .Concat( weapons )
@@ -112,20 +151,20 @@ namespace Moonfish.Graphics
         public void Add( TagIdent item )
         {
             var data = Halo2.GetReferenceObject( item );
-            objects[item] = new ScenarioObject( (ModelBlock)data );
+            //objects[item] = new ScenarioObject( (ModelBlock)data );
         }
 
         public void Draw( TagIdent item )
         {
             if( objects.ContainsKey( item ) )
             {
-                IRenderable @object = objects[item] as IRenderable;
-                @object.Render( new[] { program, systemProgram } );
+                //IRenderable @object = objects[item] as IRenderable;
+                //@object.Render( new[] { program, systemProgram } );
             }
             else
             {
                 var data = Halo2.GetReferenceObject( item );
-                objects[item] = new ScenarioObject( (ModelBlock)data );
+                //objects[item] = new ScenarioObject( (ModelBlock)data );
             }
         }
 
@@ -135,10 +174,10 @@ namespace Moonfish.Graphics
             {
                 using( program.Use( ) )
                 {
-                    if( (int)instance.PaletteIndex < 0 ) continue;
-                    program[Uniforms.WorldMatrix] = (Matrix4)instance.WorldMatrix;
-                    IRenderable @object = objects[palette[(int)instance.PaletteIndex].ObjectReference.TagID];
-                    @object.Render( new[] { program } );
+                    //if( (int)instance.PaletteIndex < 0 ) continue;
+                    //program[Uniforms.WorldMatrix] = (Matrix4)instance.WorldMatrix;
+                    //IRenderable @object = objects[palette[(int)instance.PaletteIndex].ObjectReference.TagID];
+                    //@object.Render( new[] { program } );
                 }
             }
         }

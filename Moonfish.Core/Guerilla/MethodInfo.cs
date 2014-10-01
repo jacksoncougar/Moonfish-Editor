@@ -138,8 +138,14 @@ namespace Moonfish.Guerilla
         {
             var stringBuilder = new StringBuilder
                 (
-                string.Format( "{0} enum {1} : {2}", AccessModifiersExtensions.ToString( AccessModifiers ), Value.Name, BaseType.ToString( ).ToLowerInvariant( ) ).Trim( )
+                
                 );
+            foreach( var attribute in this.Attributes )
+            {
+                stringBuilder.AppendLine( attribute.ToString() );
+            }
+            stringBuilder.AppendLine( string.Format( "{0} enum {1} : {2}", 
+                AccessModifiersExtensions.ToString( AccessModifiers ), Value.Name, BaseType.ToString( ).ToLowerInvariant( ) ).Trim( ) );
             stringBuilder.AppendLine( );
             stringBuilder.AppendLine( "{" );
 

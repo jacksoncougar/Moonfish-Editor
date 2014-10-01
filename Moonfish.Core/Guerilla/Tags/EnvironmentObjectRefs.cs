@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 28)]
     public  partial class EnvironmentObjectRefs : EnvironmentObjectRefsBase
     {
         public  EnvironmentObjectRefs(BinaryReader binaryReader): base(binaryReader)

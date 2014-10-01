@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 58)]
     public  partial class ErrorReportLinesBlock : ErrorReportLinesBlockBase
     {
         public  ErrorReportLinesBlock(BinaryReader binaryReader): base(binaryReader)
@@ -18,16 +17,12 @@ namespace Moonfish.Guerilla.Tags
     [LayoutAttribute(Size = 58)]
     public class ErrorReportLinesBlockBase
     {
-        internal Points points;
-        internal OpenTK.Vector3 position;
-        internal NodeIndices nodeIndices;
-        internal byte nodeIndex;
+        internal Points[] points;
+        internal NodeWeights[] nodeWeights;
         internal  ErrorReportLinesBlockBase(BinaryReader binaryReader)
         {
-            this.points = new Points(binaryReader);
-            this.position = binaryReader.ReadVector3();
-            this.nodeIndices = new NodeIndices(binaryReader);
-            this.nodeIndex = binaryReader.ReadByte();
+            this.points = new []{ new Points(binaryReader), new Points(binaryReader),  };
+            this.nodeWeights = new []{ new NodeWeights(binaryReader), new NodeWeights(binaryReader), new NodeWeights(binaryReader), new NodeWeights(binaryReader),  };
         }
         internal  virtual byte[] ReadData(BinaryReader binaryReader)
         {
@@ -46,13 +41,11 @@ namespace Moonfish.Guerilla.Tags
         public class Points
         {
             internal OpenTK.Vector3 position;
-            internal NodeIndices nodeIndices;
-            internal byte nodeIndex;
+            internal NodeIndices[] nodeIndices;
             internal  Points(BinaryReader binaryReader)
             {
                 this.position = binaryReader.ReadVector3();
-                this.nodeIndices = new NodeIndices(binaryReader);
-                this.nodeIndex = binaryReader.ReadByte();
+                this.nodeIndices = new []{ new NodeIndices(binaryReader), new NodeIndices(binaryReader), new NodeIndices(binaryReader), new NodeIndices(binaryReader),  };
             }
             internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {
@@ -91,12 +84,12 @@ namespace Moonfish.Guerilla.Tags
                 }
             };
         };
-        public class NodeIndices
+        public class NodeWeights
         {
-            internal byte nodeIndex;
-            internal  NodeIndices(BinaryReader binaryReader)
+            internal float nodeWeight;
+            internal  NodeWeights(BinaryReader binaryReader)
             {
-                this.nodeIndex = binaryReader.ReadByte();
+                this.nodeWeight = binaryReader.ReadSingle();
             }
             internal  virtual byte[] ReadData(BinaryReader binaryReader)
             {

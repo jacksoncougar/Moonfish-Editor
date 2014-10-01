@@ -56,6 +56,7 @@ namespace Moonfish
         public static dynamic GetReferenceObject( TagReference reference )
         {
             if( mapStream == null ) return null;
+            if( reference.TagID == TagIdent.NullIdentifier ) return null;
 
             return mapStream[reference.TagID].Deserialize( );
         }
@@ -175,7 +176,7 @@ namespace Moonfish
             Local = 0,
             MainMenu = 1,
             Shared = 2,
-            SinglePlayerShared = 4,
+            SinglePlayerShared = 3,
         }
     }
 

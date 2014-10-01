@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 1)]
     public  partial class ByteBlock : ByteBlockBase
     {
         public  ByteBlock(BinaryReader binaryReader): base(binaryReader)

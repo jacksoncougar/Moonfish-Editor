@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 6)]
     public  partial class GlobalDetailObjectBlock : GlobalDetailObjectBlockBase
     {
         public  GlobalDetailObjectBlock(BinaryReader binaryReader): base(binaryReader)

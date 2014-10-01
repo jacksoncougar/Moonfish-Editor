@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class Bsp3dNodesBlock : Bsp3dNodesBlockBase
     {
         public  Bsp3dNodesBlock(BinaryReader binaryReader): base(binaryReader)

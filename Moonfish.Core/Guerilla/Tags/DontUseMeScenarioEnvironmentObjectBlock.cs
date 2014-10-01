@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 64)]
     public  partial class DontUseMeScenarioEnvironmentObjectBlock : DontUseMeScenarioEnvironmentObjectBlockBase
     {
         public  DontUseMeScenarioEnvironmentObjectBlock(BinaryReader binaryReader): base(binaryReader)

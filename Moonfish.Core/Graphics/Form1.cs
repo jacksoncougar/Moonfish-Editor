@@ -22,6 +22,10 @@ namespace Moonfish.Graphics
 {
     public partial class Form1 : Form
     {
+        LevelManager LevelManager;
+        public CollisionManager CollisionManager { get; private set; }
+
+
         private Program program;
         private Program system_program;
         private Program viewscreenProgram;
@@ -29,10 +33,7 @@ namespace Moonfish.Graphics
         private Camera camera;
         private CoordinateGrid grid;
         private MeshManager manager;
-        LevelManager LevelManager;
         private MapStream map;
-        public BulletSharp.CollisionWorld collisionWorld;
-        List<BulletSharp.CollisionObject> selectableObjects = new List<BulletSharp.CollisionObject>( );
 
         TagIdent? activeObject;
         Object selectedObject;
@@ -68,19 +69,19 @@ namespace Moonfish.Graphics
             camera.Update( );
             UpdateGUI( );
             propertyGrid1.Refresh( );
-            collisionWorld.PerformDiscreteCollisionDetection( );
+            CollisionManager.World.PerformDiscreteCollisionDetection( );
         }
 
         private void UpdateGUI( )
         {
-            foreach( var item in selectableObjects )
-            {
-                var origin = item.WorldTransform.ExtractTranslation( );
-                var scale = camera.CreateScale( origin, 0.1f, pixelSize: 10 );
-                var scaleMatrix = Matrix4.CreateScale( scale );
-                var inverseScaleMatrix = Matrix4.CreateScale( item.WorldTransform.ExtractScale( ) ).Inverted( );
-                item.WorldTransform = scaleMatrix * inverseScaleMatrix * item.WorldTransform;
-            }
+            //foreach( var item in selectableObjects )
+            //{
+            //    var origin = item.WorldTransform.ExtractTranslation( );
+            //    var scale = camera.CreateScale( origin, 0.1f, pixelSize: 10 );
+            //    var scaleMatrix = Matrix4.CreateScale( scale );
+            //    var inverseScaleMatrix = Matrix4.CreateScale( item.WorldTransform.ExtractScale( ) ).Inverted( );
+            //    item.WorldTransform = scaleMatrix * inverseScaleMatrix * item.WorldTransform;
+            //}
         }
 
         private void RenderFrame( )
@@ -102,6 +103,7 @@ namespace Moonfish.Graphics
                 system_program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
                 grid.Draw( );
             }
+            CollisionManager.World.DebugDrawWorld( );
             //using (OpenGL.Disable(EnableCap.DepthTest))
             //{
             //    //mousePole.Render(system_program);
@@ -154,6 +156,7 @@ namespace Moonfish.Graphics
             InitializeOpenGL( );
 
             this.manager = new MeshManager( program, system_program );
+            LoadPhysics( );
             this.LevelManager = new Graphics.LevelManager( program, system_program );
 
             timer.Start( );
@@ -175,7 +178,6 @@ namespace Moonfish.Graphics
             OpenGL.ReportError( );
 
             LoadPrograms( );
-            LoadPhysics( );
 
             Scene.LoadSceneShaders( );
 
@@ -186,18 +188,7 @@ namespace Moonfish.Graphics
 
         private void LoadPhysics( )
         {
-            var defaultCollisionConfiguration = new BulletSharp.DefaultCollisionConfiguration( );
-            var collisionDispatcher = new BulletSharp.CollisionDispatcher( );
-            var worldAabbMin = new Vector3( -1000, -1000, -1000 );
-            var worldAabbMax = new Vector3( 1000, 1000, 1000 );
-            var broadphase = new BulletSharp.AxisSweep3( worldAabbMin, worldAabbMax );
-            this.collisionWorld = new BulletSharp.CollisionWorld( collisionDispatcher, broadphase, defaultCollisionConfiguration );
-            this.collisionWorld.DebugDrawer = new BulletDebugDrawer( this.viewscreenProgram );
-
-            foreach( var collisionObject in mousePole.ContactObjects )
-            {
-                collisionWorld.AddCollisionObject( collisionObject );
-            }
+            CollisionManager = new CollisionManager( viewscreenProgram );
         }
 
         private void LoadPrograms( )
@@ -267,6 +258,7 @@ namespace Moonfish.Graphics
             LoadModels( );
             LoadScenarioStructureBSP( );
             LoadScenario( );
+            this.manager.LoadCollision( this.CollisionManager );
         }
 
         private void camera_ViewMatrixChanged( object sender, MatrixChangedEventArgs e )
@@ -312,19 +304,19 @@ namespace Moonfish.Graphics
 
                 manager.Add( activeObject.Value );
 
-                foreach( var item in selectableObjects )
-                {
-                    this.collisionWorld.RemoveCollisionObject( item );
-                }
-                selectableObjects = manager[activeObject.Value].Select( x => x ).ToList( );
-                foreach( var item in selectableObjects )
-                {
-                    var userObject = item.UserObject as IClickable;
-                    if( userObject != null )
-                        userObject.OnMouseClick += userObject_OnMouseClick;
+                //foreach( var item in selectableObjects )
+                //{
+                //    this.collisionWorld.RemoveCollisionObject( item );
+                //}
+                //selectableObjects = manager[activeObject.Value].Select( x => x ).ToList( );
+                //foreach( var item in selectableObjects )
+                //{
+                //    var userObject = item.UserObject as IClickable;
+                //    if( userObject != null )
+                //        userObject.OnMouseClick += userObject_OnMouseClick;
 
-                    this.collisionWorld.AddCollisionObject( item );
-                }
+                //    this.collisionWorld.AddCollisionObject( item );
+                //}
 
                 LoadPropertyGrid( );
             }
@@ -338,7 +330,7 @@ namespace Moonfish.Graphics
                 mousePole.DropHandlers( );
                 mousePole.Show( );
                 mousePole.Position = e.WorldCoordinates;
-                mousePole.Rotation = manager[activeObject.Value].Nodes.GetWorldMatrix( marker.marker.NodeIndex ).ExtractRotation( );
+                //mousePole.Rotation;// = manager[activeObject.Value].Nodes.GetWorldMatrix( marker.marker.NodeIndex ).ExtractRotation( );
                 if( marker != null )
                 {
                     var query = from item in propertyGrid1.EnumerateAllItems( )
@@ -380,12 +372,12 @@ namespace Moonfish.Graphics
             if( e.NewSelection.Value == null ) return;
             if( e.NewSelection.Value.GetType( ) == typeof( RenderModelMarkerBlock ) && activeObject.HasValue )
             {
-                manager[activeObject.Value].Select( new[] { e.NewSelection.Value } );
+                //manager[activeObject.Value].Select( new[] { e.NewSelection.Value } );
             }
             else if( e.NewSelection.Value.GetType( ) == typeof( RenderModelMarkerGroupBlock ) && activeObject.HasValue )
             {
                 var markerGroup = e.NewSelection.Value as RenderModelMarkerGroupBlock;
-                manager[activeObject.Value].Select( markerGroup.Markers );
+                //manager[activeObject.Value].Select( markerGroup.Markers );
             }
         }
 
@@ -413,8 +405,7 @@ namespace Moonfish.Graphics
             };
 
             var callback = new BulletSharp.CollisionWorld.ClosestRayResultCallback( mouse.Close, mouse.Far );
-            collisionWorld.PerformDiscreteCollisionDetection( );
-            collisionWorld.RayTest( mouse.Close, mouse.Far, callback );
+            CollisionManager.World.RayTest( mouse.Close, mouse.Far, callback );
 
             if( callback.HasHit )
             {
@@ -456,8 +447,7 @@ namespace Moonfish.Graphics
             };
 
             var callback = new BulletSharp.CollisionWorld.ClosestRayResultCallback( mouse.Close, mouse.Far );
-            collisionWorld.PerformDiscreteCollisionDetection( );
-            collisionWorld.RayTest( mouse.Close, mouse.Far, callback );
+            CollisionManager.World.RayTest( mouse.Close, mouse.Far, callback );
 
             if( callback.HasHit )
             {
@@ -486,7 +476,7 @@ namespace Moonfish.Graphics
 
         private void saveToolStripMenuItem_Click( object sender, EventArgs e )
         {
-            manager[activeObject.Value].Save( map );
+            //manager[activeObject.Value].Save( map );
             map.Sign( );
         }
     }

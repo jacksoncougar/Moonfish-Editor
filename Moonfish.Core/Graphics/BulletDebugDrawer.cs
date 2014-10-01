@@ -31,7 +31,7 @@ namespace Moonfish.Graphics
         {
             using (debugProgram.Use())
             {
-                debugProgram["object_matrix"] = OpenTK.Matrix4.Identity;
+                debugProgram[Uniforms.WorldMatrix] = OpenTK.Matrix4.Identity;
                 using (Box box = new Box(bbMin, bbMax))
                 {
                     box.Render(new[] { debugProgram });
@@ -44,7 +44,7 @@ namespace Moonfish.Graphics
             using (debugProgram.Use())
             using (Box box = new Box(bbMin, bbMax))
             {
-                debugProgram.UniformBuffer[UniformBuffer.Uniform.WorldMatrix] = trans;
+                debugProgram[Uniforms.WorldMatrix] = trans;
                 GL.VertexAttrib3(1, new[] { 1f, 1f, 1f });
                 box.Render(new[] { debugProgram });
             }

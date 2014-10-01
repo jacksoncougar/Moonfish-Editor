@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 0)]
     public  partial class GNullBlock : GNullBlockBase
     {
         public  GNullBlock(BinaryReader binaryReader): base(binaryReader)

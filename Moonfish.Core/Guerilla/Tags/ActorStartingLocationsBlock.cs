@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 100)]
     public  partial class ActorStartingLocationsBlock : ActorStartingLocationsBlockBase
     {
         public  ActorStartingLocationsBlock(BinaryReader binaryReader): base(binaryReader)

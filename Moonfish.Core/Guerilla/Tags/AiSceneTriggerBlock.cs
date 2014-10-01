@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
     public  partial class AiSceneTriggerBlock : AiSceneTriggerBlockBase
     {
         public  AiSceneTriggerBlock(BinaryReader binaryReader): base(binaryReader)

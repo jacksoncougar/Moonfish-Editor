@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 260)]
     public  partial class GScenarioEditorFolderBlock : GScenarioEditorFolderBlockBase
     {
         public  GScenarioEditorFolderBlock(BinaryReader binaryReader): base(binaryReader)

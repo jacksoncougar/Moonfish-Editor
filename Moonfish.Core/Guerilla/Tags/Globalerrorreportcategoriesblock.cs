@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 676)]
     public  partial class GlobalErrorReportCategoriesBlock : GlobalErrorReportCategoriesBlockBase
     {
         public  GlobalErrorReportCategoriesBlock(BinaryReader binaryReader): base(binaryReader)

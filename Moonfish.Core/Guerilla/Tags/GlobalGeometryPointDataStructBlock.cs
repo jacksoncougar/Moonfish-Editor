@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 32)]
     public  partial class GlobalGeometryPointDataStructBlock : GlobalGeometryPointDataStructBlockBase
     {
         public  GlobalGeometryPointDataStructBlock(BinaryReader binaryReader): base(binaryReader)

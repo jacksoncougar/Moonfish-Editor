@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 31)]
     public  partial class DecalVerticesBlock : DecalVerticesBlockBase
     {
         public  DecalVerticesBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class ClusterDoorPortalEncodedPasBlock : ClusterDoorPortalEncodedPasBlockBase
     {
         public  ClusterDoorPortalEncodedPasBlock(BinaryReader binaryReader): base(binaryReader)

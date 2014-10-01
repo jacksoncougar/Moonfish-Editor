@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 52)]
     public  partial class BarrelFiringEffectBlock : BarrelFiringEffectBlockBase
     {
         public  BarrelFiringEffectBlock(BinaryReader binaryReader): base(binaryReader)

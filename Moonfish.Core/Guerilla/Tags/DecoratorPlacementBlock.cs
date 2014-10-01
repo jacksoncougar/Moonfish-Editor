@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 22)]
     public  partial class DecoratorPlacementBlock : DecoratorPlacementBlockBase
     {
         public  DecoratorPlacementBlock(BinaryReader binaryReader): base(binaryReader)

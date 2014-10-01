@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class FlightReferenceBlock : FlightReferenceBlockBase
     {
         public  FlightReferenceBlock(BinaryReader binaryReader): base(binaryReader)

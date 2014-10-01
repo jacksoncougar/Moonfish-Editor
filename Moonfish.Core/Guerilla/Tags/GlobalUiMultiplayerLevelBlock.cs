@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 3172)]
     public  partial class GlobalUiMultiplayerLevelBlock : GlobalUiMultiplayerLevelBlockBase
     {
         public  GlobalUiMultiplayerLevelBlock(BinaryReader binaryReader): base(binaryReader)

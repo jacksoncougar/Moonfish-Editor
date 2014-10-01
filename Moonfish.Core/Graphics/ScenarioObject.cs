@@ -1,4 +1,5 @@
-﻿using Moonfish.Collision;
+﻿using BulletSharp;
+using Moonfish.Collision;
 using Moonfish.Guerilla.Tags;
 using Moonfish.Tags;
 using OpenTK;
@@ -51,6 +52,8 @@ namespace Moonfish.Graphics
     public class ScenarioObject : RenderObject, IRenderable, IEnumerable<BulletSharp.CollisionObject>
     {
         ModelBlock Model { get; set; }
+        public CollisionObject CollisionObject { get; set; }
+        public Matrix4 WorldMatrix { get; set; }
 
         public NodeCollection Nodes { get; private set; }
         public Dictionary<RenderModelMarkerBlock, MarkerWrapper> Markers;
@@ -58,16 +61,28 @@ namespace Moonfish.Graphics
 
         IList<object> selectedObjects;
 
-        public ScenarioObject( ):base()
+        public ScenarioObject( )
+            : base( )
         {
             activePermuation = StringID.Zero;
             selectedObjects = new List<object>( );
             Nodes = new NodeCollection( );
         }
+
         public ScenarioObject( ModelBlock model )
             : this( )
         {
             this.Model = model;
+
+            if( model.RenderModel == null ) return;
+
+            this.CollisionObject = new CollisionObject( )
+            {
+                UserObject = this,
+                CollisionFlags = CollisionFlags.StaticObject,
+                CollisionShape = new BoxShape( this.Model.RenderModel.compressionInfo[0].ToHalfExtents( ) )
+            };
+
             foreach( var section in model.RenderModel.sections )
             {
                 base.sectionBuffers.Add( new Mesh( section.sectionData[0].section ) );
@@ -76,13 +91,16 @@ namespace Moonfish.Graphics
             this.Markers = model.RenderModel.markerGroups.SelectMany( x => x.Markers ).ToDictionary( x => x, x => new MarkerWrapper( x, this.Nodes ) );
         }
 
-        public IEnumerable<StringID> Permutations
+        public static ScenarioObject CreateInstance( ScenarioObject source )
         {
-            get
+            ScenarioObject instance = (ScenarioObject)source.MemberwiseClone( );
+            instance.CollisionObject = new CollisionObject( )
             {
-                var query = Model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
-                return query;
-            }
+                CollisionShape = new BoxShape( source.Model.RenderModel.compressionInfo[0].ToHalfExtents( ) ),
+                CollisionFlags = source.CollisionObject.CollisionFlags,
+                UserObject = instance
+            };
+            return instance;
         }
 
         void Render( IEnumerable<Program> shaderPasses )
@@ -96,6 +114,7 @@ namespace Moonfish.Graphics
 
         private void RenderPass( Program program )
         {
+            if( Model.RenderModel == null ) return;
             if( program.Name != "system" )
             {
                 using( program.Use( ) )
@@ -192,7 +211,7 @@ namespace Moonfish.Graphics
                 }
             }
         }
-        
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator( )
         {
             return null;

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 60)]
     public  partial class CsPointBlock : CsPointBlockBase
     {
         public  CsPointBlock(BinaryReader binaryReader): base(binaryReader)

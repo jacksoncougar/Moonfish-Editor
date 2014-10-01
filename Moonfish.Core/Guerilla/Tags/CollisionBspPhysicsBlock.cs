@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 112)]
     public  partial class CollisionBspPhysicsBlock : CollisionBspPhysicsBlockBase
     {
         public  CollisionBspPhysicsBlock(BinaryReader binaryReader): base(binaryReader)
