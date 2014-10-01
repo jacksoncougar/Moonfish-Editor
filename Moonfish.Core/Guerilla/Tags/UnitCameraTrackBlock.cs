@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class UnitCameraTrackBlock : UnitCameraTrackBlockBase
     {
         public  UnitCameraTrackBlock(BinaryReader binaryReader): base(binaryReader)

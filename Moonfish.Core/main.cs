@@ -20,12 +20,11 @@ namespace Moonfish
         [STAThread]
         static void Main()
         {
-            GuerillaCs ripper = new GuerillaCs( @"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe" );
-            
-            ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "vehi", "" );
-            ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "bipd", "" );
-            ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "unit", "" );
-            return;
+            //GuerillaCs ripper = new GuerillaCs( @"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe" );
+
+            //ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "bloc", "" );
+            //ripper.DumpTagLayout( @"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "eqip", "" );
+            //return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

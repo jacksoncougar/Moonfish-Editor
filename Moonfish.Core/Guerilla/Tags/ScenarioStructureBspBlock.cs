@@ -7,7 +7,9 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 572)]
+    [LayoutAttribute( Size = 572 )]
+
+    [TagClass( "sbsp" )]
     public  partial class ScenarioStructureBspBlock : ScenarioStructureBspBlockBase
     {
         public  ScenarioStructureBspBlock(BinaryReader binaryReader): base(binaryReader)

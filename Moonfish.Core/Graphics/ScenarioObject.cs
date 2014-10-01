@@ -20,7 +20,6 @@ namespace Moonfish.Graphics
     public interface IRenderable
     {
         void Render( IEnumerable<Program> shaderPasses );
-        void Render( IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances );
     }
 
     public class NodeCollection : List<RenderModelNodeBlock>
@@ -48,82 +47,40 @@ namespace Moonfish.Graphics
         }
     }
 
-    public class RenderObject
+
+    public class ScenarioObject : RenderObject, IRenderable, IEnumerable<BulletSharp.CollisionObject>
     {
-        public Color DiffuseColour { get; set; }
+        ModelBlock Model { get; set; }
 
-        List<Mesh> sectionBuffers;
-
-        public RenderObject( )
-        {
-            sectionBuffers = new List<Mesh>( );
-        }
-
-        public RenderObject( StructureBspClusterBlock x )
-        {
-            sectionBuffers = new List<Mesh>( new[] { new Mesh( x ) } );
-        }
-
-        public void Render( Program program )
-        {
-            if( sectionBuffers.Count == 0 ) return;
-            program[Uniforms.WorldMatrix] = Matrix4.Identity;
-            using( program.Use( ) )
-            {
-                program[Uniforms.WorldMatrix] = Matrix4.Identity;
-                program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
-                program["diffuseColourUniform"] = DiffuseColour.ToFloatRgba( );
-                using( sectionBuffers.First( ).Bind( ) )
-                {
-                    foreach( var part in sectionBuffers.First( ).Parts )
-                    {
-                        GL.DrawElements( PrimitiveType.Triangles, part.stripLength, DrawElementsType.UnsignedShort,
-                            (IntPtr)( part.stripStartIndex * 2 ) ); OpenGL.ReportError( );
-                    }
-                }
-            }
-        }
-    }
-
-    public class ScenarioObject : IRenderable, IEnumerable<BulletSharp.CollisionObject>
-    {
-        ModelBlock model;
-        List<Mesh> sectionBuffers;
-        public NodeCollection nodes;
-
-        public Dictionary<RenderModelMarkerBlock, MarkerWrapper> markers;
-
+        public NodeCollection Nodes { get; private set; }
+        public Dictionary<RenderModelMarkerBlock, MarkerWrapper> Markers;
         public StringID activePermuation;
 
         IList<object> selectedObjects;
-        private StructureBspClusterBlock x;
 
-
-
-        public ScenarioObject( )
+        public ScenarioObject( ):base()
         {
             activePermuation = StringID.Zero;
-            sectionBuffers = new List<Mesh>( );
             selectedObjects = new List<object>( );
-            nodes = new NodeCollection( );
+            Nodes = new NodeCollection( );
         }
         public ScenarioObject( ModelBlock model )
             : this( )
         {
-            this.model = model;
+            this.Model = model;
             foreach( var section in model.RenderModel.sections )
             {
-                sectionBuffers.Add( new Mesh( section ) );
+                base.sectionBuffers.Add( new Mesh( section.sectionData[0].section ) );
             }
-            this.nodes = new NodeCollection( model.RenderModel.nodes );
-            this.markers = model.RenderModel.markerGroups.SelectMany( x => x.Markers ).ToDictionary( x => x, x => new MarkerWrapper( x, this.nodes ) );
+            this.Nodes = new NodeCollection( model.RenderModel.nodes );
+            this.Markers = model.RenderModel.markerGroups.SelectMany( x => x.Markers ).ToDictionary( x => x, x => new MarkerWrapper( x, this.Nodes ) );
         }
 
         public IEnumerable<StringID> Permutations
         {
             get
             {
-                var query = model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
+                var query = Model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
                 return query;
             }
         }
@@ -143,9 +100,9 @@ namespace Moonfish.Graphics
             {
                 using( program.Use( ) )
                 {
-                    var extents = model.RenderModel.compressionInfo[0].ToExtentsMatrix( );
+                    var extents = Model.RenderModel.compressionInfo[0].ToExtentsMatrix( );
                     program[Uniforms.NormalizationMatrix] = extents;
-                    foreach( var region in model.RenderModel.regions )
+                    foreach( var region in Model.RenderModel.regions )
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
                         var mesh = sectionBuffers[section_index];
@@ -166,7 +123,7 @@ namespace Moonfish.Graphics
                 using( program.Use( ) )
                 using( OpenGL.Disable( EnableCap.DepthTest ) )
                 {
-                    foreach( var markerGroup in model.RenderModel.markerGroups )
+                    foreach( var markerGroup in Model.RenderModel.markerGroups )
                     {
                         foreach( var marker in markerGroup.markers )
                         {
@@ -175,7 +132,7 @@ namespace Moonfish.Graphics
                             var rotation = marker.rotation;
                             var scale = marker.scale;
 
-                            var worldMatrix = this.nodes.GetWorldMatrix( nodeIndex );
+                            var worldMatrix = this.Nodes.GetWorldMatrix( nodeIndex );
 
                             program[Uniforms.WorldMatrix] = worldMatrix;
 
@@ -206,11 +163,6 @@ namespace Moonfish.Graphics
             this.Render( shaderPasses );
         }
 
-        void IRenderable.Render( IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances )
-        {
-            throw new NotImplementedException( );
-        }
-
         internal void Select( IEnumerable<object> collection )
         {
             selectedObjects.Clear( );
@@ -223,33 +175,24 @@ namespace Moonfish.Graphics
         IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator( )
         {
 
-            foreach( var markerGroup in model.RenderModel.markerGroups )
+            foreach( var markerGroup in Model.RenderModel.markerGroups )
             {
                 foreach( var marker in markerGroup.markers )
                 {
                     var collisionObject = new BulletSharp.CollisionObject( );
                     collisionObject.CollisionShape = new BulletSharp.BoxShape( 0.045f );
-                    collisionObject.WorldTransform = Matrix4.CreateTranslation( marker.translation ) * this.nodes.GetWorldMatrix( marker.nodeIndex );
-                    collisionObject.UserObject = this.markers[marker];
+                    collisionObject.WorldTransform = Matrix4.CreateTranslation( marker.translation ) * this.Nodes.GetWorldMatrix( marker.nodeIndex );
+                    collisionObject.UserObject = this.Markers[marker];
                     yield return collisionObject;
 
                     var setPropertyMethodInfo = typeof( BulletSharp.CollisionObject ).GetProperty( "WorldTransform" ).GetSetMethod( );
                     var setProperty = Delegate.CreateDelegate( typeof( Action<Matrix4> ), collisionObject, setPropertyMethodInfo );
 
-                    this.markers[marker].MarkerUpdatedCallback += (Action<Matrix4>)setProperty;
+                    this.Markers[marker].MarkerUpdatedCallback += (Action<Matrix4>)setProperty;
                 }
             }
         }
-
-        void marker_MarkerUpdated( object sender, EventArgs e )
-        {
-            var markerQuery = model.RenderModel.markerGroups.SelectMany( x => x.markers ).Where( x => x.Equals( sender ) ).FirstOrDefault( );
-            if( markerQuery != null )
-            {
-
-            }
-        }
-
+        
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator( )
         {
             return null;
@@ -257,7 +200,7 @@ namespace Moonfish.Graphics
 
         internal void Save( MapStream map )
         {
-            BinaryWriter binaryWriter = new BinaryWriter( map );
+            //BinaryWriter binaryWriter = new BinaryWriter( map );
             //map[model.renderModel.TagID].Seek();
             // this.model.RenderModel.Write(binaryWriter);
         }

@@ -137,9 +137,10 @@ namespace Moonfish.Guerilla
                 var parentTag = h2Tags.Where( x => x.Class == readTag.ParentClass );
                 if( parentTag.Any( ) )
                 {
-                    info.BaseClass = new ClassInfo.TokenDictionary( ).GenerateValidToken( 
+                    info.BaseClass = new ClassInfo.TokenDictionary( ).GenerateValidToken(
                         GuerillaCs.ToTypeName( parentTag.Single( ).Definition.Name ) );
                 }
+                info.Attributes.Add( new AttributeInfo( typeof( TagClassAttribute ) ) { Parameters = { "\"" + readTag.Class.ToString( ) + "\"" } } );
                 var streamWriter = new StreamWriter( stream );
                 info.Generate( );
                 GenerateOutputForClass( info, streamWriter );

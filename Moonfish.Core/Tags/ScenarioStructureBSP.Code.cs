@@ -45,8 +45,6 @@ namespace Moonfish.Tags
         }
     }
     #endregion
-
-    [TagClass( "sbsp" )]
     partial class ScenarioStructureBSP : Moonfish.Guerilla.Tags.ScenarioStructureBspBlock
     {
         public ScenarioStructureBSP( BinaryReader binaryReader )

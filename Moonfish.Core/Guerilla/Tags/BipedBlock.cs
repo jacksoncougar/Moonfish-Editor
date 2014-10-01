@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 296)]
+    [TagClassAttribute("bipd")]
     public  partial class BipedBlock : BipedBlockBase
     {
         public  BipedBlock(BinaryReader binaryReader): base(binaryReader)

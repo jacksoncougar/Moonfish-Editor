@@ -7,15 +7,16 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 496)]
-    public  partial class WeaponBlock : WeaponBlockBase
+    [LayoutAttribute( Size = 496 )]
+    public partial class WeaponBlock : WeaponBlockBase
     {
-        public  WeaponBlock(BinaryReader binaryReader): base(binaryReader)
+        public WeaponBlock( BinaryReader binaryReader )
+            : base( binaryReader )
         {
-            
+
         }
     };
-    [LayoutAttribute(Size = 496)]
+    [LayoutAttribute( Size = 496 )]
     public class WeaponBlockBase : ItemBlock
     {
         internal Flags flags;
@@ -30,9 +31,9 @@ namespace Moonfish.Guerilla.Tags
         /// </summary>
         internal float turnOnTime;
         internal float readyTimeSeconds;
-        [TagReference("null")]
+        [TagReference( "null" )]
         internal Moonfish.Tags.TagReference readyEffect;
-        [TagReference("jpt!")]
+        [TagReference( "jpt!" )]
         internal Moonfish.Tags.TagReference readyDamageEffect;
         /// <summary>
         /// the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place
@@ -62,17 +63,17 @@ namespace Moonfish.Guerilla.Tags
         /// the amount of heat lost each second when the weapon is not being fired
         /// </summary>
         internal float overheatedHeatLossPerSecond01;
-        [TagReference("null")]
+        [TagReference( "null" )]
         internal Moonfish.Tags.TagReference overheated;
-        [TagReference("jpt!")]
+        [TagReference( "jpt!" )]
         internal Moonfish.Tags.TagReference overheatedDamageEffect;
-        [TagReference("null")]
+        [TagReference( "null" )]
         internal Moonfish.Tags.TagReference detonation;
-        [TagReference("jpt!")]
+        [TagReference( "jpt!" )]
         internal Moonfish.Tags.TagReference detonationDamageEffect;
-        [TagReference("jpt!")]
+        [TagReference( "jpt!" )]
         internal Moonfish.Tags.TagReference playerMeleeDamage;
-        [TagReference("jpt!")]
+        [TagReference( "jpt!" )]
         internal Moonfish.Tags.TagReference playerMeleeResponse;
         internal MeleeAimAssistStructBlock meleeAimAssist;
         internal MeleeDamageParametersStructBlock meleeDamageParameters;
@@ -97,9 +98,9 @@ namespace Moonfish.Guerilla.Tags
         internal float aIScariness;
         internal float weaponPowerOnTimeSeconds;
         internal float weaponPowerOffTimeSeconds;
-        [TagReference("null")]
+        [TagReference( "null" )]
         internal Moonfish.Tags.TagReference weaponPowerOnEffect;
-        [TagReference("null")]
+        [TagReference( "null" )]
         internal Moonfish.Tags.TagReference weaponPowerOffEffect;
         /// <summary>
         /// how much the weapon's heat recovery is penalized as it ages
@@ -117,11 +118,11 @@ namespace Moonfish.Guerilla.Tags
         /// at age 1.0, the misfire chance per shot
         /// </summary>
         internal float ageMisfireChance01;
-        [TagReference("snd!")]
+        [TagReference( "snd!" )]
         internal Moonfish.Tags.TagReference pickupSound;
-        [TagReference("snd!")]
+        [TagReference( "snd!" )]
         internal Moonfish.Tags.TagReference zoomInSound;
-        [TagReference("snd!")]
+        [TagReference( "snd!" )]
         internal Moonfish.Tags.TagReference zoomOutSound;
         /// <summary>
         /// how much to decrease active camo when a round is fired
@@ -150,154 +151,155 @@ namespace Moonfish.Guerilla.Tags
         internal float maxMovementVelocity;
         internal float maxTurningAcceleration;
         internal float maxTurningVelocity;
-        [TagReference("vehi")]
+        [TagReference( "vehi" )]
         internal Moonfish.Tags.TagReference deployedVehicle;
-        [TagReference("effe")]
+        [TagReference( "effe" )]
         internal Moonfish.Tags.TagReference ageEffect;
-        [TagReference("weap")]
+        [TagReference( "weap" )]
         internal Moonfish.Tags.TagReference agedWeapon;
         internal OpenTK.Vector3 firstPersonWeaponOffset;
         internal OpenTK.Vector2 firstPersonScopeSize;
-        internal  WeaponBlockBase(BinaryReader binaryReader): base(binaryReader)
+        internal WeaponBlockBase( BinaryReader binaryReader )
+            : base( binaryReader )
         {
-            this.flags = (Flags)binaryReader.ReadInt32();
-            this.invalidName_ = binaryReader.ReadStringID();
-            this.secondaryTriggerMode = (SecondaryTriggerMode)binaryReader.ReadInt16();
-            this.maximumAlternateShotsLoaded = binaryReader.ReadInt16();
-            this.turnOnTime = binaryReader.ReadSingle();
-            this.readyTimeSeconds = binaryReader.ReadSingle();
-            this.readyEffect = binaryReader.ReadTagReference();
-            this.readyDamageEffect = binaryReader.ReadTagReference();
-            this.heatRecoveryThreshold01 = binaryReader.ReadSingle();
-            this.overheatedThreshold01 = binaryReader.ReadSingle();
-            this.heatDetonationThreshold01 = binaryReader.ReadSingle();
-            this.heatDetonationFraction01 = binaryReader.ReadSingle();
-            this.heatLossPerSecond01 = binaryReader.ReadSingle();
-            this.heatIllumination01 = binaryReader.ReadSingle();
-            this.overheatedHeatLossPerSecond01 = binaryReader.ReadSingle();
-            this.overheated = binaryReader.ReadTagReference();
-            this.overheatedDamageEffect = binaryReader.ReadTagReference();
-            this.detonation = binaryReader.ReadTagReference();
-            this.detonationDamageEffect = binaryReader.ReadTagReference();
-            this.playerMeleeDamage = binaryReader.ReadTagReference();
-            this.playerMeleeResponse = binaryReader.ReadTagReference();
-            this.meleeAimAssist = new MeleeAimAssistStructBlock(binaryReader);
-            this.meleeDamageParameters = new MeleeDamageParametersStructBlock(binaryReader);
-            this.meleeDamageReportingType = (MeleeDamageReportingType)binaryReader.ReadByte();
-            this.invalidName_0 = binaryReader.ReadBytes(1);
-            this.magnificationLevels = binaryReader.ReadInt16();
-            this.magnificationRange = binaryReader.ReadRange();
-            this.weaponAimAssist = new AimAssistStructBlock(binaryReader);
-            this.movementPenalized = (MovementPenalized)binaryReader.ReadInt16();
-            this.invalidName_1 = binaryReader.ReadBytes(2);
-            this.forwardMovementPenalty = binaryReader.ReadSingle();
-            this.sidewaysMovementPenalty = binaryReader.ReadSingle();
-            this.aIScariness = binaryReader.ReadSingle();
-            this.weaponPowerOnTimeSeconds = binaryReader.ReadSingle();
-            this.weaponPowerOffTimeSeconds = binaryReader.ReadSingle();
-            this.weaponPowerOnEffect = binaryReader.ReadTagReference();
-            this.weaponPowerOffEffect = binaryReader.ReadTagReference();
-            this.ageHeatRecoveryPenalty = binaryReader.ReadSingle();
-            this.ageRateOfFirePenalty = binaryReader.ReadSingle();
-            this.ageMisfireStart01 = binaryReader.ReadSingle();
-            this.ageMisfireChance01 = binaryReader.ReadSingle();
-            this.pickupSound = binaryReader.ReadTagReference();
-            this.zoomInSound = binaryReader.ReadTagReference();
-            this.zoomOutSound = binaryReader.ReadTagReference();
-            this.activeCamoDing = binaryReader.ReadSingle();
-            this.activeCamoRegrowthRate = binaryReader.ReadSingle();
-            this.handleNode = binaryReader.ReadStringID();
-            this.weaponClass = binaryReader.ReadStringID();
-            this.weaponName = binaryReader.ReadStringID();
-            this.multiplayerWeaponType = (MultiplayerWeaponType)binaryReader.ReadInt16();
-            this.weaponType = (WeaponType)binaryReader.ReadInt16();
-            this.tracking = new WeaponTrackingStructBlock(binaryReader);
-            this.playerInterface = new WeaponInterfaceStructBlock(binaryReader);
-            this.predictedResources = ReadPredictedResourceBlockArray(binaryReader);
-            this.magazines = ReadMagazinesArray(binaryReader);
-            this.newTriggers = ReadWeaponTriggersArray(binaryReader);
-            this.barrels = ReadWeaponBarrelsArray(binaryReader);
-            this.invalidName_2 = binaryReader.ReadBytes(8);
-            this.maxMovementAcceleration = binaryReader.ReadSingle();
-            this.maxMovementVelocity = binaryReader.ReadSingle();
-            this.maxTurningAcceleration = binaryReader.ReadSingle();
-            this.maxTurningVelocity = binaryReader.ReadSingle();
-            this.deployedVehicle = binaryReader.ReadTagReference();
-            this.ageEffect = binaryReader.ReadTagReference();
-            this.agedWeapon = binaryReader.ReadTagReference();
-            this.firstPersonWeaponOffset = binaryReader.ReadVector3();
-            this.firstPersonScopeSize = binaryReader.ReadVector2();
+            this.flags = (Flags)binaryReader.ReadInt32( );
+            this.invalidName_ = binaryReader.ReadStringID( );
+            this.secondaryTriggerMode = (SecondaryTriggerMode)binaryReader.ReadInt16( );
+            this.maximumAlternateShotsLoaded = binaryReader.ReadInt16( );
+            this.turnOnTime = binaryReader.ReadSingle( );
+            this.readyTimeSeconds = binaryReader.ReadSingle( );
+            this.readyEffect = binaryReader.ReadTagReference( );
+            this.readyDamageEffect = binaryReader.ReadTagReference( );
+            this.heatRecoveryThreshold01 = binaryReader.ReadSingle( );
+            this.overheatedThreshold01 = binaryReader.ReadSingle( );
+            this.heatDetonationThreshold01 = binaryReader.ReadSingle( );
+            this.heatDetonationFraction01 = binaryReader.ReadSingle( );
+            this.heatLossPerSecond01 = binaryReader.ReadSingle( );
+            this.heatIllumination01 = binaryReader.ReadSingle( );
+            this.overheatedHeatLossPerSecond01 = binaryReader.ReadSingle( );
+            this.overheated = binaryReader.ReadTagReference( );
+            this.overheatedDamageEffect = binaryReader.ReadTagReference( );
+            this.detonation = binaryReader.ReadTagReference( );
+            this.detonationDamageEffect = binaryReader.ReadTagReference( );
+            this.playerMeleeDamage = binaryReader.ReadTagReference( );
+            this.playerMeleeResponse = binaryReader.ReadTagReference( );
+            this.meleeAimAssist = new MeleeAimAssistStructBlock( binaryReader );
+            this.meleeDamageParameters = new MeleeDamageParametersStructBlock( binaryReader );
+            this.meleeDamageReportingType = (MeleeDamageReportingType)binaryReader.ReadByte( );
+            this.invalidName_0 = binaryReader.ReadBytes( 1 );
+            this.magnificationLevels = binaryReader.ReadInt16( );
+            this.magnificationRange = binaryReader.ReadRange( );
+            this.weaponAimAssist = new AimAssistStructBlock( binaryReader );
+            this.movementPenalized = (MovementPenalized)binaryReader.ReadInt16( );
+            this.invalidName_1 = binaryReader.ReadBytes( 2 );
+            this.forwardMovementPenalty = binaryReader.ReadSingle( );
+            this.sidewaysMovementPenalty = binaryReader.ReadSingle( );
+            this.aIScariness = binaryReader.ReadSingle( );
+            this.weaponPowerOnTimeSeconds = binaryReader.ReadSingle( );
+            this.weaponPowerOffTimeSeconds = binaryReader.ReadSingle( );
+            this.weaponPowerOnEffect = binaryReader.ReadTagReference( );
+            this.weaponPowerOffEffect = binaryReader.ReadTagReference( );
+            this.ageHeatRecoveryPenalty = binaryReader.ReadSingle( );
+            this.ageRateOfFirePenalty = binaryReader.ReadSingle( );
+            this.ageMisfireStart01 = binaryReader.ReadSingle( );
+            this.ageMisfireChance01 = binaryReader.ReadSingle( );
+            this.pickupSound = binaryReader.ReadTagReference( );
+            this.zoomInSound = binaryReader.ReadTagReference( );
+            this.zoomOutSound = binaryReader.ReadTagReference( );
+            this.activeCamoDing = binaryReader.ReadSingle( );
+            this.activeCamoRegrowthRate = binaryReader.ReadSingle( );
+            this.handleNode = binaryReader.ReadStringID( );
+            this.weaponClass = binaryReader.ReadStringID( );
+            this.weaponName = binaryReader.ReadStringID( );
+            this.multiplayerWeaponType = (MultiplayerWeaponType)binaryReader.ReadInt16( );
+            this.weaponType = (WeaponType)binaryReader.ReadInt16( );
+            this.tracking = new WeaponTrackingStructBlock( binaryReader );
+            this.playerInterface = new WeaponInterfaceStructBlock( binaryReader );
+            this.predictedResources = ReadPredictedResourceBlockArray( binaryReader );
+            this.magazines = ReadMagazinesArray( binaryReader );
+            this.newTriggers = ReadWeaponTriggersArray( binaryReader );
+            this.barrels = ReadWeaponBarrelsArray( binaryReader );
+            this.invalidName_2 = binaryReader.ReadBytes( 8 );
+            this.maxMovementAcceleration = binaryReader.ReadSingle( );
+            this.maxMovementVelocity = binaryReader.ReadSingle( );
+            this.maxTurningAcceleration = binaryReader.ReadSingle( );
+            this.maxTurningVelocity = binaryReader.ReadSingle( );
+            this.deployedVehicle = binaryReader.ReadTagReference( );
+            this.ageEffect = binaryReader.ReadTagReference( );
+            this.agedWeapon = binaryReader.ReadTagReference( );
+            this.firstPersonWeaponOffset = binaryReader.ReadVector3( );
+            this.firstPersonScopeSize = binaryReader.ReadVector2( );
         }
-        internal  virtual byte[] ReadData(BinaryReader binaryReader)
+        internal virtual byte[] ReadData( BinaryReader binaryReader )
         {
-            var blamPointer = binaryReader.ReadBlamPointer(1);
+            var blamPointer = binaryReader.ReadBlamPointer( 1 );
             var data = new byte[blamPointer.Count];
-            if(blamPointer.Count > 0)
+            if( blamPointer.Count > 0 )
             {
-                using (binaryReader.BaseStream.Pin())
+                using( binaryReader.BaseStream.Pin( ) )
                 {
                     binaryReader.BaseStream.Position = blamPointer[0];
-                    data = binaryReader.ReadBytes(blamPointer.Count);
+                    data = binaryReader.ReadBytes( blamPointer.Count );
                 }
             }
             return data;
         }
-        internal  virtual PredictedResourceBlock[] ReadPredictedResourceBlockArray(BinaryReader binaryReader)
+        internal virtual PredictedResourceBlock[] ReadPredictedResourceBlockArray( BinaryReader binaryReader )
         {
-            var elementSize = Deserializer.SizeOf(typeof(PredictedResourceBlock));
-            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var elementSize = Deserializer.SizeOf( typeof( PredictedResourceBlock ) );
+            var blamPointer = binaryReader.ReadBlamPointer( elementSize );
             var array = new PredictedResourceBlock[blamPointer.Count];
-            using (binaryReader.BaseStream.Pin())
+            using( binaryReader.BaseStream.Pin( ) )
             {
-                for (int i = 0; i < blamPointer.Count; ++i)
+                for( int i = 0; i < blamPointer.Count; ++i )
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new PredictedResourceBlock(binaryReader);
+                    array[i] = new PredictedResourceBlock( binaryReader );
                 }
             }
             return array;
         }
-        internal  virtual Magazines[] ReadMagazinesArray(BinaryReader binaryReader)
+        internal virtual Magazines[] ReadMagazinesArray( BinaryReader binaryReader )
         {
-            var elementSize = Deserializer.SizeOf(typeof(Magazines));
-            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var elementSize = Deserializer.SizeOf( typeof( Magazines ) );
+            var blamPointer = binaryReader.ReadBlamPointer( elementSize );
             var array = new Magazines[blamPointer.Count];
-            using (binaryReader.BaseStream.Pin())
+            using( binaryReader.BaseStream.Pin( ) )
             {
-                for (int i = 0; i < blamPointer.Count; ++i)
+                for( int i = 0; i < blamPointer.Count; ++i )
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new Magazines(binaryReader);
+                    array[i] = new Magazines( binaryReader );
                 }
             }
             return array;
         }
-        internal  virtual WeaponTriggers[] ReadWeaponTriggersArray(BinaryReader binaryReader)
+        internal virtual WeaponTriggers[] ReadWeaponTriggersArray( BinaryReader binaryReader )
         {
-            var elementSize = Deserializer.SizeOf(typeof(WeaponTriggers));
-            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var elementSize = Deserializer.SizeOf( typeof( WeaponTriggers ) );
+            var blamPointer = binaryReader.ReadBlamPointer( elementSize );
             var array = new WeaponTriggers[blamPointer.Count];
-            using (binaryReader.BaseStream.Pin())
+            using( binaryReader.BaseStream.Pin( ) )
             {
-                for (int i = 0; i < blamPointer.Count; ++i)
+                for( int i = 0; i < blamPointer.Count; ++i )
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new WeaponTriggers(binaryReader);
+                    array[i] = new WeaponTriggers( binaryReader );
                 }
             }
             return array;
         }
-        internal  virtual WeaponBarrels[] ReadWeaponBarrelsArray(BinaryReader binaryReader)
+        internal virtual WeaponBarrels[] ReadWeaponBarrelsArray( BinaryReader binaryReader )
         {
-            var elementSize = Deserializer.SizeOf(typeof(WeaponBarrels));
-            var blamPointer = binaryReader.ReadBlamPointer(elementSize);
+            var elementSize = Deserializer.SizeOf( typeof( WeaponBarrels ) );
+            var blamPointer = binaryReader.ReadBlamPointer( elementSize );
             var array = new WeaponBarrels[blamPointer.Count];
-            using (binaryReader.BaseStream.Pin())
+            using( binaryReader.BaseStream.Pin( ) )
             {
-                for (int i = 0; i < blamPointer.Count; ++i)
+                for( int i = 0; i < blamPointer.Count; ++i )
                 {
                     binaryReader.BaseStream.Position = blamPointer[i];
-                    array[i] = new WeaponBarrels(binaryReader);
+                    array[i] = new WeaponBarrels( binaryReader );
                 }
             }
             return array;

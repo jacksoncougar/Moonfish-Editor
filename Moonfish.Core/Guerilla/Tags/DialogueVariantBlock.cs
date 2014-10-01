@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
     public  partial class DialogueVariantBlock : DialogueVariantBlockBase
     {
         public  DialogueVariantBlock(BinaryReader binaryReader): base(binaryReader)

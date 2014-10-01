@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
+    [TagClassAttribute("bloc")]
     public  partial class CrateBlock : CrateBlockBase
     {
         public  CrateBlock(BinaryReader binaryReader): base(binaryReader)

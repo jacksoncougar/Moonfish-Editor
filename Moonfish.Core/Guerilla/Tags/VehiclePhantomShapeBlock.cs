@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 224)]
     public  partial class VehiclePhantomShapeBlock : VehiclePhantomShapeBlockBase
     {
         public  VehiclePhantomShapeBlock(BinaryReader binaryReader): base(binaryReader)

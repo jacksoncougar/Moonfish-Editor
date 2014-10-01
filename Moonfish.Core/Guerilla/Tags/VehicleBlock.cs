@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 276)]
+    [TagClassAttribute("vehi")]
     public  partial class VehicleBlock : VehicleBlockBase
     {
         public  VehicleBlock(BinaryReader binaryReader): base(binaryReader)

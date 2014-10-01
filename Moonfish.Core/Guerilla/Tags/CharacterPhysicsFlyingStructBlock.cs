@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 44)]
     public  partial class CharacterPhysicsFlyingStructBlock : CharacterPhysicsFlyingStructBlockBase
     {
         public  CharacterPhysicsFlyingStructBlock(BinaryReader binaryReader): base(binaryReader)

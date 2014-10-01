@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 128)]
     public  partial class SpheresBlock : SpheresBlockBase
     {
         public  SpheresBlock(BinaryReader binaryReader): base(binaryReader)

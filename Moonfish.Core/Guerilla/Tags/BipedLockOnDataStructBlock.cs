@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class BipedLockOnDataStructBlock : BipedLockOnDataStructBlockBase
     {
         public  BipedLockOnDataStructBlock(BinaryReader binaryReader): base(binaryReader)

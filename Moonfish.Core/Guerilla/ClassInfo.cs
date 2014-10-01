@@ -72,7 +72,7 @@ namespace Moonfish.Guerilla
                     var salt = 0;
                     do
                     {
-                        if( Tokens.Contains( token )  )
+                        if( Tokens.Contains( token ) )
                         {
                             validToken = string.Format( "{0}{1}", token, salt );
                         }
@@ -147,16 +147,21 @@ namespace Moonfish.Guerilla
 
         public ClassInfo GenerateWrapper( string wrapperName, string baseName )
         {
+            var tagClassAttribute = this.Attributes.Where( x => x.AttributeType == typeof( Moonfish.Tags.TagClassAttribute ) ).SingleOrDefault( );
+            var hasTagClassAttribute = tagClassAttribute == null ? false : true;
+            if( hasTagClassAttribute )
+                this.Attributes.Remove( tagClassAttribute );
             ClassInfo wrapperClassInfo = new ClassInfo( )
             {
                 AccessModifiers = AccessModifiers.Public | AccessModifiers.Partial,
-                Attributes = this.Attributes,
                 Constructors = this.Constructors.Select( x => x.MakeWrapper( wrapperName ) ).ToList( ),
                 Namespace = this.Namespace,
                 Usings = this.Usings,
                 Value = new GuerillaName( this.Value ),
                 BaseClass = baseName,
             };
+            if(hasTagClassAttribute)
+                wrapperClassInfo.Attributes.Add(tagClassAttribute);
             wrapperClassInfo.Value.Name = wrapperName;
             return wrapperClassInfo;
         }
@@ -216,7 +221,7 @@ return data;",
                 Returns = "",
                 AccessModifiers = AccessModifiers.Internal,
                 Arguments = { "BinaryReader binaryReader" },
-                Wrapper = string.IsNullOrWhiteSpace(BaseClass) ? false :  true
+                Wrapper = string.IsNullOrWhiteSpace( BaseClass ) ? false : true
             } );
             StringBuilder stringBuilder = new StringBuilder( );
             foreach( var item in this.Fields )

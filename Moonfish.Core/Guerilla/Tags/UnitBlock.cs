@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 304)]
+    [TagClassAttribute("unit")]
     public  partial class UnitBlock : UnitBlockBase
     {
         public  UnitBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 68)]
     public  partial class GearBlock : GearBlockBase
     {
         public  GearBlock(BinaryReader binaryReader): base(binaryReader)

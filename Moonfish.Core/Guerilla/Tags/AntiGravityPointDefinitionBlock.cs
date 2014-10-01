@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 76)]
     public  partial class AntiGravityPointDefinitionBlock : AntiGravityPointDefinitionBlockBase
     {
         public  AntiGravityPointDefinitionBlock(BinaryReader binaryReader): base(binaryReader)

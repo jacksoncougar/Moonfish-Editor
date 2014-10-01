@@ -29,6 +29,7 @@ namespace Moonfish.Graphics
         private Camera camera;
         private CoordinateGrid grid;
         private MeshManager manager;
+        LevelManager LevelManager;
         private MapStream map;
         public BulletSharp.CollisionWorld collisionWorld;
         List<BulletSharp.CollisionObject> selectableObjects = new List<BulletSharp.CollisionObject>( );
@@ -93,10 +94,7 @@ namespace Moonfish.Graphics
                 Console.WriteLine( camera.ViewMatrix );
                 manager.Draw( activeObject.Value );
             }
-            foreach( var item in test )
-            {
-                item.Render( program );
-            }
+            LevelManager.RenderLevel( );
             manager.Draw( );
             using( system_program.Use( ) )
             {
@@ -156,6 +154,7 @@ namespace Moonfish.Graphics
             InitializeOpenGL( );
 
             this.manager = new MeshManager( program, system_program );
+            this.LevelManager = new Graphics.LevelManager( program, system_program );
 
             timer.Start( );
             //  firing this method is meant to load the view-projection matrix values into 
@@ -236,8 +235,8 @@ namespace Moonfish.Graphics
         List<RenderObject> test = new List<RenderObject>( );
         private void LoadScenarioStructureBSP( )
         {
-            var structureBSP = (ScenarioStructureBSP)map["sbsp", ""].Deserialize( );
-            structureBSP.clusters.ToList( ).ForEach( x => test.Add( new RenderObject( x ) { DiffuseColour = Colours.RandomDiffuseColor } ) );
+            var structureBSP = (ScenarioStructureBspBlock)map["sbsp", ""].Deserialize( );
+            this.LevelManager.LoadScenarioStructure( structureBSP );
         }
 
         private void LoadScenario( )
@@ -339,7 +338,7 @@ namespace Moonfish.Graphics
                 mousePole.DropHandlers( );
                 mousePole.Show( );
                 mousePole.Position = e.WorldCoordinates;
-                mousePole.Rotation = manager[activeObject.Value].nodes.GetWorldMatrix( marker.marker.NodeIndex ).ExtractRotation( );
+                mousePole.Rotation = manager[activeObject.Value].Nodes.GetWorldMatrix( marker.marker.NodeIndex ).ExtractRotation( );
                 if( marker != null )
                 {
                     var query = from item in propertyGrid1.EnumerateAllItems( )
