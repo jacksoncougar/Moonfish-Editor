@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 20)]
     public  partial class ScenarioObjectPermutationStructBlock : ScenarioObjectPermutationStructBlockBase
     {
         public  ScenarioObjectPermutationStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -47,7 +46,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum ActiveChangeColors : int
+        
         {
             Primary = 1,
             Secondary = 2,

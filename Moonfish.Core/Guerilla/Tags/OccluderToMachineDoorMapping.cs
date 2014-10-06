@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 1)]
     public  partial class OccluderToMachineDoorMapping : OccluderToMachineDoorMappingBase
     {
         public  OccluderToMachineDoorMapping(BinaryReader binaryReader): base(binaryReader)

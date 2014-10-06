@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 32)]
     public  partial class UserHintWellPointBlock : UserHintWellPointBlockBase
     {
         public  UserHintWellPointBlock(BinaryReader binaryReader): base(binaryReader)
@@ -50,6 +49,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : short
+        
         {
             Jump = 0,
             Climb = 1,

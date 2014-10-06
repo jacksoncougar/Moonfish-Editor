@@ -49,15 +49,23 @@ namespace Moonfish.Graphics
     }
 
 
-    public class ScenarioObject : RenderObject, IRenderable, IEnumerable<BulletSharp.CollisionObject>
+    public class ScenarioObject : RenderObject, IClickable, IRenderable, IEnumerable<BulletSharp.CollisionObject>
     {
-        ModelBlock Model { get; set; }
+        public ModelBlock Model { get; set; }
         public CollisionObject CollisionObject { get; set; }
-        public Matrix4 WorldMatrix { get; set; }
-
+        public Matrix4 WorldMatrix
+        {
+            get { return worldMatrix; }
+            set { worldMatrix = value; CollisionObject.WorldTransform = collisionSpaceMatrix * value; }
+        }
         public NodeCollection Nodes { get; private set; }
         public Dictionary<RenderModelMarkerBlock, MarkerWrapper> Markers;
         public StringID activePermuation;
+
+        public bool Selected { get; set; }
+
+        private Matrix4 worldMatrix;
+        private Matrix4 collisionSpaceMatrix;
 
         IList<object> selectedObjects;
 
@@ -67,6 +75,7 @@ namespace Moonfish.Graphics
             activePermuation = StringID.Zero;
             selectedObjects = new List<object>( );
             Nodes = new NodeCollection( );
+            Selected = false;
         }
 
         public ScenarioObject( ModelBlock model )
@@ -82,6 +91,8 @@ namespace Moonfish.Graphics
                 CollisionFlags = CollisionFlags.StaticObject,
                 CollisionShape = new BoxShape( this.Model.RenderModel.compressionInfo[0].ToHalfExtents( ) )
             };
+
+            collisionSpaceMatrix = Matrix4.CreateTranslation( this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix( ).ExtractTranslation( ) );
 
             foreach( var section in model.RenderModel.sections )
             {
@@ -121,6 +132,7 @@ namespace Moonfish.Graphics
                 {
                     var extents = Model.RenderModel.compressionInfo[0].ToExtentsMatrix( );
                     program[Uniforms.NormalizationMatrix] = extents;
+                    program["diffuseColourUniform"] = Selected ? Color.Yellow.ToFloatRgba( ) : Color.LightCoral.ToFloatRgba( );
                     foreach( var region in Model.RenderModel.regions )
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
@@ -222,6 +234,60 @@ namespace Moonfish.Graphics
             //BinaryWriter binaryWriter = new BinaryWriter( map );
             //map[model.renderModel.TagID].Seek();
             // this.model.RenderModel.Write(binaryWriter);
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseClick
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        void IClickable.OnMouseDown( object sender, MouseEventArgs e )
+        {
+            this.Selected = true;
+        }
+
+        void IClickable.OnMouseMove( object sender, MouseEventArgs e )
+        {
+        }
+
+        void IClickable.OnMouseUp( object sender, MouseEventArgs e )
+        {
+            this.Selected = false;
+        }
+
+        void IClickable.OnMouseClick( object sender, MouseEventArgs e )
+        {
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseDown
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseMove
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseUp
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+
+        event EventHandler<MouseEventArgs> IClickable.MouseCaptureChanged
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        void IClickable.OnMouseCaptureChanged( object sender, EventArgs e )
+        {
+            throw new NotImplementedException( );
         }
     }
 

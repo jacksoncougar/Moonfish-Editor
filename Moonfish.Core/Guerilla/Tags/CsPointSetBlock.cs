@@ -59,7 +59,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             ManualReferenceFrame = 1,
             TurretDeployment = 2,

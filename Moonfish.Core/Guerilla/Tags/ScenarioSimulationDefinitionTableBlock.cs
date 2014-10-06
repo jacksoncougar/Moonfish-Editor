@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class ScenarioSimulationDefinitionTableBlock : ScenarioSimulationDefinitionTableBlockBase
     {
         public  ScenarioSimulationDefinitionTableBlock(BinaryReader binaryReader): base(binaryReader)

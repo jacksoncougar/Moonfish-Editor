@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 56)]
     public  partial class ZoneBlock : ZoneBlockBase
     {
         public  ZoneBlock(BinaryReader binaryReader): base(binaryReader)
@@ -77,7 +76,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             ManualBspIndex = 1,
         };

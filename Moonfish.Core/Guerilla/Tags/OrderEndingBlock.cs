@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 20)]
     public  partial class OrderEndingBlock : OrderEndingBlockBase
     {
         public  OrderEndingBlock(BinaryReader binaryReader): base(binaryReader)
@@ -66,11 +65,13 @@ namespace Moonfish.Guerilla.Tags
             return array;
         }
         internal enum CombinationRule : short
+        
         {
             OR = 0,
             AND = 1,
         };
         internal enum DialogueTypeWhenThisEndingIsTriggeredLaunchADialogueEventOfTheGivenType : short
+        
         {
             None = 0,
             Advance = 1,

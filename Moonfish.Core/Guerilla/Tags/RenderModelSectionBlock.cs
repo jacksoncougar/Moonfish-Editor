@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 92)]
     public  partial class RenderModelSectionBlock : RenderModelSectionBlockBase
     {
         public  RenderModelSectionBlock(BinaryReader binaryReader): base(binaryReader)

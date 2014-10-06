@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 68)]
     public  partial class ScenarioStructureBspReferenceBlock : ScenarioStructureBspReferenceBlockBase
     {
         public  ScenarioStructureBspReferenceBlock(BinaryReader binaryReader): base(binaryReader)
@@ -63,7 +62,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             DefaultSkyEnabled = 1,
         };

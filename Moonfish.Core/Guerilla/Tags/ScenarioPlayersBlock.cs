@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 52)]
     public  partial class ScenarioPlayersBlock : ScenarioPlayersBlockBase
     {
         public  ScenarioPlayersBlock(BinaryReader binaryReader): base(binaryReader)
@@ -68,6 +67,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum TeamDesignator : short
+        
         {
             RedAlpha = 0,
             BlueBravo = 1,
@@ -80,6 +80,7 @@ namespace Moonfish.Guerilla.Tags
             NEUTRAL = 8,
         };
         internal enum GameType1 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -98,6 +99,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType2 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -116,6 +118,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType3 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -134,6 +137,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType4 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -152,30 +156,35 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum SpawnType0 : short
+        
         {
             Both = 0,
             InitialSpawnOnly = 1,
             RespawnOnly = 2,
         };
         internal enum SpawnType1 : short
+        
         {
             Both = 0,
             InitialSpawnOnly = 1,
             RespawnOnly = 2,
         };
         internal enum SpawnType2 : short
+        
         {
             Both = 0,
             InitialSpawnOnly = 1,
             RespawnOnly = 2,
         };
         internal enum SpawnType3 : short
+        
         {
             Both = 0,
             InitialSpawnOnly = 1,
             RespawnOnly = 2,
         };
         internal enum CampaignPlayerType : short
+        
         {
             Masterchief = 0,
             Dervish = 1,

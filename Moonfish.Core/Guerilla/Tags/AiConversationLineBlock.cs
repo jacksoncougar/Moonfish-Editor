@@ -69,7 +69,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             AddresseeLookAtSpeaker = 1,
             EveryoneLookAtSpeaker = 2,
@@ -79,6 +81,7 @@ namespace Moonfish.Guerilla.Tags
             WaitUntilEveryoneNearby = 32,
         };
         internal enum Addressee : short
+        
         {
             None = 0,
             Player = 1,

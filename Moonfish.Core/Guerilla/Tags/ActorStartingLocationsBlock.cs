@@ -84,7 +84,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             InitiallyAsleep = 1,
             InfectionFormExplode = 2,
@@ -93,6 +95,7 @@ namespace Moonfish.Guerilla.Tags
             InitiallyHidden = 16,
         };
         internal enum SeatType : short
+        
         {
             DEFAULT = 0,
             Passenger = 1,
@@ -104,12 +107,14 @@ namespace Moonfish.Guerilla.Tags
             NOVehicle = 7,
         };
         internal enum GrenadeType : short
+        
         {
             NONE = 0,
             HumanGrenade = 1,
             CovenantPlasma = 2,
         };
         internal enum InitialMovementMode : short
+        
         {
             Default = 0,
             Climbing = 1,

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 144)]
     public  partial class ScenarioNetgameEquipmentBlock : ScenarioNetgameEquipmentBlockBase
     {
         public  ScenarioNetgameEquipmentBlock(BinaryReader binaryReader): base(binaryReader)
@@ -68,12 +67,15 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             Levitate = 1,
             DestroyExistingOnNewSpawn = 2,
         };
         internal enum GameType1 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -92,6 +94,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType2 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -110,6 +113,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType3 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -128,6 +132,7 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum GameType4 : short
+        
         {
             NONE = 0,
             CaptureTheFlag = 1,
@@ -146,11 +151,13 @@ namespace Moonfish.Guerilla.Tags
             AllExceptCTFRace = 14,
         };
         internal enum RespawnTimerStarts : short
+        
         {
             OnPickUp = 0,
             OnBodyDepletion = 1,
         };
         internal enum Classification : byte
+        
         {
             Weapon = 0,
             PrimaryLightLand = 1,

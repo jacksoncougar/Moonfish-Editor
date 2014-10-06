@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 104)]
     public  partial class StructureBspEnvironmentObjectBlock : StructureBspEnvironmentObjectBlockBase
     {
         public  StructureBspEnvironmentObjectBlock(BinaryReader binaryReader): base(binaryReader)

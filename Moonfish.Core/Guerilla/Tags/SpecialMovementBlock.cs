@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class SpecialMovementBlock : SpecialMovementBlockBase
     {
         public  SpecialMovementBlock(BinaryReader binaryReader): base(binaryReader)
@@ -37,7 +36,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum SpecialMovement1 : int
+        
         {
             Jump = 1,
             Climb = 2,

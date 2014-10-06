@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 32)]
     public  partial class ObjectFunctionBlock : ObjectFunctionBlockBase
     {
         public  ObjectFunctionBlock(BinaryReader binaryReader): base(binaryReader)
@@ -55,7 +54,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             InvertResultOfFunctionIsOneMinusActualResult = 1,
             MappingDoesNotControlsActiveTheCurveMappingCanMakeTheFunctionActiveInactive = 2,

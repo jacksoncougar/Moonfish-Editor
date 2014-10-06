@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class WeaponTrackingStructBlock : WeaponTrackingStructBlockBase
     {
         public  WeaponTrackingStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -40,6 +39,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum TrackingType : short
+        
         {
             NoTracking = 0,
             HumanTracking = 1,

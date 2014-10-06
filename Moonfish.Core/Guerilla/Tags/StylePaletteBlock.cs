@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class StylePaletteBlock : StylePaletteBlockBase
     {
         public  StylePaletteBlock(BinaryReader binaryReader): base(binaryReader)

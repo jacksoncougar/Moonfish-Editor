@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class SectorBlock : SectorBlockBase
     {
         public  SectorBlock(BinaryReader binaryReader): base(binaryReader)
@@ -41,7 +40,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum PathFindingSectorFlags : short
+        
         {
             SectorWalkable = 1,
             SectorBreakable = 2,

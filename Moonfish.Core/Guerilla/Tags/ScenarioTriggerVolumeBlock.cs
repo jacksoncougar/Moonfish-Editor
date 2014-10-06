@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 68)]
     public  partial class ScenarioTriggerVolumeBlock : ScenarioTriggerVolumeBlockBase
     {
         public  ScenarioTriggerVolumeBlock(BinaryReader binaryReader): base(binaryReader)

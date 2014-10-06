@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 24)]
     public  partial class ScenarioInterpolatorBlock : ScenarioInterpolatorBlockBase
     {
         public  ScenarioInterpolatorBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 80)]
     public  partial class OldObjectFunctionBlock : OldObjectFunctionBlockBase
     {
         public  OldObjectFunctionBlock(BinaryReader binaryReader): base(binaryReader)

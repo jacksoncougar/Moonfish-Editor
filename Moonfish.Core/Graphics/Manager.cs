@@ -70,28 +70,24 @@ namespace Moonfish.Graphics
             }
         }
     }
+
     public class MeshManager
     {
         CollisionManager Collision { get; set; }
         ScenarioBlock scenario;
         Program program;
         Program systemProgram;
-        Dictionary<TagIdent, List<ScenarioObject>> objects;
+        MultiValueDictionary<TagIdent, ScenarioObject> objectInstances;
 
-        internal void Add( ModelBlock model, TagIdent id )
-        {
-            //objects.Contains
-         //   objects[id] = {new ScenarioObject( model )};
-        }
 
-        public List<ScenarioObject> this[TagIdent ident]
+        internal void Add( TagIdent ident, ScenarioObject @object )
         {
-            get { return this.objects.ContainsKey( ident ) ? objects[ident] : null; }
+            objectInstances.Add( ident, @object );
         }
 
         public MeshManager( Program program, Program systemProgram )
         {
-            objects = new Dictionary<TagIdent, List<ScenarioObject>>( );
+            objectInstances = new MultiValueDictionary<TagIdent, ScenarioObject>( );
             this.program = program;
             this.systemProgram = systemProgram;
         }
@@ -99,7 +95,7 @@ namespace Moonfish.Graphics
         public void LoadCollision( CollisionManager collision )
         {
             this.Collision = collision;
-            foreach( var item in objects.SelectMany( x => x.Value ) )
+            foreach( var item in objectInstances.SelectMany( x => x.Value ) )
             {
                 Collision.World.AddCollisionObject( item.CollisionObject );
             }
@@ -108,44 +104,72 @@ namespace Moonfish.Graphics
         public void LoadScenario( MapStream map )
         {
             this.scenario = map["scnr", ""].Deserialize( );
-            var scenery = scenario.sceneryPalette
-                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
-                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var weapons = scenario.weaponPalette
-                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
-                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var vehicles = scenario.vehiclePalette
-                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
-                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var crates = scenario.cratesPalette
-                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
-                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
-            var equipment = scenario.equipmentPalette
-                .Where( x => !TagIdent.IsNull( x.name.TagID ) )
-                .Select( x => new { Tag = (ObjectBlock)map[x.name.TagID].Deserialize( ), Ident = x.name.TagID } ).ToArray( );
 
-            var items = scenery
-            .Concat( weapons )
-            .Concat( vehicles )
-            .Concat( crates )
-            .Concat( equipment );
-
-            foreach( var item in items )
-            {
-                Add( Halo2.GetReferenceObject( item.Tag.model ), item.Ident );
-            }
+            LoadInstances(
+                scenario.scenery.Select( x => (IH2ObjectInstance)x ).ToList( ),
+                scenario.sceneryPalette.Select( x => (IH2ObjectPalette)x ).ToList( ) );
+            LoadInstances(
+                scenario.crates.Select( x => (IH2ObjectInstance)x ).ToList( ),
+                scenario.cratesPalette.Select( x => (IH2ObjectPalette)x ).ToList( ) );
+            LoadInstances(
+                scenario.weapons.Select( x => (IH2ObjectInstance)x ).ToList( ),
+                scenario.weaponPalette.Select( x => (IH2ObjectPalette)x ).ToList( ) );
+            LoadNetgameEquipment(
+                scenario.netgameEquipment.Select( x => x ).ToList( ) );
 
             Log.Info( GL.GetError( ).ToString( ) );
+        }
+
+        private void LoadNetgameEquipment( List<ScenarioNetgameEquipmentBlock> list )
+        {
+            foreach( var item in list.Where( x => !TagIdent.IsNull( x.itemVehicleCollection.Ident )
+                && ( x.itemVehicleCollection.Class.ToString( ) == "vehc" || x.itemVehicleCollection.Class.ToString( ) == "itmc" ) ) )
+            {
+                try
+                {
+                    Add( item.itemVehicleCollection.Ident, new ScenarioObject( Halo2.GetReferenceObject<ModelBlock>(
+                    Halo2.GetReferenceObject<ObjectBlock>(
+                    item.itemVehicleCollection.Class.ToString( ) == "itmc" ?
+                    Halo2.GetReferenceObject<ItemCollectionBlock>( item.itemVehicleCollection ).itemPermutations.First( ).item
+                    : Halo2.GetReferenceObject<VehicleCollectionBlock>( item.itemVehicleCollection ).vehiclePermutations.First( ).vehicle ).model ) )
+                        {
+                            WorldMatrix = item.WorldMatrix
+                        }
+                        );
+                }
+                catch( NullReferenceException )
+                {
+                }
+            }
+        }
+
+        private void LoadInstances( List<IH2ObjectInstance> instances, List<IH2ObjectPalette> objectPalette )
+        {
+            var join = ( from instance in instances
+                         join palette in objectPalette on (int)instance.PaletteIndex equals objectPalette.IndexOf( palette ) into gj
+                         from items in gj.DefaultIfEmpty( )
+                         select new { instance, Object = items.ObjectReference } ).ToArray( );
+
+            foreach( var item in join )
+            {
+                Add( item.Object.Ident, new ScenarioObject(
+                    Halo2.GetReferenceObject<ModelBlock>( Halo2.GetReferenceObject<ObjectBlock>( item.Object ).model ) )
+                    {
+                        WorldMatrix = item.instance.WorldMatrix
+                    }
+                );
+            }
         }
 
         public void Draw( )
         {
             if( scenario == null ) return;
-            RenderPalette( scenario.sceneryPalette, scenario.scenery );
-            RenderPalette( scenario.vehiclePalette, scenario.vehicles );
-            RenderPalette( scenario.equipmentPalette, scenario.equipment );
-            RenderPalette( scenario.weaponPalette, scenario.weapons );
-            RenderPalette( scenario.cratesPalette, scenario.crates );
+            foreach( var item in objectInstances.SelectMany( x => x.Value ) )
+            {
+                program[Uniforms.WorldMatrix] = item.WorldMatrix;
+                IRenderable @object = item;
+                @object.Render( new[] { program } );
+            }
         }
 
         public void Add( TagIdent item )
@@ -156,7 +180,7 @@ namespace Moonfish.Graphics
 
         public void Draw( TagIdent item )
         {
-            if( objects.ContainsKey( item ) )
+            if( objectInstances.ContainsKey( item ) )
             {
                 //IRenderable @object = objects[item] as IRenderable;
                 //@object.Render( new[] { program, systemProgram } );
@@ -168,28 +192,14 @@ namespace Moonfish.Graphics
             }
         }
 
-        private void RenderPalette( IList<IH2ObjectPalette> palette, IEnumerable<IH2ObjectInstance> instances )
-        {
-            foreach( var instance in instances )
-            {
-                using( program.Use( ) )
-                {
-                    //if( (int)instance.PaletteIndex < 0 ) continue;
-                    //program[Uniforms.WorldMatrix] = (Matrix4)instance.WorldMatrix;
-                    //IRenderable @object = objects[palette[(int)instance.PaletteIndex].ObjectReference.TagID];
-                    //@object.Render( new[] { program } );
-                }
-            }
-        }
-
         internal void Remove( TagIdent item )
         {
-            this.objects.Remove( item );
+            this.objectInstances.Remove( item );
         }
 
         internal void Clear( )
         {
-            this.objects.Clear( );
+            this.objectInstances.Clear( );
         }
     }
 }

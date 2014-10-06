@@ -43,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : int
+        
         {
             Generic = 0,
         };

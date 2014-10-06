@@ -72,7 +72,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             SceneCanPlayMultipleTimes = 1,
             EnableCombatDialogue = 2,

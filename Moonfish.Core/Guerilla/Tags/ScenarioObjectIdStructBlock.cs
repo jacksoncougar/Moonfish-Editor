@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class ScenarioObjectIdStructBlock : ScenarioObjectIdStructBlockBase
     {
         public  ScenarioObjectIdStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -44,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : byte
+        
         {
             Biped = 0,
             Vehicle = 1,
@@ -60,6 +60,7 @@ namespace Moonfish.Guerilla.Tags
             Creature = 12,
         };
         internal enum Source : byte
+        
         {
             Structure = 0,
             Editor = 1,

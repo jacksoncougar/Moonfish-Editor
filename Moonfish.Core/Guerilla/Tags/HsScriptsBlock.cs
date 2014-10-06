@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 40)]
     public  partial class HsScriptsBlock : HsScriptsBlockBase
     {
         public  HsScriptsBlock(BinaryReader binaryReader): base(binaryReader)
@@ -44,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum ScriptType : short
+        
         {
             Startup = 0,
             Dormant = 1,
@@ -53,6 +53,7 @@ namespace Moonfish.Guerilla.Tags
             CommandScript = 5,
         };
         internal enum ReturnType : short
+        
         {
             Unparsed = 0,
             SpecialForm = 1,

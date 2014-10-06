@@ -54,6 +54,11 @@ namespace Moonfish.Guerilla.Tags
                 );
             return extents_matrix;
         }
+
+        public Vector3 ToHalfExtents( )
+        {
+            return new Vector3( positionBoundsX.Length / 2, positionBoundsY.Length / 2, positionBoundsZ.Length / 2 );
+        }
     };
 
     [TypeConverter( typeof( ExpandableObjectConverter ) )]

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 188)]
+    [TagClassAttribute("obje")]
     public  partial class ObjectBlock : ObjectBlockBase
     {
         public  ObjectBlock(BinaryReader binaryReader): base(binaryReader)
@@ -251,7 +251,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             DoesNotCastShadow = 1,
             SearchCardinalDirectionLightmapsOnFailure = 2,
@@ -269,12 +271,14 @@ namespace Moonfish.Guerilla.Tags
             EffectsCreatedByThisObjectDoNotSpawnObjectsInMultiplayer = 8192,
         };
         internal enum LightmapShadowMode : short
+        
         {
             Default = 0,
             Never = 1,
             Always = 2,
         };
         internal enum SweetenerSize : byte
+        
         {
             Small = 0,
             Medium = 1,

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 36)]
     public  partial class ScenarioCutsceneTitleBlock : ScenarioCutsceneTitleBlockBase
     {
         public  ScenarioCutsceneTitleBlock(BinaryReader binaryReader): base(binaryReader)
@@ -56,6 +55,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Justification : short
+        
         {
             Left = 0,
             Right = 1,
@@ -63,6 +63,7 @@ namespace Moonfish.Guerilla.Tags
             CustomTextEntry = 3,
         };
         internal enum Font : short
+        
         {
             TerminalFont = 0,
             BodyTextFont = 1,

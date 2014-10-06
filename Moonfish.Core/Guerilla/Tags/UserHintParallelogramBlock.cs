@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 68)]
     public  partial class UserHintParallelogramBlock : UserHintParallelogramBlockBase
     {
         public  UserHintParallelogramBlock(BinaryReader binaryReader): base(binaryReader)
@@ -61,7 +60,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             Bidirectional = 1,
             Closed = 2,

@@ -85,9 +85,9 @@ namespace Moonfish.Tags
         static void DeserializeTag(this BinaryReader sourceReader, object item, FieldInfo field)
         {
             var reference = sourceReader.ReadTagReference();
-            Source.Position = Source[reference.TagID].Meta.VirtualAddress;
+            Source.Position = Source[reference.Ident].Meta.VirtualAddress;
 
-            field.SetValue(item, Deserialize(sourceReader, Halo2.GetTypeOf(reference.TagClass)));
+            field.SetValue(item, Deserialize(sourceReader, Halo2.GetTypeOf(reference.Class)));
         }
 
         static void Deserialize(this BinaryReader sourceReader, object item, FieldInfo field)

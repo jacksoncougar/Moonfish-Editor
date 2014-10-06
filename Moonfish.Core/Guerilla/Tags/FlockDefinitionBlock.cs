@@ -182,7 +182,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             HardBoundariesOnVolume = 1,
             FlockInitiallyStopped = 2,

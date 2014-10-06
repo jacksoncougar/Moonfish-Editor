@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 116)]
     public  partial class PathfindingDataBlock : PathfindingDataBlockBase
     {
         public  PathfindingDataBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 236)]
     public  partial class WeaponBarrels : WeaponBarrelsBase
     {
         public  WeaponBarrels(BinaryReader binaryReader): base(binaryReader)
@@ -234,7 +233,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             TracksFiredProjectilePooPooCaCaPeePee = 1,
             RandomFiringEffectsRatherThanBeingChosenSequentiallyFiringEffectsArePickedRandomly = 2,
@@ -252,12 +253,14 @@ namespace Moonfish.Guerilla.Tags
             FiresLockedProjectiles = 8192,
         };
         internal enum PredictionType : short
+        
         {
             None = 0,
             Continuous = 1,
             Instant = 2,
         };
         internal enum FiringNoiseHowLoudThisWeaponAppearsToTheAI : short
+        
         {
             Silent = 0,
             Medium = 1,
@@ -266,11 +269,13 @@ namespace Moonfish.Guerilla.Tags
             Quiet = 4,
         };
         internal enum DistributionFunction : short
+        
         {
             Point = 0,
             HorizontalFan = 1,
         };
         internal enum DamageEffectReportingType : byte
+        
         {
             TehGuardians11 = 0,
             FallingDamage = 1,
@@ -316,6 +321,7 @@ namespace Moonfish.Guerilla.Tags
             Teleporter = 41,
         };
         internal enum AngleChangeFunctionFunctionUsedToScaleBetweenInitialAndFinalAngleChangePerShot : short
+        
         {
             Linear = 0,
             Early = 1,

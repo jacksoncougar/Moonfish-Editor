@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 108)]
     public  partial class ScenarioLightBlock : ScenarioLightBlockBase
     {
         public  ScenarioLightBlock(BinaryReader binaryReader): base(binaryReader)

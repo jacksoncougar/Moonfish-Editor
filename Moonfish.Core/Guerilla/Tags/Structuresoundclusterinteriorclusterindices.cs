@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 2)]
     public  partial class StructureSoundClusterInteriorClusterIndices : StructureSoundClusterInteriorClusterIndicesBase
     {
         public  StructureSoundClusterInteriorClusterIndices(BinaryReader binaryReader): base(binaryReader)

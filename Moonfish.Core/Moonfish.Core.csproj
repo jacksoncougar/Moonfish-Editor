@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Moonfish</RootNamespace>
     <AssemblyName>Moonfish</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -18,7 +18,8 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -72,6 +73,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <Optimize>false</Optimize>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -82,6 +84,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BulletSharp">
@@ -91,6 +94,9 @@
       <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Experimental.Collections">
+      <HintPath>..\..\packages\Microsoft.Experimental.Collections.1.0.3-alpha\lib\portable-net45+win8+wp8\Microsoft.Experimental.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
@@ -131,6 +137,7 @@
     <Compile Include="Graphics\Manager.cs" />
     <Compile Include="Graphics\MarkerWrapper.cs" />
     <Compile Include="Graphics\MoonfishColours.cs" />
+    <Compile Include="Graphics\MouseEventManager.cs" />
     <Compile Include="Graphics\MousePole.cs" />
     <Compile Include="Graphics\OpenGL.cs" />
     <Compile Include="Graphics\Maths.cs" />
@@ -142,6 +149,7 @@
     <Compile Include="Graphics\program.cs" />
     <Compile Include="Graphics\RenderObject.cs" />
     <Compile Include="Graphics\resource.cs" />
+    <Compile Include="Graphics\ScenarioObjectList.cs" />
     <Compile Include="Graphics\Scene.cs" />
     <Compile Include="Graphics\Section.cs" />
     <Compile Include="Graphics\shader.cs" />
@@ -526,6 +534,8 @@
     <Compile Include="Guerilla\Tags\UserHintWellBlock.cs" />
     <Compile Include="Guerilla\Tags\UserHintWellPointBlock.cs" />
     <Compile Include="Guerilla\Tags\VehicleBlock.cs" />
+    <Compile Include="Guerilla\Tags\VehicleCollectionBlock.cs" />
+    <Compile Include="Guerilla\Tags\VehiclePermutation.cs" />
     <Compile Include="Guerilla\Tags\VehiclePhantomShapeBlock.cs" />
     <Compile Include="Guerilla\Tags\VerticesBlock.cs" />
     <Compile Include="Guerilla\Tags\VisibilityStructBlock.cs" />
@@ -561,6 +571,7 @@
     <Compile Include="Guerilla\GuerillaToEnt.cs" />
     <Compile Include="Tags\RenderModel.Code.cs" />
     <Compile Include="Tags\HierarchyModel.Code.cs" />
+    <Compile Include="Tags\ScenarioNetgameEquipmentBlock.cs" />
     <Compile Include="Tags\Scenery.Code.cs" />
     <Compile Include="Tags\ScenarioStructureBSP.Code.cs" />
     <Compile Include="Guerilla\TagGroups.cs" />

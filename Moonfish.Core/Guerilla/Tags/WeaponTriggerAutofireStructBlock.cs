@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
     public  partial class WeaponTriggerAutofireStructBlock : WeaponTriggerAutofireStructBlockBase
     {
         public  WeaponTriggerAutofireStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -44,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum SecondaryAction : short
+        
         {
             Fire = 0,
             Charge = 1,
@@ -51,6 +51,7 @@ namespace Moonfish.Guerilla.Tags
             FireOther = 3,
         };
         internal enum PrimaryAction : short
+        
         {
             Fire = 0,
             Charge = 1,

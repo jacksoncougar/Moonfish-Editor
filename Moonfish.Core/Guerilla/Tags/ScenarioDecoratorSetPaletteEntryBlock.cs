@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class ScenarioDecoratorSetPaletteEntryBlock : ScenarioDecoratorSetPaletteEntryBlockBase
     {
         public  ScenarioDecoratorSetPaletteEntryBlock(BinaryReader binaryReader): base(binaryReader)

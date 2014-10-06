@@ -160,8 +160,8 @@ namespace Moonfish.Tags
 
         public static void Write( this BinaryWriter binaryWriter, TagReference value )
         {
-            binaryWriter.Write( (int)value.TagClass );
-            binaryWriter.Write( (int)value.TagID );
+            binaryWriter.Write( (int)value.Class );
+            binaryWriter.Write( (int)value.Ident );
         }
 
         public static void Write( this BinaryWriter binaryWriter, BlockFlags8 value )

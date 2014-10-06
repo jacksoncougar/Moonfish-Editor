@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 40)]
     public  partial class HsGlobalsBlock : HsGlobalsBlockBase
     {
         public  HsGlobalsBlock(BinaryReader binaryReader): base(binaryReader)
@@ -44,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : short
+        
         {
             Unparsed = 0,
             SpecialForm = 1,

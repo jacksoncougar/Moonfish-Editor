@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 176)]
     public  partial class StructureBspClusterBlock : StructureBspClusterBlockBase
     {
         public  StructureBspClusterBlock(BinaryReader binaryReader): base(binaryReader)

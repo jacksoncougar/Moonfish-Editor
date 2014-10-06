@@ -40,7 +40,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             CanChangeOnlyOnce = 1,
         };

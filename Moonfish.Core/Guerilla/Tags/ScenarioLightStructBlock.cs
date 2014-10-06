@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 48)]
     public  partial class ScenarioLightStructBlock : ScenarioLightStructBlockBase
     {
         public  ScenarioLightStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -60,26 +59,32 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : short
+        
         {
             Sphere = 0,
             Orthogonal = 1,
             Projective = 2,
             Pyramid = 3,
         };
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             CustomGeometry = 1,
             Unused = 2,
             CinematicOnly = 4,
         };
         internal enum LightmapType : short
+        
         {
             UseLightTagSetting = 0,
             DynamicOnly = 1,
             DynamicWithLightmaps = 2,
             LightmapsOnly = 3,
         };
+        [FlagsAttribute]
         internal enum LightmapFlags : short
+        
         {
             Unused = 1,
         };

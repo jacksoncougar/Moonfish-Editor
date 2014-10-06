@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 100)]
     public  partial class StructureBspBackgroundSoundPaletteBlock : StructureBspBackgroundSoundPaletteBlockBase
     {
         public  StructureBspBackgroundSoundPaletteBlock(BinaryReader binaryReader): base(binaryReader)
@@ -62,7 +61,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum ScaleFlags : int
+        
         {
             OverrideDefaultScale = 1,
             UseAdjacentClusterAsPortalScale = 2,

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class ScenarioClusterAtmosphericFogPropertiesBlock : ScenarioClusterAtmosphericFogPropertiesBlockBase
     {
         public  ScenarioClusterAtmosphericFogPropertiesBlock(BinaryReader binaryReader): base(binaryReader)

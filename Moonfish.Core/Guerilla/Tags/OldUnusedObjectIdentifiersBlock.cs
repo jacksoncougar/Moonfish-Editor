@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class OldUnusedObjectIdentifiersBlock : OldUnusedObjectIdentifiersBlockBase
     {
         public  OldUnusedObjectIdentifiersBlock(BinaryReader binaryReader): base(binaryReader)

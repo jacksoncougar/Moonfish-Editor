@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 24)]
     public  partial class StructureBspConveyorSurfaceBlock : StructureBspConveyorSurfaceBlockBase
     {
         public  StructureBspConveyorSurfaceBlock(BinaryReader binaryReader): base(binaryReader)

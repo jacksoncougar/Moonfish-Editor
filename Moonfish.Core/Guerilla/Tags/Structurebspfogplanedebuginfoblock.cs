@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 56)]
     public  partial class StructureBspFogPlaneDebugInfoBlock : StructureBspFogPlaneDebugInfoBlockBase
     {
         public  StructureBspFogPlaneDebugInfoBlock(BinaryReader binaryReader): base(binaryReader)

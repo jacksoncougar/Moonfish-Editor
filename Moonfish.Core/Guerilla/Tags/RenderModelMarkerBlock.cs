@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 36)]
     public  partial class RenderModelMarkerBlock : RenderModelMarkerBlockBase
     {
         public  RenderModelMarkerBlock(BinaryReader binaryReader): base(binaryReader)

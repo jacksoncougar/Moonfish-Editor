@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 2)]
     public  partial class StructureBspSkyOwnerClusterBlock : StructureBspSkyOwnerClusterBlockBase
     {
         public  StructureBspSkyOwnerClusterBlock(BinaryReader binaryReader): base(binaryReader)

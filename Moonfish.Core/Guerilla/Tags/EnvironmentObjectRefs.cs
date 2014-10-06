@@ -76,7 +76,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             Mobile = 1,
         };

@@ -61,6 +61,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum DecoratorType : byte
+        
         {
             Model = 0,
             FloatingDecal = 1,

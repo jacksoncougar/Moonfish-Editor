@@ -56,6 +56,7 @@ namespace Moonfish.Guerilla.Tags
             return array;
         }
         internal enum CombinationRule : short
+        
         {
             OR = 0,
             AND = 1,

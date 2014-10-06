@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 992)]
+    [TagClassAttribute("scnr")]
     public  partial class ScenarioBlock : ScenarioBlockBase
     {
         public  ScenarioBlock(BinaryReader binaryReader): base(binaryReader)
@@ -225,7 +225,7 @@ namespace Moonfish.Guerilla.Tags
             this.eMPTYSTRING2 = ReadGNullBlockArray(binaryReader);
             this.eMPTYSTRING3 = ReadGNullBlockArray(binaryReader);
             this.scenarioClusterData = ReadScenarioClusterDataBlockArray(binaryReader);
-            this.objectSalts = new[] { new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), new ObjectSalts( binaryReader ), };
+            this.objectSalts = new []{ new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader), new ObjectSalts(binaryReader),  };
             this.spawnData = ReadScenarioSpawnDataBlockArray(binaryReader);
             this.soundEffectCollection = binaryReader.ReadTagReference();
             this.crates = ReadScenarioCrateBlockArray(binaryReader);
@@ -1602,6 +1602,7 @@ namespace Moonfish.Guerilla.Tags
             return array;
         }
         internal enum Type : short
+        
         {
             InvalidName = 0,
             Multiplayer = 1,
@@ -1609,7 +1610,9 @@ namespace Moonfish.Guerilla.Tags
             InvalidName1 = 3,
             InvalidName2 = 4,
         };
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             CortanaHackSortsCortanaInFrontOfOtherTransparentGeometry = 1,
             AlwaysDrawSkyAlwaysDrawsSky0EvenIfNoSkyPolygonsAreVisible = 2,

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 40)]
     public  partial class ObjectChangeColorFunction : ObjectChangeColorFunctionBase
     {
         public  ObjectChangeColorFunction(BinaryReader binaryReader): base(binaryReader)
@@ -47,7 +46,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum ScaleFlags : int
+        
         {
             BlendInHsvBlendsColorsInHsvRatherThanRgbSpace = 1,
             MoreColorsBlendsColorsThroughMoreHuesGoesTheLongWayAroundTheColorWheel = 2,

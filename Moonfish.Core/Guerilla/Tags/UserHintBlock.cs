@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 72)]
     public  partial class UserHintBlock : UserHintBlockBase
     {
         public  UserHintBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 72)]
     public  partial class StructureBspSoundEnvironmentPaletteBlock : StructureBspSoundEnvironmentPaletteBlockBase
     {
         public  StructureBspSoundEnvironmentPaletteBlock(BinaryReader binaryReader): base(binaryReader)

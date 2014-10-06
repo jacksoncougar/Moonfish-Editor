@@ -40,7 +40,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum ProjectionSign : byte
+        
         {
             ProjectionSign = 1,
         };

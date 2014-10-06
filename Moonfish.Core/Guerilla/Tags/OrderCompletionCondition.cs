@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 56)]
     public  partial class OrderCompletionCondition : OrderCompletionConditionBase
     {
         public  OrderCompletionCondition(BinaryReader binaryReader): base(binaryReader)
@@ -58,6 +57,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum RuleType : short
+        
         {
             AOrGreaterAlive = 0,
             AOrFewerAlive = 1,
@@ -81,7 +81,9 @@ namespace Moonfish.Guerilla.Tags
             PlayerShotMoreThanXSecondsAgo = 19,
             GameSafeToSave = 20,
         };
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             NOT = 1,
         };

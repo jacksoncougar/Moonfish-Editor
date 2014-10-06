@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class ScenarioSceneryDatumStructV4Block : ScenarioSceneryDatumStructV4BlockBase
     {
         public  ScenarioSceneryDatumStructV4Block(BinaryReader binaryReader): base(binaryReader)
@@ -61,6 +60,7 @@ namespace Moonfish.Guerilla.Tags
             return array;
         }
         internal enum PathfindingPolicy : short
+        
         {
             TagDefault = 0,
             PathfindingDYNAMIC = 1,
@@ -69,12 +69,15 @@ namespace Moonfish.Guerilla.Tags
             PathfindingNONE = 4,
         };
         internal enum LightmappingPolicy : short
+        
         {
             TagDefault = 0,
             Dynamic = 1,
             PerVertex = 2,
         };
+        [FlagsAttribute]
         internal enum ValidMultiplayerGames : short
+        
         {
             CaptureTheFlag = 1,
             Slayer = 2,

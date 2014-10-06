@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class SecondaryZoneSetBlock : SecondaryZoneSetBlockBase
     {
         public  SecondaryZoneSetBlock(BinaryReader binaryReader): base(binaryReader)
@@ -44,6 +43,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum AreaType : short
+        
         {
             Deault = 0,
             Search = 1,

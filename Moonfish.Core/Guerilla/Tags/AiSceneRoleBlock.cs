@@ -58,6 +58,7 @@ namespace Moonfish.Guerilla.Tags
             return array;
         }
         internal enum Group : short
+        
         {
             Group1 = 0,
             Group2 = 1,

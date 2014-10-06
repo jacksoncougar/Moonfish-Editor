@@ -47,6 +47,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : byte
+        
         {
             TagBlock = 0,
             TagData = 1,

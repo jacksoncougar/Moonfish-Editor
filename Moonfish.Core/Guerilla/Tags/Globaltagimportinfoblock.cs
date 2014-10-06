@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 592)]
     public  partial class GlobalTagImportInfoBlock : GlobalTagImportInfoBlockBase
     {
         public  GlobalTagImportInfoBlock(BinaryReader binaryReader): base(binaryReader)

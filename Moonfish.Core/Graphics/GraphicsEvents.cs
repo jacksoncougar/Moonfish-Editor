@@ -11,11 +11,16 @@ namespace Moonfish.Graphics
 {
     public interface IClickable
     {
-        event EventHandler<MouseEventArgs> OnMouseClick;
+        event EventHandler<MouseEventArgs> MouseDown;
+        event EventHandler<MouseEventArgs> MouseMove;
+        event EventHandler<MouseEventArgs> MouseUp;
+        event EventHandler<MouseEventArgs> MouseClick;
+        event EventHandler<MouseEventArgs> MouseCaptureChanged;
         void OnMouseDown(Object sender, MouseEventArgs e);
         void OnMouseMove(Object sender, MouseEventArgs e);
         void OnMouseUp(Object sender, MouseEventArgs e);
-        void OnMouseClickHandler(Object sender, MouseEventArgs e);
+        void OnMouseClick( Object sender, MouseEventArgs e );
+        void OnMouseCaptureChanged( Object sender, EventArgs e );
     }
 
     public class MouseEventArgs : EventArgs
@@ -25,6 +30,7 @@ namespace Moonfish.Graphics
         public Vector2 ScreenCoordinates { get; private set; }
         public Vector3 WorldCoordinates { get; private set; }
         public System.Windows.Forms.MouseButtons Button { get; private set; }
+        public bool WasHit { get; set; }
 
         public MouseEventArgs(Camera camera, Vector2 mouseViewportCoordinates, Vector3 mouseWorldCoordinates, 
             System.Windows.Forms.MouseButtons button)

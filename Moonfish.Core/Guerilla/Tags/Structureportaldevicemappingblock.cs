@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class StructurePortalDeviceMappingBlock : StructurePortalDeviceMappingBlockBase
     {
         public  StructurePortalDeviceMappingBlock(BinaryReader binaryReader): base(binaryReader)

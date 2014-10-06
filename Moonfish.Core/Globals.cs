@@ -56,9 +56,17 @@ namespace Moonfish
         public static dynamic GetReferenceObject( TagReference reference )
         {
             if( mapStream == null ) return null;
-            if( reference.TagID == TagIdent.NullIdentifier ) return null;
+            if( reference.Ident == TagIdent.NullIdentifier ) return null;
 
-            return mapStream[reference.TagID].Deserialize( );
+            return mapStream[reference.Ident].Deserialize( );
+        }
+
+        public static T GetReferenceObject<T>( TagReference reference ) where T : class
+        {
+            if( mapStream == null ) return null;
+            if( reference.Ident == TagIdent.NullIdentifier ) return null;
+
+            return mapStream[reference.Ident].Deserialize( );
         }
 
 

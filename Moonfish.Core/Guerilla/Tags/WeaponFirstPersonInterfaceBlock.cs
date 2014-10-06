@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class WeaponFirstPersonInterfaceBlock : WeaponFirstPersonInterfaceBlockBase
     {
         public  WeaponFirstPersonInterfaceBlock(BinaryReader binaryReader): base(binaryReader)

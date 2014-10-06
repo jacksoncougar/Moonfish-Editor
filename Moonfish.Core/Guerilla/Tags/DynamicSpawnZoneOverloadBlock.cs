@@ -45,6 +45,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum OverloadType : short
+        
         {
             Enemy = 0,
             Friend = 1,

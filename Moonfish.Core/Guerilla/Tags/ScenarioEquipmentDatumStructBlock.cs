@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class ScenarioEquipmentDatumStructBlock : ScenarioEquipmentDatumStructBlockBase
     {
         public  ScenarioEquipmentDatumStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -37,7 +36,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum EquipmentFlags : int
+        
         {
             InitiallyAtRestDoesNotFall = 1,
             Obsolete = 2,

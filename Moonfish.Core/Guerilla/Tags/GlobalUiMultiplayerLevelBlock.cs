@@ -83,7 +83,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : byte
+        
         {
             Unlockable = 1,
         };

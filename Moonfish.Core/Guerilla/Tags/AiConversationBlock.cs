@@ -103,7 +103,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             StopIfDeathThisConversationWillBeAbortedIfAnyParticipantDies = 1,
             StopIfDamagedAnActorWillAbortThisConversationIfTheyAreDamaged = 2,

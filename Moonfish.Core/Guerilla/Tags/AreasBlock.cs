@@ -65,7 +65,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum AreaFlags : int
+        
         {
             VehicleArea = 1,
             Perch = 2,

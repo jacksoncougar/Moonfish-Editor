@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 28)]
     public  partial class SoundSceneryDatumStructBlock : SoundSceneryDatumStructBlockBase
     {
         public  SoundSceneryDatumStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -46,6 +45,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum VolumeType : int
+        
         {
             Sphere = 0,
             VerticalCylinder = 1,

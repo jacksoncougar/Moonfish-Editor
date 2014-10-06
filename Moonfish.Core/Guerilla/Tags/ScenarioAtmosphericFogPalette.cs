@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 244)]
     public  partial class ScenarioAtmosphericFogPalette : ScenarioAtmosphericFogPaletteBase
     {
         public  ScenarioAtmosphericFogPalette(BinaryReader binaryReader): base(binaryReader)
@@ -62,7 +61,7 @@ namespace Moonfish.Guerilla.Tags
         internal byte[] invalidName_2;
         internal Moonfish.Tags.ColorR8G8B8 patchyColor;
         internal byte[] invalidName_3;
-        internal float patchyDensity01;
+        internal OpenTK.Vector2 patchyDensity01;
         internal Moonfish.Model.Range patchyDistanceWorldUnits;
         internal byte[] invalidName_4;
         [TagReference("fpch")]
@@ -96,7 +95,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_2 = binaryReader.ReadBytes(44);
             this.patchyColor = binaryReader.ReadColorR8G8B8();
             this.invalidName_3 = binaryReader.ReadBytes(12);
-            this.patchyDensity01 = binaryReader.ReadSingle();
+            this.patchyDensity01 = binaryReader.ReadVector2();
             this.patchyDistanceWorldUnits = binaryReader.ReadRange();
             this.invalidName_4 = binaryReader.ReadBytes(32);
             this.patchyFog = binaryReader.ReadTagReference();
@@ -137,7 +136,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum CameraImmersionFlags : short
+        
         {
             DisableAtmosphericFog = 1,
             DisableSecondaryFog = 2,

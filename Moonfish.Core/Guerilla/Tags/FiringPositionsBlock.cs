@@ -48,7 +48,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             Open = 1,
             Partial = 2,

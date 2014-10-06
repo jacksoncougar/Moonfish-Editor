@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 20)]
     public  partial class PathfindingHintsBlock : PathfindingHintsBlockBase
     {
         public  PathfindingHintsBlock(BinaryReader binaryReader): base(binaryReader)
@@ -56,6 +55,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum HintType : short
+        
         {
             IntersectionLink = 0,
             JumpLink = 1,

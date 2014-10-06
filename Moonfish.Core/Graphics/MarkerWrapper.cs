@@ -12,7 +12,7 @@ namespace Moonfish.Graphics
     public class MarkerWrapper : IClickable
     {
         private NodeCollection nodes;
-        public event EventHandler<MouseEventArgs> OnMouseClick;
+        public event EventHandler<MouseEventArgs> MouseClick;
 
         public Matrix4 WorldMatrix
         {
@@ -57,10 +57,46 @@ namespace Moonfish.Graphics
         {
         }
 
-        void IClickable.OnMouseClickHandler(object sender, MouseEventArgs e)
+        void IClickable.OnMouseClick(object sender, MouseEventArgs e)
         {
             Console.WriteLine("Click");
-            if (this.OnMouseClick != null) this.OnMouseClick(this, e);
+            if (this.MouseClick != null) this.MouseClick(this, e);
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseDown
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseMove
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseUp
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        event EventHandler<MouseEventArgs> IClickable.MouseClick
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+
+        event EventHandler<MouseEventArgs> IClickable.MouseCaptureChanged
+        {
+            add { throw new NotImplementedException( ); }
+            remove { throw new NotImplementedException( ); }
+        }
+
+        void IClickable.OnMouseCaptureChanged( object sender, EventArgs e )
+        {
+            throw new NotImplementedException( );
         }
     }
 }

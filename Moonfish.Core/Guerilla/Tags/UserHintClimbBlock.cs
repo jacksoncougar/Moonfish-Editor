@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class UserHintClimbBlock : UserHintClimbBlockBase
     {
         public  UserHintClimbBlock(BinaryReader binaryReader): base(binaryReader)
@@ -39,7 +38,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             Bidirectional = 1,
             Closed = 2,

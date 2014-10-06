@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class StaticSpawnZoneDataStructBlock : StaticSpawnZoneDataStructBlockBase
     {
         public  StaticSpawnZoneDataStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -43,7 +42,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum RelevantTeam : int
+        
         {
             RedAlpha = 1,
             BlueBravo = 2,
@@ -55,7 +56,9 @@ namespace Moonfish.Guerilla.Tags
             PinkHotel = 128,
             NEUTRAL = 256,
         };
+        [FlagsAttribute]
         internal enum RelevantGames : int
+        
         {
             Slayer = 1,
             Oddball = 2,
@@ -66,7 +69,9 @@ namespace Moonfish.Guerilla.Tags
             Juggernaut = 64,
             Territories = 128,
         };
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             DisabledIfFlagHome = 1,
             DisabledIfFlagAway = 2,

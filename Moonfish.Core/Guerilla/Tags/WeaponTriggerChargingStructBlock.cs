@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 36)]
     public  partial class WeaponTriggerChargingStructBlock : WeaponTriggerChargingStructBlockBase
     {
         public  WeaponTriggerChargingStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -72,6 +71,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum OverchargedAction : short
+        
         {
             None = 0,
             Explode = 1,

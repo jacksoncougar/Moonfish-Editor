@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 124)]
     public  partial class OrdersBlock : OrdersBlockBase
     {
         public  OrdersBlock(BinaryReader binaryReader): base(binaryReader)
@@ -140,7 +139,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             Locked = 1,
             AlwaysActive = 2,
@@ -153,6 +154,7 @@ namespace Moonfish.Guerilla.Tags
             InhibitVehicleUse = 256,
         };
         internal enum ForceCombatStatus : short
+        
         {
             NONE = 0,
             Asleep = 1,

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
+    [TagClassAttribute("itmc")]
     public  partial class ItemCollectionBlock : ItemCollectionBlockBase
     {
         public  ItemCollectionBlock(BinaryReader binaryReader): base(binaryReader)

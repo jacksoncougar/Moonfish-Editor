@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 2)]
     public  partial class StructureBspClusterInstancedGeometryIndexBlock : StructureBspClusterInstancedGeometryIndexBlockBase
     {
         public  StructureBspClusterInstancedGeometryIndexBlock(BinaryReader binaryReader): base(binaryReader)

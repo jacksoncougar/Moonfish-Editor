@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 64)]
     public  partial class WeaponTriggers : WeaponTriggersBase
     {
         public  WeaponTriggers(BinaryReader binaryReader): base(binaryReader)
@@ -53,17 +52,21 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             AutofireSingleActionOnly = 1,
         };
         internal enum Input : short
+        
         {
             RightTrigger = 0,
             LeftTrigger = 1,
             MeleeAttack = 2,
         };
         internal enum Behavior : short
+        
         {
             Spew = 0,
             Latch = 1,
@@ -73,6 +76,7 @@ namespace Moonfish.Guerilla.Tags
             LatchRocketlauncher = 5,
         };
         internal enum Prediction : short
+        
         {
             None = 0,
             Spew = 1,

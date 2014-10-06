@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 32)]
     public  partial class ScenarioNetpointsBlock : ScenarioNetpointsBlockBase
     {
         public  ScenarioNetpointsBlock(BinaryReader binaryReader): base(binaryReader)
@@ -52,6 +51,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : short
+        
         {
             CTFFlagSpawn = 0,
             CTFFlagReturn = 1,
@@ -74,6 +74,7 @@ namespace Moonfish.Guerilla.Tags
             KingHill7 = 18,
         };
         internal enum TeamDesignator : short
+        
         {
             RedAlpha = 0,
             BlueBravo = 1,
@@ -85,7 +86,9 @@ namespace Moonfish.Guerilla.Tags
             PinkHotel = 7,
             NEUTRAL = 8,
         };
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             MultipleFlagBomb = 1,
             SingleFlagBomb = 2,

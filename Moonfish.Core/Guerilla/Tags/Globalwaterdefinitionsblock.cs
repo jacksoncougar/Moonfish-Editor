@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 172)]
     public  partial class GlobalWaterDefinitionsBlock : GlobalWaterDefinitionsBlockBase
     {
         public  GlobalWaterDefinitionsBlock(BinaryReader binaryReader): base(binaryReader)

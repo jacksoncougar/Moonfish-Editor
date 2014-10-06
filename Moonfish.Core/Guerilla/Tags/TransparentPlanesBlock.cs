@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 20)]
     public  partial class TransparentPlanesBlock : TransparentPlanesBlockBase
     {
         public  TransparentPlanesBlock(BinaryReader binaryReader): base(binaryReader)

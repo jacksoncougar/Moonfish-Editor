@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 84)]
     public  partial class RenderLightingStructBlock : RenderLightingStructBlockBase
     {
         public  RenderLightingStructBlock(BinaryReader binaryReader): base(binaryReader)

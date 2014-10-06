@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 36)]
     public  partial class SquadGroupsBlock : SquadGroupsBlockBase
     {
         public  SquadGroupsBlock(BinaryReader binaryReader): base(binaryReader)

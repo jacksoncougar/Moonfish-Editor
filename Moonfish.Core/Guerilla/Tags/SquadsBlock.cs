@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 116)]
     public  partial class SquadsBlock : SquadsBlockBase
     {
         public  SquadsBlock(BinaryReader binaryReader): base(binaryReader)
@@ -100,7 +99,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             Unused = 1,
             NeverSearch = 2,
@@ -118,6 +119,7 @@ namespace Moonfish.Guerilla.Tags
             UnitsNotEnterableByPlayer = 8192,
         };
         internal enum Team : short
+        
         {
             Default = 0,
             Player = 1,
@@ -137,6 +139,7 @@ namespace Moonfish.Guerilla.Tags
             Unused15 = 15,
         };
         internal enum MajorUpgrade : short
+        
         {
             Normal = 0,
             Few = 1,
@@ -145,6 +148,7 @@ namespace Moonfish.Guerilla.Tags
             All = 4,
         };
         internal enum GrenadeType : short
+        
         {
             NONE = 0,
             HumanGrenade = 1,

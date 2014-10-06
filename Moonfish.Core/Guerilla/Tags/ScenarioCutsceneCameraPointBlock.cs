@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 64)]
     public  partial class ScenarioCutsceneCameraPointBlock : ScenarioCutsceneCameraPointBlockBase
     {
         public  ScenarioCutsceneCameraPointBlock(BinaryReader binaryReader): base(binaryReader)
@@ -47,11 +46,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : short
+        
         {
             EditAsRelative = 1,
         };
         internal enum Type : short
+        
         {
             Normal = 0,
             IgnoreTargetOrientation = 1,

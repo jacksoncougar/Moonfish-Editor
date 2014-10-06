@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class ObjectAiPropertiesBlock : ObjectAiPropertiesBlockBase
     {
         public  ObjectAiPropertiesBlock(BinaryReader binaryReader): base(binaryReader)
@@ -48,13 +47,16 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum AiFlags : int
+        
         {
             DetroyableCover = 1,
             PathfindingIgnoreWhenDead = 2,
             DynamicCover = 4,
         };
         internal enum AiSize : short
+        
         {
             Default = 0,
             Tiny = 1,
@@ -65,6 +67,7 @@ namespace Moonfish.Guerilla.Tags
             Immobile = 6,
         };
         internal enum LeapJumpSpeed : short
+        
         {
             NONE = 0,
             Down = 1,

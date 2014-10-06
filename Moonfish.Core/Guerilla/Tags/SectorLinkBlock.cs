@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class SectorLinkBlock : SectorLinkBlockBase
     {
         public  SectorLinkBlock(BinaryReader binaryReader): base(binaryReader)
@@ -51,7 +50,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum LinkFlags : short
+        
         {
             SectorLinkFromCollisionEdge = 1,
             SectorIntersectionLink = 2,

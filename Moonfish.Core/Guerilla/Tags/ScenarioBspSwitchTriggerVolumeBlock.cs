@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 14)]
     public  partial class ScenarioBspSwitchTriggerVolumeBlock : ScenarioBspSwitchTriggerVolumeBlockBase
     {
         public  ScenarioBspSwitchTriggerVolumeBlock(BinaryReader binaryReader): base(binaryReader)

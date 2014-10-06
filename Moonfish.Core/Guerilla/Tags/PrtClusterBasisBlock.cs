@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class PrtClusterBasisBlock : PrtClusterBasisBlockBase
     {
         public  PrtClusterBasisBlock(BinaryReader binaryReader): base(binaryReader)

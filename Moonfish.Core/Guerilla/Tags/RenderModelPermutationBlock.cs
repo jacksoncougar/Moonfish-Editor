@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 16)]
     public  partial class RenderModelPermutationBlock : RenderModelPermutationBlockBase
     {
         public  RenderModelPermutationBlock(BinaryReader binaryReader): base(binaryReader)

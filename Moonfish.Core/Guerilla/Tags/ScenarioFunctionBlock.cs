@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 120)]
     public  partial class ScenarioFunctionBlock : ScenarioFunctionBlockBase
     {
         public  ScenarioFunctionBlock(BinaryReader binaryReader): base(binaryReader)
@@ -67,7 +66,7 @@ namespace Moonfish.Guerilla.Tags
         /// Controls how bounds, below, are used.
         /// </summary>
         internal BoundsModeControlsHowBoundsBelowAreUsed boundsMode;
-        internal float bounds;
+        internal OpenTK.Vector2 bounds;
         internal byte[] invalidName_0;
         internal byte[] invalidName_1;
         /// <summary>
@@ -94,7 +93,7 @@ namespace Moonfish.Guerilla.Tags
             this.invalidName_ = binaryReader.ReadBytes(2);
             this.scaleResultBy = binaryReader.ReadShortBlockIndex1();
             this.boundsMode = (BoundsModeControlsHowBoundsBelowAreUsed)binaryReader.ReadInt16();
-            this.bounds = binaryReader.ReadSingle();
+            this.bounds = binaryReader.ReadVector2();
             this.invalidName_0 = binaryReader.ReadBytes(4);
             this.invalidName_1 = binaryReader.ReadBytes(2);
             this.turnOffWith = binaryReader.ReadShortBlockIndex1();
@@ -115,7 +114,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             ScriptedLevelScriptWillSetThisValueOtherSettingsHereWillBeIgnored = 1,
             InvertResultOfFunctionIs1MinusActualResult = 2,
@@ -123,6 +124,7 @@ namespace Moonfish.Guerilla.Tags
             AlwaysActiveFunctionDoesNotDeactivateWhenAtOrBelowLowerBound = 8,
         };
         internal enum Function : short
+        
         {
             One = 0,
             Zero = 1,
@@ -138,6 +140,7 @@ namespace Moonfish.Guerilla.Tags
             Spark = 11,
         };
         internal enum WobbleFunctionCurveUsedForWobble : short
+        
         {
             One = 0,
             Zero = 1,
@@ -153,6 +156,7 @@ namespace Moonfish.Guerilla.Tags
             Spark = 11,
         };
         internal enum MapTo : short
+        
         {
             Linear = 0,
             Early = 1,
@@ -164,6 +168,7 @@ namespace Moonfish.Guerilla.Tags
             Zero = 7,
         };
         internal enum BoundsModeControlsHowBoundsBelowAreUsed : short
+        
         {
             Clip = 0,
             ClipAndNormalize = 1,

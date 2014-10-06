@@ -47,3 +47,5 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe.c
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.frag
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.vert
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Microsoft.Experimental.Collections.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Microsoft.Experimental.Collections.xml

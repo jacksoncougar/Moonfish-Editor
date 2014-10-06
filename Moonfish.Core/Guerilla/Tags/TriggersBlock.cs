@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 48)]
     public  partial class TriggersBlock : TriggersBlockBase
     {
         public  TriggersBlock(BinaryReader binaryReader): base(binaryReader)
@@ -60,11 +59,14 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum TriggerFlags : int
+        
         {
             LatchONWhenTriggered = 1,
         };
         internal enum CombinationRule : short
+        
         {
             OR = 0,
             AND = 1,

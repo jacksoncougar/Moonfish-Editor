@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
     public  partial class MapLeafFaceVertexBlock : MapLeafFaceVertexBlockBase
     {
         public  MapLeafFaceVertexBlock(BinaryReader binaryReader): base(binaryReader)

@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 24)]
     public  partial class ObjectAttachmentBlock : ObjectAttachmentBlockBase
     {
         public  ObjectAttachmentBlock(BinaryReader binaryReader): base(binaryReader)
@@ -49,6 +48,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum ChangeColor : short
+        
         {
             None = 0,
             Primary = 1,

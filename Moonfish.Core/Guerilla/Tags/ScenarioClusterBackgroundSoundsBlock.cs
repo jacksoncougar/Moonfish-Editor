@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 4)]
     public  partial class ScenarioClusterBackgroundSoundsBlock : ScenarioClusterBackgroundSoundsBlockBase
     {
         public  ScenarioClusterBackgroundSoundsBlock(BinaryReader binaryReader): base(binaryReader)

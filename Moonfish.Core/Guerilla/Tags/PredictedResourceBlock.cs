@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class PredictedResourceBlock : PredictedResourceBlockBase
     {
         public  PredictedResourceBlock(BinaryReader binaryReader): base(binaryReader)
@@ -42,6 +41,7 @@ namespace Moonfish.Guerilla.Tags
             return data;
         }
         internal enum Type : short
+        
         {
             Bitmap = 0,
             Sound = 1,

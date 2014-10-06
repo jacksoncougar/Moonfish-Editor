@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 112)]
+    [TagClassAttribute("item")]
     public  partial class ItemBlock : ItemBlockBase
     {
         public  ItemBlock(BinaryReader binaryReader): base(binaryReader)
@@ -16,7 +16,7 @@ namespace Moonfish.Guerilla.Tags
         }
     };
     [LayoutAttribute(Size = 112)]
-    public class ItemBlockBase
+    public class ItemBlockBase : ObjectBlock
     {
         internal Flags flags;
         internal short oLDMessageIndex;
@@ -45,7 +45,7 @@ namespace Moonfish.Guerilla.Tags
         internal Moonfish.Tags.TagReference detonatingEffect;
         [TagReference("effe")]
         internal Moonfish.Tags.TagReference detonationEffect;
-        internal  ItemBlockBase(BinaryReader binaryReader)
+        internal  ItemBlockBase(BinaryReader binaryReader): base(binaryReader)
         {
             this.flags = (Flags)binaryReader.ReadInt32();
             this.oLDMessageIndex = binaryReader.ReadInt16();
@@ -99,7 +99,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             AlwaysMaintainsZUp = 1,
             DestroyedByExplosions = 2,

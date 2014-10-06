@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 92)]
     public  partial class Magazines : MagazinesBase
     {
         public  Magazines(BinaryReader binaryReader): base(binaryReader)
@@ -94,7 +93,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             WastesRoundsWhenReloaded = 1,
             EveryRoundMustBeChambered = 2,

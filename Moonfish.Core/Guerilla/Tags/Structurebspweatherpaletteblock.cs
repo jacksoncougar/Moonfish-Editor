@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 136)]
     public  partial class StructureBspWeatherPaletteBlock : StructureBspWeatherPaletteBlockBase
     {
         public  StructureBspWeatherPaletteBlock(BinaryReader binaryReader): base(binaryReader)

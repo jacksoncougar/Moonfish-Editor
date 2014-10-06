@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 12)]
     public  partial class UserHintWellBlock : UserHintWellBlockBase
     {
         public  UserHintWellBlock(BinaryReader binaryReader): base(binaryReader)
@@ -54,7 +53,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return array;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             Bidirectional = 1,
         };

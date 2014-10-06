@@ -7,7 +7,6 @@ using System.IO;
 
 namespace Moonfish.Guerilla.Tags
 {
-    [LayoutAttribute(Size = 8)]
     public  partial class ScenarioControlStructBlock : ScenarioControlStructBlockBase
     {
         public  ScenarioControlStructBlock(BinaryReader binaryReader): base(binaryReader)
@@ -41,7 +40,9 @@ namespace Moonfish.Guerilla.Tags
             }
             return data;
         }
+        [FlagsAttribute]
         internal enum Flags : int
+        
         {
             UsableFromBothSides = 1,
         };
