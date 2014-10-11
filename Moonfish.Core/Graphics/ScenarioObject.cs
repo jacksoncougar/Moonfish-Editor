@@ -289,6 +289,11 @@ namespace Moonfish.Graphics
         {
             throw new NotImplementedException( );
         }
+
+        internal void UpdateWorldMatrix( object sender, MatrixChangedEventArgs e )
+        {
+            this.WorldMatrix = e.Matrix;
+        }
     }
 
     class ScenarioObjectd

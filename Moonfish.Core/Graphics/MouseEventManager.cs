@@ -15,6 +15,20 @@ namespace Moonfish.Graphics
     {
         private Dictionary<object, IClickable> Hooks = new Dictionary<object, IClickable>( );
 
+        public object SelectedObject
+        {
+            get { return selectedObject; }
+            set
+            {
+                selectedObject = value; 
+                if( SelectedObjectChanged != null )
+                    SelectedObjectChanged( this, null );
+            }
+        }
+        object selectedObject;
+
+        public event EventHandler SelectedObjectChanged;
+
         public void OnMouseDown( CollisionManager collision, Camera viewportCamera, System.Windows.Forms.MouseEventArgs e )
         {
             var callback = SetupCallback( collision, viewportCamera, e );
@@ -46,6 +60,7 @@ namespace Moonfish.Graphics
                         new Vector2( e.X, e.Y ),
                         callback.CollisionObject.WorldTransform.ExtractTranslation( ),
                         e.Button ) { WasHit = true } );
+                SelectedObject = ( @object );
             }
             foreach( var item in Hooks.Where( x => !x.Equals( @object ) ).Select( x => x.Value ) )
             {
@@ -72,6 +87,11 @@ namespace Moonfish.Graphics
                 mouse.Far );
             collision.World.RayTest( mouse.Near, mouse.Far, callback );
             return callback;
+        }
+
+        internal void OnMouseMove( CollisionManager CollisionManager, Camera ActiveCamera, System.Windows.Forms.MouseEventArgs e )
+        {
+            //throw new NotImplementedException( );
         }
     }
 }

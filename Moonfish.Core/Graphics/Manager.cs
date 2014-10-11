@@ -26,6 +26,35 @@ namespace Moonfish.Graphics
             if( debug != null )
                 this.World.DebugDrawer = new BulletDebugDrawer( debug );
         }
+
+        internal void LoadScenarioCollision( ScenarioStructureBspBlock structureBSP )
+        {
+            foreach( var cluster in structureBSP.clusters )
+            {
+                var @object = new RenderObject( cluster ) { DiffuseColour = Colours.LinearRandomDiffuseColor };
+                var mesh = new TriangleMesh( false, false );
+                var indexedMesh = new IndexedMesh( )
+                {
+                    VertexType = PhyScalarType.PhyFloat,
+                    IndexType = PhyScalarType.PhyShort
+                };
+                indexedMesh.Allocate( cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12, 12,
+                    cluster.clusterData[0].section.stripIndices.Length, 12 );
+                using( var data = indexedMesh.LockIndices( ) )
+                {
+                    var indices = cluster.clusterData[0].section.stripIndices.Select( x => (int)x.index ).ToArray( );
+                    data.WriteRange( indices );
+                }
+                using( var data = indexedMesh.LockVerts( ) )
+                {
+                    var vertices = cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data;
+                    data.Write( vertices, 0, vertices.Length );
+                }
+
+                break;
+            }
+            //var d = new BvhTriangleMeshShape(
+        }
     }
 
     public class LevelManager
@@ -50,6 +79,7 @@ namespace Moonfish.Graphics
             foreach( var cluster in this.Level.clusters )
             {
                 ClusterObjects.Add( new RenderObject( cluster ) { DiffuseColour = Colours.LinearRandomDiffuseColor } );
+                break;
             }
             foreach( var item in this.Level.instancedGeometriesDefinitions )
             {

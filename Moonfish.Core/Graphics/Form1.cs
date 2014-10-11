@@ -71,6 +71,8 @@ namespace Moonfish.Graphics
             this.BackColor = Colours.ClearColour;
             ActiveCamera = camera;
 
+            this.mouseEventDispatcher.SelectedObjectChanged += mouseEventDispatcher_SelectedObjectChanged;
+
             this.camera.ViewProjectionMatrixChanged += viewport_ProjectionChanged;
             this.camera.ViewMatrixChanged += camera_ViewMatrixChanged;
             this.camera.CameraUpdated += mousePole.OnCameraUpdate;
@@ -116,6 +118,8 @@ namespace Moonfish.Graphics
         private void LoadPhysics( )
         {
             CollisionManager = new CollisionManager( viewscreenProgram );
+            foreach( var item in mousePole.ContactObjects )
+                CollisionManager.World.AddCollisionObject( item );
         }
 
         private void LoadPrograms( )
@@ -154,6 +158,7 @@ namespace Moonfish.Graphics
         {
             var structureBSP = (ScenarioStructureBspBlock)map["sbsp", ""].Deserialize( );
             this.LevelManager.LoadScenarioStructure( structureBSP );
+            this.CollisionManager.LoadScenarioCollision( structureBSP );
         }
 
         private void LoadScenario( )
@@ -220,6 +225,7 @@ namespace Moonfish.Graphics
         private void RenderFrame( )
         {
             if( !gl_loaded ) return;
+
             program["LightPositionUniform"] = new Vector3( 100, 10, 100 );
 
             if( activeObject.HasValue )
@@ -237,14 +243,12 @@ namespace Moonfish.Graphics
                 grid.Draw( );
             }
             CollisionManager.World.DebugDrawWorld( );
-            //using (OpenGL.Disable(EnableCap.DepthTest))
-            //{
-            //    //mousePole.Render(system_program);
-            //    using (system_program.Use())
-            //    {
-            //        //collisionWorld.DebugDrawWorld();
-            //    }
-            //}
+
+            using( OpenGL.Disable( EnableCap.DepthTest ) )
+            {
+                mousePole.Render( system_program );
+            }
+
             glControl1.SwapBuffers( );
             GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
         }
@@ -323,6 +327,21 @@ namespace Moonfish.Graphics
                 LoadPropertyGrid( );
             }
         }
+
+
+        void mouseEventDispatcher_SelectedObjectChanged( object sender, EventArgs e )
+        {
+            var @object = mouseEventDispatcher.SelectedObject as ScenarioObject;
+            if( @object == null ) return;
+
+            mousePole.DropHandlers( );
+            mousePole.Show( );
+            mousePole.Position = @object.WorldMatrix.ExtractTranslation( );
+            mousePole.Rotation = @object.WorldMatrix.ExtractRotation( );
+
+            mousePole.WorldMatrixChanged += new MatrixChangedEventHandler( @object.UpdateWorldMatrix );
+        }
+
 
         private void userObject_OnMouseClick( object sender, MouseEventArgs e )
         {
@@ -415,6 +434,8 @@ namespace Moonfish.Graphics
         {
             if( !gl_loaded ) return;
             mousePole.OnMouseMove( this, new MouseEventArgs( ActiveCamera, new Vector2( e.X, e.Y ), default( Vector3 ), e.Button ) );
+
+            mouseEventDispatcher.OnMouseMove( CollisionManager, ActiveCamera, e );
         }
 
         private void glControl1_MouseClick_1( object sender, System.Windows.Forms.MouseEventArgs e )

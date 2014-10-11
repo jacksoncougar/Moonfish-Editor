@@ -50,10 +50,12 @@ namespace Moonfish.Graphics.Input
             var translationMatrix = Matrix4.CreateTranslation( this.position );
             var rotationMatrix = Matrix4.CreateFromQuaternion( this.rotation );
             var scaleMatrix = Matrix4.CreateScale( this.scale );
-            return translationMatrix * rotationMatrix.Inverted( );
+            var worldMatrix = rotationMatrix *  translationMatrix ;
+            return worldMatrix;
         }
 
         public event MatrixChangedEventHandler WorldMatrixChanged;
+        public Action<Matrix4> SetWorldMatrix;
 
         Vector3 position;
         Vector3 origin;
@@ -517,6 +519,7 @@ namespace Moonfish.Graphics.Input
 
         internal void DropHandlers( )
         {
+            SetWorldMatrix = null;
             WorldMatrixChanged = null;
         }
 
