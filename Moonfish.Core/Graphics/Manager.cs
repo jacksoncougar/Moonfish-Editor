@@ -38,17 +38,18 @@ namespace Moonfish.Graphics
                     VertexType = PhyScalarType.PhyFloat,
                     IndexType = PhyScalarType.PhyShort
                 };
-                indexedMesh.Allocate( cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12, 12,
-                    cluster.clusterData[0].section.stripIndices.Length, 12 );
+                indexedMesh.Allocate(
+                    cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12, 3,
+                    cluster.clusterData[0].section.stripIndices.Length, 2 );
                 using( var data = indexedMesh.LockIndices( ) )
                 {
-                    var indices = cluster.clusterData[0].section.stripIndices.Select( x => (int)x.index ).ToArray( );
+                    var indices = cluster.clusterData[0].section.stripIndices.Select( x => x.index ).ToArray( );
                     data.WriteRange( indices );
                 }
                 using( var data = indexedMesh.LockVerts( ) )
                 {
                     var vertices = cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data;
-                    data.Write( vertices, 0, vertices.Length );
+                    data.WriteRange( vertices );
                 }
 
                 break;
