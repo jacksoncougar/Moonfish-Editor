@@ -39,19 +39,26 @@ namespace Moonfish.Graphics
                     IndexType = PhyScalarType.PhyShort
                 };
                 indexedMesh.Allocate(
-                    cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12, 3,
+                    cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12, 16,
                     cluster.clusterData[0].section.stripIndices.Length, 2 );
                 using( var data = indexedMesh.LockIndices( ) )
                 {
                     var indices = cluster.clusterData[0].section.stripIndices.Select( x => x.index ).ToArray( );
                     data.WriteRange( indices );
                 }
-                using( var data = indexedMesh.LockVerts( ) )
+                using( var data = indexedMesh.LockVerts( ) )//manually add
                 {
                     var vertices = cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data;
-                    data.WriteRange( vertices );
+                    for (int i = 0; i < vertices.Length / 12; ++i)
+                    {
+                        data.Write(vertices, i * 12, 12);
+                        data.Write((int)0x00000000);
+                    }
                 }
-
+                mesh.AddIndexedMesh(indexedMesh);
+                CollisionObject o = new CollisionObject();
+                o.CollisionShape = new BvhTriangleMeshShape(mesh, false);
+                World.AddCollisionObject(o);
                 break;
             }
             //var d = new BvhTriangleMeshShape(
