@@ -15,36 +15,36 @@ namespace Moonfish.Graphics
 {
     public interface ISelectable
     {
-        void Select( );
+        void Select();
     }
 
     public interface IRenderable
     {
-        void Render( IEnumerable<Program> shaderPasses );
+        void Render(IEnumerable<Program> shaderPasses);
     }
 
     public class NodeCollection : List<RenderModelNodeBlock>
     {
-        public NodeCollection( ) : base( ) { }
-        public NodeCollection( int capacity )
-            : base( capacity )
+        public NodeCollection() : base() { }
+        public NodeCollection(int capacity)
+            : base(capacity)
         {
         }
-        public NodeCollection( IEnumerable<RenderModelNodeBlock> collection )
-            : base( collection )
+        public NodeCollection(IEnumerable<RenderModelNodeBlock> collection)
+            : base(collection)
         {
         }
-        public Matrix4 GetWorldMatrix( int nodeIndex )
+        public Matrix4 GetWorldMatrix(int nodeIndex)
         {
-            return GetWorldMatrix( this[nodeIndex] );
+            return GetWorldMatrix(this[nodeIndex]);
         }
-        public Matrix4 GetWorldMatrix( RenderModelNodeBlock node )
+        public Matrix4 GetWorldMatrix(RenderModelNodeBlock node)
         {
-            if( !this.Contains( node ) ) throw new ArgumentOutOfRangeException( );
+            if (!this.Contains(node)) throw new ArgumentOutOfRangeException();
 
             var worldMatrix = node.WorldMatrix;
-            if( (int)node.parentNode < 0 ) return worldMatrix;
-            return worldMatrix * GetWorldMatrix( this[(int)node.parentNode] );
+            if ((int)node.parentNode < 0) return worldMatrix;
+            return worldMatrix * GetWorldMatrix(this[(int)node.parentNode]);
         }
     }
 
@@ -69,167 +69,155 @@ namespace Moonfish.Graphics
 
         IList<object> selectedObjects;
 
-        public ScenarioObject( )
-            : base( )
+        public ScenarioObject()
+            : base()
         {
             activePermuation = StringID.Zero;
-            selectedObjects = new List<object>( );
-            Nodes = new NodeCollection( );
+            selectedObjects = new List<object>();
+            Nodes = new NodeCollection();
             Selected = false;
         }
 
-        public ScenarioObject( ModelBlock model )
-            : this( )
+        public ScenarioObject(ModelBlock model)
+            : this()
         {
             this.Model = model;
 
-            if( model.RenderModel == null ) return;
+            if (model.RenderModel == null) return;
 
-            this.CollisionObject = new CollisionObject( )
+            this.CollisionObject = new CollisionObject()
             {
                 UserObject = this,
                 CollisionFlags = CollisionFlags.StaticObject,
-                CollisionShape = new BoxShape( this.Model.RenderModel.compressionInfo[0].ToHalfExtents( ) )
+                CollisionShape = new BoxShape(this.Model.RenderModel.compressionInfo[0].ToHalfExtents())
             };
 
-            collisionSpaceMatrix = Matrix4.CreateTranslation( this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix( ).ExtractTranslation( ) );
+            collisionSpaceMatrix = Matrix4.CreateTranslation(this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix().ExtractTranslation());
 
-            foreach( var section in model.RenderModel.sections )
+            foreach (var section in model.RenderModel.sections)
             {
-                base.sectionBuffers.Add( new Mesh( section.sectionData[0].section ) );
+                base.sectionBuffers.Add(new Mesh(section.sectionData[0].section));
             }
-            this.Nodes = new NodeCollection( model.RenderModel.nodes );
-            this.Markers = model.RenderModel.markerGroups.SelectMany( x => x.Markers ).ToDictionary( x => x, x => new MarkerWrapper( x, this.Nodes ) );
+            this.Nodes = new NodeCollection(model.RenderModel.nodes);
+            this.Markers = model.RenderModel.markerGroups.SelectMany(x => x.Markers).ToDictionary(x => x, x => new MarkerWrapper(x, this.Nodes));
         }
 
-        public static ScenarioObject CreateInstance( ScenarioObject source )
+        void Render(IEnumerable<Program> shaderPasses)
         {
-            ScenarioObject instance = (ScenarioObject)source.MemberwiseClone( );
-            instance.CollisionObject = new CollisionObject( )
+            foreach (var program in shaderPasses)
             {
-                CollisionShape = new BoxShape( source.Model.RenderModel.compressionInfo[0].ToHalfExtents( ) ),
-                CollisionFlags = source.CollisionObject.CollisionFlags,
-                UserObject = instance
-            };
-            return instance;
-        }
-
-        void Render( IEnumerable<Program> shaderPasses )
-        {
-            foreach( var program in shaderPasses )
-            {
-                RenderPass( program );
+                RenderPass(program);
             }
 
         }
 
-        private void RenderPass( Program program )
+        private void RenderPass(Program program)
         {
-            if( Model.RenderModel == null ) return;
-            if( program.Name != "system" )
+            if (Model.RenderModel == null) return;
+            if (program.Name != "system")
             {
-                using( program.Use( ) )
+                using (program.Use())
                 {
-                    var extents = Model.RenderModel.compressionInfo[0].ToExtentsMatrix( );
-                    program[Uniforms.NormalizationMatrix] = extents;
-                    program["diffuseColourUniform"] = Selected ? Color.Yellow.ToFloatRgba( ) : Color.LightCoral.ToFloatRgba( );
-                    foreach( var region in Model.RenderModel.regions )
+                    var extents = Model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+                    program.SetAttribute("objectExtents", extents);
+                    program.SetAttribute("colour", Selected ? Color.Yellow.ToFloatRgba() : Color.LightCoral.ToFloatRgba());
+                    foreach (var region in Model.RenderModel.regions)
                     {
                         var section_index = region.permutations[0].l6SectionIndexHollywood;
                         var mesh = sectionBuffers[section_index];
-                        using( mesh.Bind( ) )
+                        using (mesh.Bind())
                         {
-                            GL.UseProgram( program.ID );
-                            foreach( var part in mesh.Parts )
+                            GL.UseProgram(program.ID);
+                            foreach (var part in mesh.Parts)
                             {
-                                GL.DrawElements( PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
-                                    (IntPtr)( part.stripStartIndex * 2 ) ); OpenGL.ReportError( );
+                                GL.DrawElements(PrimitiveType.TriangleStrip, part.stripLength, DrawElementsType.UnsignedShort,
+                                    (IntPtr)(part.stripStartIndex * 2)); OpenGL.ReportError();
                             }
                         }
                     }
                 }
             }
-            if( program.Name == "system" )
+            if (program.Name == "system")
             {
-                using( program.Use( ) )
-                using( OpenGL.Disable( EnableCap.DepthTest ) )
+                using (program.Use())
+                using (OpenGL.Disable(EnableCap.DepthTest))
                 {
-                    foreach( var markerGroup in Model.RenderModel.markerGroups )
+                    foreach (var markerGroup in Model.RenderModel.markerGroups)
                     {
-                        foreach( var marker in markerGroup.markers )
+                        foreach (var marker in markerGroup.markers)
                         {
                             var nodeIndex = marker.nodeIndex;
                             var translation = marker.translation;
                             var rotation = marker.rotation;
                             var scale = marker.scale;
 
-                            var worldMatrix = this.Nodes.GetWorldMatrix( nodeIndex );
+                            var worldMatrix = this.Nodes.GetWorldMatrix(nodeIndex);
 
                             program[Uniforms.WorldMatrix] = worldMatrix;
 
-                            if( selectedObjects.Contains( marker ) )
+                            if (selectedObjects.Contains(marker))
                             {
-                                GL.VertexAttrib3( 1, Color.Black.ToFloatRgba( ) );
-                                DebugDrawer.DrawPoint( translation, 7 );
-                                GL.VertexAttrib3( 1, Color.Tomato.ToFloatRgba( ) );
-                                DebugDrawer.DrawPoint( translation, 4 );
+                                GL.VertexAttrib3(1, Color.Black.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 7);
+                                GL.VertexAttrib3(1, Color.Tomato.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 4);
                             }
                             else
                             {
-                                GL.VertexAttrib3( 1, Color.White.ToFloatRgba( ) );
-                                DebugDrawer.DrawPoint( translation, 7 );
-                                GL.VertexAttrib3( 1, Color.SkyBlue.ToFloatRgba( ) );
-                                DebugDrawer.DrawPoint( translation, 3 );
+                                GL.VertexAttrib3(1, Color.White.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 7);
+                                GL.VertexAttrib3(1, Color.SkyBlue.ToFloatRgba());
+                                DebugDrawer.DrawPoint(translation, 3);
                             }
 
-                            DebugDrawer.DrawPoint( translation, 5 );
+                            DebugDrawer.DrawPoint(translation, 5);
                         }
                     }
                 }
             }
         }
 
-        void IRenderable.Render( IEnumerable<Program> shaderPasses )
+        void IRenderable.Render(IEnumerable<Program> shaderPasses)
         {
-            this.Render( shaderPasses );
+            this.Render(shaderPasses);
         }
 
-        internal void Select( IEnumerable<object> collection )
+        internal void Select(IEnumerable<object> collection)
         {
-            selectedObjects.Clear( );
-            foreach( var item in collection )
+            selectedObjects.Clear();
+            foreach (var item in collection)
             {
-                selectedObjects.Add( item );
+                selectedObjects.Add(item);
             }
         }
 
-        IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator( )
+        IEnumerator<BulletSharp.CollisionObject> IEnumerable<BulletSharp.CollisionObject>.GetEnumerator()
         {
 
-            foreach( var markerGroup in Model.RenderModel.markerGroups )
+            foreach (var markerGroup in Model.RenderModel.markerGroups)
             {
-                foreach( var marker in markerGroup.markers )
+                foreach (var marker in markerGroup.markers)
                 {
-                    var collisionObject = new BulletSharp.CollisionObject( );
-                    collisionObject.CollisionShape = new BulletSharp.BoxShape( 0.045f );
-                    collisionObject.WorldTransform = Matrix4.CreateTranslation( marker.translation ) * this.Nodes.GetWorldMatrix( marker.nodeIndex );
+                    var collisionObject = new BulletSharp.CollisionObject();
+                    collisionObject.CollisionShape = new BulletSharp.BoxShape(0.045f);
+                    collisionObject.WorldTransform = Matrix4.CreateTranslation(marker.translation) * this.Nodes.GetWorldMatrix(marker.nodeIndex);
                     collisionObject.UserObject = this.Markers[marker];
                     yield return collisionObject;
 
-                    var setPropertyMethodInfo = typeof( BulletSharp.CollisionObject ).GetProperty( "WorldTransform" ).GetSetMethod( );
-                    var setProperty = Delegate.CreateDelegate( typeof( Action<Matrix4> ), collisionObject, setPropertyMethodInfo );
+                    var setPropertyMethodInfo = typeof(BulletSharp.CollisionObject).GetProperty("WorldTransform").GetSetMethod();
+                    var setProperty = Delegate.CreateDelegate(typeof(Action<Matrix4>), collisionObject, setPropertyMethodInfo);
 
                     this.Markers[marker].MarkerUpdatedCallback += (Action<Matrix4>)setProperty;
                 }
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator( )
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return null;
         }
 
-        internal void Save( MapStream map )
+        internal void Save(MapStream map)
         {
             //BinaryWriter binaryWriter = new BinaryWriter( map );
             //map[model.renderModel.TagID].Seek();
@@ -238,59 +226,67 @@ namespace Moonfish.Graphics
 
         event EventHandler<MouseEventArgs> IClickable.MouseClick
         {
-            add { throw new NotImplementedException( ); }
-            remove { throw new NotImplementedException( ); }
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
-        void IClickable.OnMouseDown( object sender, MouseEventArgs e )
+        void IClickable.OnMouseDown(object sender, MouseEventArgs e)
         {
             this.Selected = true;
         }
 
-        void IClickable.OnMouseMove( object sender, MouseEventArgs e )
+        void IClickable.OnMouseMove(object sender, MouseEventArgs e)
         {
+            Console.WriteLine(this.Model.RenderModel.compressionInfo[0].positionBoundsZ.Length / 2);
+            Console.WriteLine(collisionSpaceMatrix.ExtractTranslation().ToString());
+            if (!this.Selected) return;
+            var matrix = this.WorldMatrix.ClearTranslation();
+            var collMtrix = this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+            var translation = Matrix4.CreateTranslation(
+                e.HitPointWorld);
+            this.WorldMatrix = matrix * translation;
         }
 
-        void IClickable.OnMouseUp( object sender, MouseEventArgs e )
+        void IClickable.OnMouseUp(object sender, MouseEventArgs e)
         {
             this.Selected = false;
         }
 
-        void IClickable.OnMouseClick( object sender, MouseEventArgs e )
+        void IClickable.OnMouseClick(object sender, MouseEventArgs e)
         {
         }
 
         event EventHandler<MouseEventArgs> IClickable.MouseDown
         {
-            add { throw new NotImplementedException( ); }
-            remove { throw new NotImplementedException( ); }
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
         event EventHandler<MouseEventArgs> IClickable.MouseMove
         {
-            add { throw new NotImplementedException( ); }
-            remove { throw new NotImplementedException( ); }
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
         event EventHandler<MouseEventArgs> IClickable.MouseUp
         {
-            add { throw new NotImplementedException( ); }
-            remove { throw new NotImplementedException( ); }
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
 
         event EventHandler<MouseEventArgs> IClickable.MouseCaptureChanged
         {
-            add { throw new NotImplementedException( ); }
-            remove { throw new NotImplementedException( ); }
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
-        void IClickable.OnMouseCaptureChanged( object sender, EventArgs e )
+        void IClickable.OnMouseCaptureChanged(object sender, EventArgs e)
         {
-            throw new NotImplementedException( );
+            throw new NotImplementedException();
         }
 
-        internal void UpdateWorldMatrix( object sender, MatrixChangedEventArgs e )
+        internal void UpdateWorldMatrix(object sender, MatrixChangedEventArgs e)
         {
             this.WorldMatrix = e.Matrix;
         }
@@ -300,7 +296,7 @@ namespace Moonfish.Graphics
     {
         ModelBlock model;
 
-        public ScenarioObjectd( ModelBlock test )
+        public ScenarioObjectd(ModelBlock test)
         {
             this.model = test;
             ActivePermutation = StringID.Zero;
@@ -312,12 +308,12 @@ namespace Moonfish.Graphics
         {
             get
             {
-                var query = model.RenderModel.regions.SelectMany( x => x.permutations ).Select( x => x.name ).Distinct( );
+                var query = model.RenderModel.regions.SelectMany(x => x.permutations).Select(x => x.name).Distinct();
                 return query;
             }
         }
 
-        public void Draw( )
+        public void Draw()
         {
         }
     }

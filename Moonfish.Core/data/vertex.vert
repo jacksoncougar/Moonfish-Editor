@@ -3,19 +3,18 @@
 in vec4 position;
 in vec2 texcoord;
 in int compressedNormal;
+in vec4 colour; 
+in mat4 worldMatrix;
+in mat4 objectExtents;
 
-uniform mat4 objectExtents;
-uniform mat4 objectWorldMatrix;
 uniform mat4 viewProjectionMatrix;
-uniform mat4 viewMatrix;
-
-uniform vec4 diffuseColourUniform;
+uniform mat4 viewMatrix; 
 uniform vec3 LightPositionUniform;
 
-smooth out vec4 lightPosition;
-smooth out vec4 diffuseColour;
 smooth out vec3 normal;
+smooth out vec4 diffuseColour;
 smooth out vec3 vertexPosition;
+smooth out vec4 lightPosition;
 
 vec3 decompress(in int compressedNormal)
 {
@@ -48,12 +47,11 @@ vec3 decompress(in int compressedNormal)
 void main()
 {
 	mat3 normalMatrix = mat3(viewMatrix);	
-	
-	diffuseColour = diffuseColourUniform;
-	vertexPosition = vec3(viewMatrix  * objectWorldMatrix * objectExtents * position);
+	diffuseColour  = colour;
+	vertexPosition = vec3(viewMatrix  * worldMatrix * objectExtents * position);
 	normal = normalize(normalMatrix * decompress(compressedNormal));
 	
 	lightPosition = viewMatrix * vec4(LightPositionUniform, 1);
 	
-    gl_Position = viewProjectionMatrix  * objectWorldMatrix * objectExtents * position;
+    gl_Position = viewProjectionMatrix  * worldMatrix * objectExtents * position;
 }

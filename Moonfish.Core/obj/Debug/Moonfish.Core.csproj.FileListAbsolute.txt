@@ -25,3 +25,27 @@ C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.C
 C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.pdb
 C:\Users\stem\Documents\Visual Studio 2012\Projects\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe.config
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csprojResolveAssemblyReference.cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Graphics.Form1.resources
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Core.csproj.GenerateResource.Cache
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\etc\default.png
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sprite.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\viewscreen.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sys_fragment.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\sys_vertex.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\fragment.frag
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\data\vertex.vert
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.exe
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\BulletSharp.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Fasterflect.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Microsoft.Experimental.Collections.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.dll
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Fasterflect.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\Microsoft.Experimental.Collections.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.xml
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.exe
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.pdb

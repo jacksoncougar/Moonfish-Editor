@@ -30,7 +30,10 @@ namespace Moonfish.Graphics
         public Vector2 ScreenCoordinates { get; private set; }
         public Vector3 WorldCoordinates { get; private set; }
         public System.Windows.Forms.MouseButtons Button { get; private set; }
+
         public bool WasHit { get; set; }
+        public Vector3 HitPointWorld { get; set; }
+        public Vector3 HitNormalWorld { get; set; }
 
         public MouseEventArgs(Camera camera, Vector2 mouseViewportCoordinates, Vector3 mouseWorldCoordinates, 
             System.Windows.Forms.MouseButtons button)

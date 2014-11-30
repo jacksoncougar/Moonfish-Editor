@@ -129,7 +129,8 @@ namespace Moonfish.Graphics
             this.program = new Program( "shaded" ); OpenGL.ReportError( );
             GL.BindAttribLocation( this.program.ID, 0, "position" ); OpenGL.ReportError( );
             GL.BindAttribLocation( this.program.ID, 1, "texcoord" ); OpenGL.ReportError( );
-            GL.BindAttribLocation( this.program.ID, 2, "compressedNormal" ); OpenGL.ReportError( );
+            GL.BindAttribLocation(this.program.ID, 2, "compressedNormal"); OpenGL.ReportError();
+            GL.BindAttribLocation(this.program.ID, 3, "colour"); OpenGL.ReportError();
             this.program.Link( new List<Shader>( 2 ) { vertex_shader, fragment_shader } ); OpenGL.ReportError( );
 
             vertex_shader = new Shader( "data/viewscreen.vert", ShaderType.VertexShader );
@@ -207,7 +208,7 @@ namespace Moonfish.Graphics
             camera.Update( );
             UpdateGUI( );
             propertyGrid1.Refresh( );
-            CollisionManager.World.PerformDiscreteCollisionDetection( );
+            CollisionManager.World.PerformDiscreteCollisionDetection();
         }
 
         private void UpdateGUI( )
@@ -222,8 +223,18 @@ namespace Moonfish.Graphics
             //}
         }
 
+        LinkedList<float> frameTimes = new LinkedList<float>();
+
         private void RenderFrame( )
         {
+            frameTimes.AddFirst(timer.ElapsedMilliseconds);
+            if (frameTimes.Count > 100) frameTimes.RemoveLast();
+            var sum = 0.0f;
+            frameTimes.ToList().ForEach(x => sum += x);
+            var average = sum / (float)frameTimes.Count;
+            this.Text = Math.Round((1000f / average)).ToString();
+            timer.Restart();
+
             if( !gl_loaded ) return;
 
             program["LightPositionUniform"] = new Vector3( 100, 10, 100 );
@@ -242,11 +253,14 @@ namespace Moonfish.Graphics
                 system_program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
                 grid.Draw( );
             }
-            CollisionManager.World.DebugDrawWorld( );
+            //CollisionManager.World.DebugDrawWorld( );
 
             using( OpenGL.Disable( EnableCap.DepthTest ) )
             {
                 mousePole.Render( system_program );
+                DebugDrawer.debugProgram = system_program;
+                DebugDrawer.DrawLine(mouseEventDispatcher.hit.Origin, mouseEventDispatcher.hit.Origin + mouseEventDispatcher.hit.Direction);
+                mouseEventDispatcher.collisionPoints.ForEach(x => DebugDrawer.DrawLine(x.Item1, x.Item1 + x.Item2));
             }
 
             glControl1.SwapBuffers( );
@@ -271,6 +285,7 @@ namespace Moonfish.Graphics
         {
             if( !gl_loaded ) return;
             program["viewMatrix"] = e.Matrix;
+            system_program["viewMatrix"] = e.Matrix;
         }
 
         private void viewport_ProjectionChanged( object sender, MatrixChangedEventArgs e )

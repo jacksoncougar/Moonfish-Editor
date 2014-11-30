@@ -35,8 +35,8 @@ namespace Moonfish.Graphics
             if( sectionBuffers.Count == 0 ) return;
             using( program.Use( ) )
             {
-                program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
-                program["diffuseColourUniform"] = DiffuseColour.ToFloatRgba( );
+                program.SetAttribute("objectExtents", Matrix4.Identity);
+                program.SetAttribute("colour", DiffuseColour.ToFloatRgba());
                 using( sectionBuffers.First( ).Bind( ) )
                 {
                     foreach( var part in sectionBuffers.First( ).Parts )

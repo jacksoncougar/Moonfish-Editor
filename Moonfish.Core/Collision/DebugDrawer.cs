@@ -10,6 +10,43 @@ using System.Text;
 
 namespace Moonfish.Collision
 {
+
+    public class Line : IRenderable, IDisposable
+    {
+        int vao, arrayBuffer;
+
+        public Line(Vector3 start, Vector3 end)
+        {
+            vao = GL.GenVertexArray();
+            arrayBuffer = GL.GenBuffer();
+
+            GL.BindVertexArray(vao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, arrayBuffer);
+            var data = new []{ start, end };
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Vector3.SizeInBytes * 2), data , BufferUsageHint.StaticDraw);
+
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            GL.EnableVertexAttribArray(0);
+        }
+
+        public void Render(IEnumerable<Program> shaderPasses)
+        {
+            GL.BindVertexArray(vao);
+            GL.DrawArrays(PrimitiveType.Lines, 0, 2);
+        }
+
+        public void Render(IEnumerable<Program> shaderPasses, IList<IH2ObjectInstance> instances)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteVertexArray(vao);
+            GL.DeleteBuffer(arrayBuffer);
+        }
+    }
+
     public class Point : IRenderable, IDisposable
     {
         int vao, arrayBuffer;
@@ -49,8 +86,6 @@ namespace Moonfish.Collision
     {
         public static Program debugProgram;
 
-
-
         public static void DrawBox(ref OpenTK.Vector3 bbMin, ref OpenTK.Vector3 bbMax, ref OpenTK.Matrix4 trans, OpenTK.Graphics.Color4 color)
         {
             using (debugProgram.Using("object_matrix", trans))
@@ -63,6 +98,7 @@ namespace Moonfish.Collision
 
         public static void DrawPoint(Vector3 coordinate)
         {
+            using(debugProgram.Use())
             using (Point point = new Point(coordinate))
             {
                 point.Render(new[] { debugProgram });
@@ -72,6 +108,15 @@ namespace Moonfish.Collision
         internal static void DrawPoint(Vector3 coordinate, float pointSize)
         {
             DrawPoint(coordinate);
+        }
+
+        public static void DrawLine(Vector3 lineStart, Vector3 lineEnd)
+        {
+            using (debugProgram.Use())
+            using (Line line = new Line(lineStart, lineEnd))
+            {
+                line.Render(new[] { debugProgram });
+            }
         }
 
 
