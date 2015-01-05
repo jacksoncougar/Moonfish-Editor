@@ -1,4 +1,5 @@
-﻿namespace Moonfish.Graphics
+﻿using OpenTK.Graphics;
+namespace Moonfish.Graphics
 {
     partial class Form1
     {
@@ -63,7 +64,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.glControl1);
             this.splitContainer1.Size = new System.Drawing.Size(928, 543);
-            this.splitContainer1.SplitterDistance = 25;
+            this.splitContainer1.SplitterDistance = 439;
             this.splitContainer1.TabIndex = 2;
             // 
             // splitContainer2
@@ -80,7 +81,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(25, 543);
+            this.splitContainer2.Size = new System.Drawing.Size(439, 543);
             this.splitContainer2.SplitterDistance = 241;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -89,7 +90,7 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(25, 241);
+            this.listView1.Size = new System.Drawing.Size(439, 241);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -100,7 +101,7 @@
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(25, 298);
+            this.propertyGrid1.Size = new System.Drawing.Size(439, 298);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propertyGrid1_SelectedGridItemChanged);
             // 
@@ -110,7 +111,7 @@
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl1.Location = new System.Drawing.Point(0, 0);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(899, 543);
+            this.glControl1.Size = new System.Drawing.Size(485, 543);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = true;
             this.glControl1.Load += new System.EventHandler(this.Initialization);
@@ -176,7 +177,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Moonfish Marker Viewer 2014 for Remnantmods";
+            this.Text = "Moonfish 2015 for Remnantmods";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

@@ -90,7 +90,6 @@ namespace Moonfish.Graphics.Input
             var scene = sender as Form1;
             if( scene != null && e.Button == MouseButtons.Left )
             {
-                var raycast = new BulletSharp.RaycastInfo( );
                 var callback = new BulletSharp.CollisionWorld.ClosestRayResultCallback( e.MouseRay.Origin, e.MouseRay.Origin + e.MouseRay.Direction * e.MouseRayFarPoint );
                 var collisionWorld = scene.CollisionManager.World;
                 collisionWorld.RayTest( e.MouseRay.Origin, e.MouseRay.Origin + e.MouseRay.Direction * e.MouseRayFarPoint, callback );

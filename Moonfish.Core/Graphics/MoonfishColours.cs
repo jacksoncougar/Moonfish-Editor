@@ -23,7 +23,7 @@ namespace Moonfish.Graphics
             {
                 seed += GoldenAngleConjugate;
                 seed %= 1;
-                return ColorFromHSV( seed * 360f, 0.681, 1 );
+                return ColorFromHSV( seed * 60f + 150, 0, 1 );
             }
         }
         public static Color ColorFromHSV( double hue, double saturation, double value )

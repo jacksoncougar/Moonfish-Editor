@@ -233,18 +233,91 @@ namespace Moonfish.Graphics
         void IClickable.OnMouseDown(object sender, MouseEventArgs e)
         {
             this.Selected = true;
+            if (sender is MouseEventDispatcher)
+            {
+            }
+        }
+
+        //class myCallback : BulletSharp.CollisionWorld.ConvexResultCallback
+        //{
+        //    public myCallback(ref Vector3 convexFromWorld, ref Vector3 convexToWorld)   { }
+        //    public myCallback(Vector3 convexFromWorld, Vector3 convexToWorld) { }
+        //    public CollisionObject CollisionObject { get; set; }
+        //    public Vector3 ConvexFromWorld { get; set; }
+        //    public Vector3 ConvexToWorld { get; set; }
+        //    public Vector3 HitNormalWorld { get; set; }
+        //    public Vector3 HitPointWorld { get; set; }
+
+
+        //    public new float AddSingleResult(CollisionWorld.LocalConvexResult convexResult, bool normalInWorldSpace)
+        //    {
+        //        return 0;
+        //    }
+        //}
+
+        public class myCallback : OverlapFilterCallback
+        {
+            public myCallback()
+                : base()
+            {
+            }
+
+            public override bool NeedBroadphaseCollision(BroadphaseProxy proxy0, BroadphaseProxy proxy1)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void OnMouseMove(CollisionManager CollisionManager, Camera ActiveCamera, System.Windows.Forms.MouseEventArgs e)
+        {
+            var mouse = new
+            {
+                Near = ActiveCamera.Project(new Vector2(e.X, e.Y), depth: -0.90f),
+                Far = ActiveCamera.Project(new Vector2(e.X, e.Y), depth: 1)
+            };
+
+            Matrix4 from = Matrix4.Translation(mouse.Near);
+            Matrix4 to = Matrix4.Translation(mouse.Far);
+
+            var d = (mouse.Far - mouse.Near).Normalized();
+            using (var callback = new CollisionWorld.ClosestConvexResultCallback(mouse.Near, mouse.Far))
+            {
+
+                callback.CollisionFilterGroup = CollisionFilterGroups.StaticFilter;
+                callback.CollisionFilterMask = CollisionFilterGroups.StaticFilter;
+
+                CollisionManager.World.ConvexSweepTest((ConvexShape)CollisionObject.CollisionShape, from, to, callback);
+                
+                var lookingNormal = (callback.ConvexToWorld - callback.ConvexFromWorld).Normalized();
+                var dot = Vector3.Dot(callback.HitNormalWorld, lookingNormal);
+                Console.WriteLine(callback.HitNormalWorld);
+                if (callback.HasHit)
+                {
+                    if (!this.Selected) return;
+                    var matrix = this.WorldMatrix.ClearTranslation();
+                    var collMtrix = this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+
+                    Vector3 linVel, angVel;
+                    TransformUtil.CalculateVelocity(from, to, 1.0f, out linVel, out angVel);
+                    Matrix4 T;
+                    TransformUtil.IntegrateTransform(from, linVel, angVel, callback.ClosestHitFraction, out T);
+
+                    this.WorldMatrix = T;
+                }
+
+            }
         }
 
         void IClickable.OnMouseMove(object sender, MouseEventArgs e)
         {
-            Console.WriteLine(this.Model.RenderModel.compressionInfo[0].positionBoundsZ.Length / 2);
-            Console.WriteLine(collisionSpaceMatrix.ExtractTranslation().ToString());
-            if (!this.Selected) return;
-            var matrix = this.WorldMatrix.ClearTranslation();
-            var collMtrix = this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix();
-            var translation = Matrix4.CreateTranslation(
-                e.HitPointWorld);
-            this.WorldMatrix = matrix * translation;
+            //Console.WriteLine(this.Model.RenderModel.compressionInfo[0].positionBoundsZ.Length / 2);
+            //Console.WriteLine(collisionSpaceMatrix.ExtractTranslation().ToString());
+            //if (!this.Selected) return;
+            //var matrix = this.WorldMatrix.ClearTranslation();
+            //var collMtrix = this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix();
+            //var translation = Matrix4.CreateTranslation(
+            //    e.HitPointWorld);
+            //this.WorldMatrix = matrix * translation;
         }
 
         void IClickable.OnMouseUp(object sender, MouseEventArgs e)

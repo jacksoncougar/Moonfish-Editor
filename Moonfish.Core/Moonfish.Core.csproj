@@ -87,8 +87,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BulletSharp">
-      <HintPath>..\..\..\..\Downloads\bulletsharp-2.82\Release OpenTK\BulletSharp.dll</HintPath>
+    <Reference Include="BulletSharp, Version=2.82.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bulletsharp\vs2012\Release OpenTK\BulletSharp.dll</HintPath>
     </Reference>
     <Reference Include="Fasterflect">
       <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
@@ -142,6 +143,7 @@
     <Compile Include="Graphics\MousePole.cs" />
     <Compile Include="Graphics\OpenGL.cs" />
     <Compile Include="Graphics\Maths.cs" />
+    <Compile Include="Graphics\Performance.cs" />
     <Compile Include="Graphics\ScenarioObject.cs" />
     <Compile Include="Graphics\mouse_pole.cs" />
     <Compile Include="Graphics\primitive.cs" />
@@ -154,6 +156,12 @@
     <Compile Include="Graphics\Scene.cs" />
     <Compile Include="Graphics\Section.cs" />
     <Compile Include="Graphics\shader.cs" />
+    <Compile Include="Graphics\ShaderViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Graphics\ShaderViewer.Designer.cs">
+      <DependentUpon>ShaderViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Graphics\Track.cs" />
     <Compile Include="Graphics\UniformBuffer.cs" />
     <Compile Include="Guerilla\ClassInfo.cs" />
@@ -185,6 +193,10 @@
     <Compile Include="Guerilla\Tags\BarrelFiringEffectBlock.cs" />
     <Compile Include="Guerilla\Tags\BipedBlock.cs" />
     <Compile Include="Guerilla\Tags\BipedLockOnDataStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\BitmapBlock.cs" />
+    <Compile Include="Guerilla\Tags\BitmapDataBlock.cs" />
+    <Compile Include="Guerilla\Tags\BitmapGroupSequenceBlock.cs" />
+    <Compile Include="Guerilla\Tags\BitmapGroupSpriteBlock.cs" />
     <Compile Include="Guerilla\Tags\BreakableSurfaceKeyTableBlock.cs" />
     <Compile Include="Guerilla\Tags\Bsp2dNodesBlock.cs" />
     <Compile Include="Guerilla\Tags\Bsp2dReferencesBlock.cs" />
@@ -567,9 +579,11 @@
     <Compile Include="Padding.cs" />
     <Compile Include="Tags\Attributes.cs" />
     <Compile Include="Tags\BinaryReaderExtensions.cs" />
+    <Compile Include="Tags\Bitmap.Code.cs" />
     <Compile Include="Tags\Deserializer.cs" />
     <Compile Include="Guerilla\GuerillaToCs.cs" />
     <Compile Include="Guerilla\GuerillaToEnt.cs" />
+    <Compile Include="Tags\IWriteable.cs" />
     <Compile Include="Tags\RenderModel.Code.cs" />
     <Compile Include="Tags\HierarchyModel.Code.cs" />
     <Compile Include="Tags\ScenarioNetgameEquipmentBlock.cs" />
@@ -623,6 +637,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Graphics\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Graphics\ShaderViewer.resx">
+      <DependentUpon>ShaderViewer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

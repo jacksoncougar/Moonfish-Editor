@@ -251,13 +251,17 @@ namespace Moonfish
                     var ltmpVirtualAddress = bin.ReadInt32();
                     var sbsp = bin.ReadTagClass();
 
-                    var sbspLength = ltmpVirtualAddress - sbspVirtualAddress;
+                    var hasLightmapData = !TagIdent.IsNull(ltmpIdentifier);
+
+
+                    var sbspLength = hasLightmapData ? ltmpVirtualAddress - sbspVirtualAddress : blockLength;
                     var ltmpLength = blockLength - sbspLength;
+
 
                     Tags[sbspIdentifier.Index].VirtualAddress = sbspVirtualAddress;
                     Tags[sbspIdentifier.Index].Length = sbspLength;
 
-                    if (ltmpIdentifier != TagIdent.NullIdentifier)
+                    if (hasLightmapData)
                     {
                         Tags[ltmpIdentifier.Index].VirtualAddress = ltmpVirtualAddress;
                         Tags[ltmpIdentifier.Index].Length = ltmpLength;
@@ -350,7 +354,7 @@ namespace Moonfish
                              select types).FirstOrDefault();
 
             var ident = (this as IMap).Meta.Identifier;
-            
+
             deserializedTags[ident] = Moonfish.Tags.Deserializer.Deserialize(this, typeQuery);
             this.hashTags[ident] = CalculateTaghash(ident);
             return deserializedTags[ident];

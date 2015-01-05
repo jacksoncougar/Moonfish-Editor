@@ -94,6 +94,7 @@ namespace Moonfish.Graphics
             var callback = new CollisionWorld.ClosestRayResultCallback(
                 mouse.Near,
                 mouse.Far);
+            callback.Flags = (uint)BulletSharp.InternalEdgeAdjustFlags.TriangleConvexBackfaceMode;
             collision.World.RayTest(mouse.Near, mouse.Far, callback);
             return callback;
         }
@@ -109,9 +110,9 @@ namespace Moonfish.Graphics
 
             var callback = new CollisionWorld.ClosestRayResultCallback(
                 mouse.Near,
-                mouse.Far);
-            callback.CollisionFilterGroup = CollisionFilterGroups.StaticFilter;
-            callback.CollisionFilterMask = CollisionFilterGroups.StaticFilter;
+                    mouse.Far);
+                callback.CollisionFilterGroup = CollisionFilterGroups.StaticFilter;
+                callback.CollisionFilterMask = CollisionFilterGroups.StaticFilter;
             collision.World.RayTest(mouse.Near, mouse.Far, callback);
             return callback;
         }
@@ -125,82 +126,11 @@ namespace Moonfish.Graphics
 
             var @object = (IClickable)(null);
 
-            callback.CollisionFilterGroup = CollisionFilterGroups.StaticFilter;
-
-            if (callback.HasHit && callback.CollisionObject.UserObject is IClickable
-                && callback.CollisionFilterGroup == CollisionFilterGroups.StaticFilter)
+            foreach (var item in Hooks.Where(x => x.Value is ScenarioObject).Select(x => (ScenarioObject)x.Value))
             {
+                item.OnMouseMove(CollisionManager, ActiveCamera, e);
+            }
 
-                @object = callback.CollisionObject.UserObject as IClickable;
-                @object.OnMouseMove(this, new MouseEventArgs(
-                        ActiveCamera,
-                        new Vector2(e.X, e.Y),
-                        callback.CollisionObject.WorldTransform.ExtractTranslation(),
-                        e.Button)
-                        {
-                            WasHit = true,
-                            HitPointWorld = callback.HitPointWorld,
-                            HitNormalWorld = callback.HitNormalWorld
-                        });
-                SelectedObject = (@object);
-            }
-            else if (callback.HasHit)
-            {
-                collisionPoints.Clear();
-                bool fuck = false;
-                int manifoldCount = CollisionManager.World.Dispatcher.NumManifolds;
-                for (int i = 0; i < manifoldCount; ++i)
-                {
-                    PersistentManifold contactManifold = CollisionManager.World.Dispatcher.GetManifoldByIndexInternal(i);
-                    var objectA = (CollisionObject)contactManifold.Body0;
-                    var objectB = (CollisionObject)contactManifold.Body1;
-
-                    if (objectA.UserObject is ScenarioObject)
-                    {
-                        var selectedObject = objectA.UserObject as ScenarioObject;
-                        if (selectedObject.Selected)
-                        {
-                            int numberOfContacts = contactManifold.NumContacts;
-                            for (int j = 0; j < numberOfContacts; ++j)
-                            {
-                                fuck = true;
-                                ManifoldPoint point = contactManifold.GetContactPoint(j);
-                                if (point.Distance < 0.0)
-                                {
-                                    Vector3 pta = point.PositionWorldOnA;
-                                    Vector3 ptb = point.PositionWorldOnB;
-                                    Vector3 normal = point.NormalWorldOnB;
-                                    collisionPoints.Add(new Tuple<Vector3, Vector3>(ptb, normal));
-                                }
-                            }
-                        }
-                    }
-                }
-                foreach (var item in Hooks.Where(x => !x.Equals(@object)).Select(x => x.Value))
-                {
-                    item.OnMouseMove(this, new MouseEventArgs(
-                            ActiveCamera,
-                            new Vector2(e.X, e.Y),
-                            callback.RayToWorld,
-                            e.Button)
-                    {
-                        WasHit = false,
-                        HitPointWorld = callback.HitPointWorld,
-                        HitNormalWorld = callback.HitNormalWorld
-                    });
-                }
-            }
-            else
-            {
-                foreach (var item in Hooks.Where(x => !x.Equals(@object)).Select(x => x.Value))
-                {
-                    item.OnMouseMove(this, new MouseEventArgs(
-                            ActiveCamera,
-                            new Vector2(e.X, e.Y),
-                            callback.RayToWorld,
-                            e.Button) { WasHit = false });
-                }
-            }
         }
     }
 }

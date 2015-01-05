@@ -18,10 +18,8 @@ namespace Moonfish.Graphics
         public CollisionManager(Program debug)
         {
             var defaultCollisionConfiguration = new DefaultCollisionConfiguration();
-            var collisionDispatcher = new CollisionDispatcher();
-            //var worldAabbMin = new Vector3(-1000, -1000, -1000);
-            //var worldAabbMax = new Vector3(1000, 1000, 1000);
-            var broadphase = new DbvtBroadphase();// new AxisSweep3(worldAabbMin, worldAabbMax);
+            var collisionDispatcher = new CollisionDispatcher(defaultCollisionConfiguration);
+            var broadphase = new DbvtBroadphase();
             this.World = new CollisionWorld(collisionDispatcher, broadphase, defaultCollisionConfiguration);
             if (debug != null)
                 this.World.DebugDrawer = new BulletDebugDrawer(debug);
@@ -33,52 +31,6 @@ namespace Moonfish.Graphics
             foreach (var cluster in structureBSP.clusters)
             {
                 var triangleMesh = new TriangleMesh();
-                //if (cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Type != VertexAttributeType.coordinate_float) 
-                //    continue;
-                //var @object = new RenderObject( cluster ) { DiffuseColour = Colours.LinearRandomDiffuseColor };
-
-                // alias
-
-                //var vertexBuffer = cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer;
-
-                //var vertexCount = vertexBuffer.Data.Length / vertexBuffer.Type.GetSize();
-
-                //var indexedMesh = new IndexedMesh()
-                //{
-                //    VertexType = PhyScalarType.PhyFloat,
-                //    IndexType = PhyScalarType.PhyInteger,
-                //    VertexStride = Vector3.SizeInBytes,
-                //    TriangleIndexStride = sizeof(int) * 3,
-                //    NumTriangles = cluster.clusterData[0].section.stripIndices.Count() / 3,
-                //    NumVertices = vertexCount,
-                //};
-
-
-                //// initialize vertices
-
-                //Vector3Array vertexArray = new Vector3Array(vertexCount);
-                //indexedMesh.Vertices = vertexArray;
-                //indexedMesh.VertexStride = Vector3.SizeInBytes;
-
-                ////initialize indices
-
-                //IntArray triangleVertexIndexArray = new IntArray(cluster.clusterData[0].section.stripIndices.Count());
-                //indexedMesh.TriangleIndices = triangleVertexIndexArray;
-                //indexedMesh.TriangleIndexStride = sizeof(int) * 3;
-
-                //for (int i = 0; i < cluster.clusterData[0].section.stripIndices.Length; ++i)
-                //{
-                //    triangleVertexIndexArray[i] = (int)cluster.clusterData[0].section.stripIndices[i].index;
-                //}
-
-                //var data = cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data;
-                //for (int i = 0; i < data.Length / Vector3.SizeInBytes; ++i)
-                //{
-                //    vertexArray[i] = new Vector3(
-                //        BitConverter.ToSingle(data, i * Vector3.SizeInBytes + 0),
-                //        BitConverter.ToSingle(data, i * Vector3.SizeInBytes + 4),
-                //        BitConverter.ToSingle(data, i * Vector3.SizeInBytes + 8));
-                //}
 
                 var vertices = new Vector3[cluster.clusterData[0].section.vertexBuffers[0].vertexBuffer.Data.Length / 12];
                 for (int i = 0; i < vertices.Length; ++i)
@@ -92,15 +44,13 @@ namespace Moonfish.Graphics
                 TriangleIndexVertexArray inte = new TriangleIndexVertexArray(
                     cluster.clusterData[0].section.stripIndices.Select(x => (int)x.index).ToArray(), vertices);
 
-                //Vector3 min, max;
-                //inte.CalculateAabbBruteForce(out min, out max);
                 CollisionObject o = new CollisionObject();
                 o.CollisionShape = new BvhTriangleMeshShape(inte, true);
                 o.CollisionFlags = CollisionFlags.StaticObject;
 
+
                 World.AddCollisionObject(o, CollisionFilterGroups.StaticFilter, CollisionFilterGroups.AllFilter);
             }
-            //var d = new BvhTriangleMeshShape(
         }
     }
 
@@ -139,6 +89,7 @@ namespace Moonfish.Graphics
             if (Level == null) return;
 
             shaded.SetAttribute("worldMatrix", Matrix4.Identity);
+            shaded.SetAttribute("objectExtents", Matrix4.Identity);
 
             foreach (var item in ClusterObjects)
                 item.Render(shaded);
@@ -169,6 +120,11 @@ namespace Moonfish.Graphics
             objectInstances = new MultiValueDictionary<TagIdent, ScenarioObject>();
             this.program = program;
             this.systemProgram = systemProgram;
+        }
+
+        public MeshManager()
+        {
+            objectInstances = new MultiValueDictionary<TagIdent, ScenarioObject>();
         }
 
         public void LoadCollision(CollisionManager collision)
@@ -242,7 +198,7 @@ namespace Moonfish.Graphics
 
         public void Draw()
         {
-            if (scenario == null) return;
+            if (program == null) return;
             foreach (var item in objectInstances.SelectMany(x => x.Value))
             {
                 program.SetAttribute("worldMatrix", item.WorldMatrix);

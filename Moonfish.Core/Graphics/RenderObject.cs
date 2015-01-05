@@ -35,7 +35,6 @@ namespace Moonfish.Graphics
             if( sectionBuffers.Count == 0 ) return;
             using( program.Use( ) )
             {
-                program.SetAttribute("objectExtents", Matrix4.Identity);
                 program.SetAttribute("colour", DiffuseColour.ToFloatRgba());
                 using( sectionBuffers.First( ).Bind( ) )
                 {

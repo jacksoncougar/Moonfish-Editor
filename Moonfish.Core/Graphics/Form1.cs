@@ -108,7 +108,7 @@ namespace Moonfish.Graphics
 
             LoadPrograms( );
 
-            Scene.LoadSceneShaders( );
+            //Scene.LoadSceneShaders( );
 
             gl_loaded = true;
 
@@ -159,7 +159,12 @@ namespace Moonfish.Graphics
         {
             var structureBSP = (ScenarioStructureBspBlock)map["sbsp", ""].Deserialize( );
             this.LevelManager.LoadScenarioStructure( structureBSP );
-            this.CollisionManager.LoadScenarioCollision( structureBSP );
+            this.CollisionManager.LoadScenarioCollision(structureBSP); 
+            this.listView1.Clear();
+            this.listView1.Columns.Add("Name");
+            this.listView1.FullRowSelect = true;
+            this.listView1.MultiSelect = false;
+            this.listView1.Items.AddRange(structureBSP.clusters.Select((x, i) => new ListViewItem( i.ToString())).ToArray());
         }
 
         private void LoadScenario( )
@@ -253,7 +258,7 @@ namespace Moonfish.Graphics
                 system_program[Uniforms.NormalizationMatrix] = Matrix4.Identity;
                 grid.Draw( );
             }
-            //CollisionManager.World.DebugDrawWorld( );
+            CollisionManager.World.DebugDrawWorld( );
 
             using( OpenGL.Disable( EnableCap.DepthTest ) )
             {
@@ -269,6 +274,7 @@ namespace Moonfish.Graphics
 
         private void LoadModels( )
         {
+            return;
             if( map == null ) return;
             var tags = map.Where( x => x.Type.ToString( ) == "hlmt" ).Select( x => new ListViewItem( x.Path ) { Tag = x } ).ToArray( );
             this.listView1.Clear( );
@@ -482,7 +488,7 @@ namespace Moonfish.Graphics
             toolStripComboBox1.Items.Add( TransformMode.Local );
             toolStripComboBox1.SelectedIndex = 0;
             //k?
-            LoadFile( @"C:\Users\stem\Documents\modding\headlong.map" );
+            LoadFile( @"C:\Users\stem\Documents\modding\lockout.map" );
         }
 
         private void toolStripComboBox1_SelectedIndexChanged( object sender, EventArgs e )
