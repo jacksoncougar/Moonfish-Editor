@@ -21,7 +21,7 @@ namespace Moonfish.Graphics
         FrameInfo[] frameHistory;
         int index = 0;
 
-        const int Size = 50;
+        const int Size = 25;
 
         TimeSpan frameStart, frameEnd;
 
@@ -41,11 +41,11 @@ namespace Moonfish.Graphics
         {
             frameEnd = Timer.Elapsed;
 
-            var elapsed = (frameEnd - frameStart).Milliseconds;
+            var elapsed = (frameEnd - frameStart).Ticks;
             frameHistory[++index >= Size ? index = 0 : index] = new FrameInfo() { RenderTime = elapsed };
             var sum = 0.0f;
             foreach (var value in frameHistory) sum += value.RenderTime;
-            FramesPerSecond = (float)(1000f / (sum / frameHistory.Length));
+            FramesPerSecond = (float)((Stopwatch.Frequency / (sum / frameHistory.Length)));
         }
 
         public float Delta { get { return (Timer.Elapsed - frameEnd).Milliseconds; } }

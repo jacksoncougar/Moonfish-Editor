@@ -195,6 +195,17 @@ namespace Moonfish.Graphics
                 );
             }
         }
+       
+        public void Draw(Program shaderProgram)
+        {
+            if (shaderProgram == null) return;
+            foreach (var item in objectInstances.SelectMany(x => x.Value))
+            {
+                shaderProgram.SetAttribute("worldMatrix", item.WorldMatrix);
+                IRenderable @object = item;
+                @object.Render(new[] { shaderProgram });
+            }
+        }
 
         public void Draw()
         {

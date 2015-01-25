@@ -22,7 +22,7 @@ namespace Moonfish
         {
             //GuerillaCs ripper = new GuerillaCs(@"C:\Program Files (x86)\Microsoft Games\Halo 2 Map Editor\H2Guerilla.exe");
 
-            //ripper.DumpTagLayout(@"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "bitm", "");
+            //ripper.DumpTagLayout(@"C:\Users\stem\Documents\moonfish\moonfish\Moonfish.Core\Guerilla\Tags", "shad", "");
             //return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

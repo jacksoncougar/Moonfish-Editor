@@ -87,41 +87,26 @@ namespace Moonfish
             //HEADER
             BinaryReader bin = new BinaryReader(this, Encoding.UTF8);
 
-            //this.Lock(0, 2048);
-            this.Seek(0, SeekOrigin.Begin);
+            this.Position = 0;
             if (bin.ReadTagClass() != (TagClass)"head")
                 throw new InvalidDataException("Not a halo-map file");
 
-            using (this.Pin())
-            {
-                this.Seek(42, SeekOrigin.Begin);
-                var version = bin.ReadInt32();
-                switch (version)
-                {
-                    case 0:
-                        BuildVersion = Version.XBOX_RETAIL;
-                        break;
-                    case 1:
-                        BuildVersion = Version.PC_RETAIL;
-                        return;
-                        break;
-                }
+            this.Position = 42;
+            BuildVersion = (Version)bin.ReadInt32();
 
-            }
-            BuildVersion = Version.XBOX_RETAIL;
-            this.Seek(16, SeekOrigin.Begin);
-
-
+            this.Position = 16;
             int indexAddress = bin.ReadInt32();
             int indexLength = bin.ReadInt32();
             this.TagCacheLength = bin.ReadInt32();
 
+
             if (BuildVersion == Version.PC_RETAIL)
-                this.Seek(12, SeekOrigin.Current);
+                this.Position += 12;
 
             // Read maptype
             using (this.Pin())
             {
+                this.Position = 2048;
                 this.Seek(320, SeekOrigin.Begin);
                 this.Type = (MapType)bin.ReadInt32();
             }
@@ -145,7 +130,6 @@ namespace Moonfish
             int pathsTableAddress = bin.ReadInt32();
             int pathsTableLength = bin.ReadInt32();
 
-            //this.Unlock(0, 2048);
 
             this.Seek(pathsTableAddress, SeekOrigin.Begin);
             var Paths = Encoding.UTF8.GetString(bin.ReadBytes(pathsTableLength - 1)).Split(char.MinValue);

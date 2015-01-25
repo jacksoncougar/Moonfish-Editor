@@ -321,6 +321,15 @@ namespace Moonfish.Tags
             return new ColorR8G8B8(binaryReader.ReadSingle(), binaryReader.ReadSingle(), binaryReader.ReadSingle());
         }
 
+        public static ColourA1R1G1B1 ReadColourA1R1G1B1(this BinaryReader binaryReader)
+        {
+            return new ColourA1R1G1B1(
+                binaryReader.ReadByte(),
+                binaryReader.ReadByte(),
+                binaryReader.ReadByte(),
+                binaryReader.ReadByte());
+        }
+
         public static Point ReadPoint(this BinaryReader binaryReader)
         {
             return new Point(binaryReader);

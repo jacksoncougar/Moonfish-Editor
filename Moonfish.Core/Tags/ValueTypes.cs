@@ -301,12 +301,17 @@ namespace Moonfish.Tags
 
     [GuerillaType(field_type._field_argb_color)]
     [StructLayout(LayoutKind.Sequential, Size = 4)]
-    public struct ARGBColor
+    public struct ColourA1R1G1B1
     {
         public byte Alpha;
         public byte Red;
         public byte Green;
         public byte Blue;
+
+        public ColourA1R1G1B1(byte a, byte r, byte g, byte b)
+        {
+            Alpha = a; Red = r; Green = g; Blue = b;
+        }
     }
 
     [GuerillaType(field_type._field_string)]
@@ -522,14 +527,15 @@ namespace Moonfish.Tags
         short X { get; set; }
         short Y { get; set; }
 
-        public Point(short x, short y):this()
+        public Point(short x, short y)
+            : this()
         {
             X = x;
             Y = y;
         }
 
         public Point(BinaryReader binaryReader)
-        :this(binaryReader.ReadInt16(), binaryReader.ReadInt16())
+            : this(binaryReader.ReadInt16(), binaryReader.ReadInt16())
         {
 
         }

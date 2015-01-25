@@ -95,8 +95,8 @@ namespace Moonfish
 
         public static void Write(this BinaryWriter binary_writer, Range range)
         {
-            binary_writer.Write(range.min);
-            binary_writer.Write(range.max);
+            binary_writer.Write(range.Min);
+            binary_writer.Write(range.Max);
         }
         public static Range ReadRange(this BinaryReader binary_reader)
         {

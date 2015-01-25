@@ -212,6 +212,7 @@
     <Compile Include="Guerilla\Tags\CharacterPhysicsStructBlock.cs" />
     <Compile Include="Guerilla\Tags\ClusterDoorPortalEncodedPasBlock.cs" />
     <Compile Include="Guerilla\Tags\CollisionBspPhysicsBlock.cs" />
+    <Compile Include="Guerilla\Tags\ColorFunctionStructBlock.cs" />
     <Compile Include="Guerilla\Tags\ContactPointBlock.cs" />
     <Compile Include="Guerilla\Tags\CrateBlock.cs" />
     <Compile Include="Guerilla\Tags\CsPointBlock.cs" />
@@ -280,6 +281,7 @@
     <Compile Include="Guerilla\Tags\Globalgeometrysectionvertexbufferblock.cs" />
     <Compile Include="Guerilla\Tags\Globalleafconnectionblock.cs" />
     <Compile Include="Guerilla\Tags\Globalmapleafblock.cs" />
+    <Compile Include="Guerilla\Tags\GlobalShaderParameterBlock.cs" />
     <Compile Include="Guerilla\Tags\Globalstructurephysicsstructblock.cs" />
     <Compile Include="Guerilla\Tags\Globalsubpartsblock.cs" />
     <Compile Include="Guerilla\Tags\Globaltagimportinfoblock.cs" />
@@ -306,6 +308,7 @@
     <Compile Include="Guerilla\Tags\ItemPermutation.cs" />
     <Compile Include="Guerilla\Tags\LeafConnectionVertexBlock.cs" />
     <Compile Include="Guerilla\Tags\LeavesBlock.cs" />
+    <Compile Include="Guerilla\Tags\LongBlock.cs" />
     <Compile Include="Guerilla\Tags\MagazineObjects.cs" />
     <Compile Include="Guerilla\Tags\Magazines.cs" />
     <Compile Include="Guerilla\Tags\MapLeafConnectionIndexBlock.cs" />
@@ -347,6 +350,7 @@
     <Compile Include="Guerilla\Tags\PathfindingHintsBlock.cs" />
     <Compile Include="Guerilla\Tags\PathfindingObjectIndexListBlock.cs" />
     <Compile Include="Guerilla\Tags\PillsBlock.cs" />
+    <Compile Include="Guerilla\Tags\Pixel32Block.cs" />
     <Compile Include="Guerilla\Tags\PlanesBlock.cs" />
     <Compile Include="Guerilla\Tags\PoweredSeatBlock.cs" />
     <Compile Include="Guerilla\Tags\PredictedBitmapsBlock.cs" />
@@ -357,6 +361,7 @@
     <Compile Include="Guerilla\Tags\PrtRawPcaDataBlock.cs" />
     <Compile Include="Guerilla\Tags\PrtSectionInfoBlock.cs" />
     <Compile Include="Guerilla\Tags\PrtVertexBuffersBlock.cs" />
+    <Compile Include="Guerilla\Tags\RealVector4dBlock.cs" />
     <Compile Include="Guerilla\Tags\RecordedAnimationBlock.cs" />
     <Compile Include="Guerilla\Tags\RefBlock.cs" />
     <Compile Include="Guerilla\Tags\RenderLightingStructBlock.cs" />
@@ -373,6 +378,8 @@
     <Compile Include="Guerilla\Tags\RenderModelSectionBlock.cs" />
     <Compile Include="Guerilla\Tags\RenderModelSectionDataBlock.cs" />
     <Compile Include="Guerilla\Tags\RenderModelSectionGroupBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderStateBlock.cs" />
+    <Compile Include="Guerilla\Tags\RenderStateParameterBlock.cs" />
     <Compile Include="Guerilla\Tags\ScalarFunctionStructBlock.cs" />
     <Compile Include="Guerilla\Tags\ScenarioAiResourceReferenceBlock.cs" />
     <Compile Include="Guerilla\Tags\ScenarioAtmosphericFogMixerBlock.cs" />
@@ -462,6 +469,34 @@
     <Compile Include="Guerilla\Tags\SectorBsp2dNodesBlock.cs" />
     <Compile Include="Guerilla\Tags\SectorLinkBlock.cs" />
     <Compile Include="Guerilla\Tags\SectorVertexBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderAnimationPropertyBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderGpuStateReferenceStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderGpuStateStructBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessAnimatedParameterNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessAnimatedParameterReferenceNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessBitmapBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessBitmapNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessBitmapPropertyBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessBitmapTransformBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessBitmapTransformOverlayBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessColorBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessColorOverlayBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessColorPropertyBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessDefinitionNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessImplementationBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessImplementationNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessLayerBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessLevelOfDetailBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessLevelOfDetailNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessOverlayNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessOverlayReferenceNewBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessPassBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessValueBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessValueOverlayBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessValuePropertyBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPostprocessVertexShaderConstantBlock.cs" />
+    <Compile Include="Guerilla\Tags\ShaderPropertiesBlock.cs" />
     <Compile Include="Guerilla\Tags\SoundSceneryDatumStructBlock.cs" />
     <Compile Include="Guerilla\Tags\SpecialMovementBlock.cs" />
     <Compile Include="Guerilla\Tags\SpheresBlock.cs" />
@@ -516,7 +551,12 @@
     <Compile Include="Guerilla\Tags\SurfaceFlagsBlock.cs" />
     <Compile Include="Guerilla\Tags\SurfacesBlock.cs" />
     <Compile Include="Guerilla\Tags\SyntaxDatumBlock.cs" />
+    <Compile Include="Guerilla\Tags\TagBlockIndexBlock.cs" />
+    <Compile Include="Guerilla\Tags\TagBlockIndexStructBlock.cs" />
     <Compile Include="Guerilla\Tags\TagImportFileBlock.cs" />
+    <Compile Include="Guerilla\Tags\TextureBlock.cs" />
+    <Compile Include="Guerilla\Tags\TextureStageStateBlock.cs" />
+    <Compile Include="Guerilla\Tags\TextureStageStateParameterBlock.cs" />
     <Compile Include="Guerilla\Tags\TorqueCurveStructBlock.cs" />
     <Compile Include="Guerilla\Tags\TransparentPlanesBlock.cs" />
     <Compile Include="Guerilla\Tags\TriggerReferences.cs" />
@@ -550,6 +590,7 @@
     <Compile Include="Guerilla\Tags\VehicleCollectionBlock.cs" />
     <Compile Include="Guerilla\Tags\VehiclePermutation.cs" />
     <Compile Include="Guerilla\Tags\VehiclePhantomShapeBlock.cs" />
+    <Compile Include="Guerilla\Tags\VertexShaderConstantBlock.cs" />
     <Compile Include="Guerilla\Tags\VerticesBlock.cs" />
     <Compile Include="Guerilla\Tags\VisibilityStructBlock.cs" />
     <Compile Include="Guerilla\Tags\WaterGeometrySectionBlock.cs" />
@@ -567,6 +608,7 @@
     <Compile Include="Guerilla\Tags\ZoneSetBlock.cs" />
     <Compile Include="Guerilla\Validator.cs" />
     <Compile Include="Guerilla\VirtualMemoryStream.cs" />
+    <Compile Include="Halo2XboxHeader.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="main.cs" />
     <Compile Include="Debug\Memory.cs" />
@@ -575,7 +617,6 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="MapStream.cs" />
-    <Compile Include="Memory.cs" />
     <Compile Include="Padding.cs" />
     <Compile Include="Tags\Attributes.cs" />
     <Compile Include="Tags\BinaryReaderExtensions.cs" />
@@ -593,14 +634,11 @@
     <Compile Include="Tags\StructureBspInstancedGeometryInstancesBlock.cs" />
     <Compile Include="Tags\StructureInstancedGeometryRenderInfoStructBlock.cs" />
     <Compile Include="Tags\ValueTypes.cs" />
-    <Compile Include="ValueTypes\fourcc.cs" />
     <Compile Include="ValueTypes\Range.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValueTypes\StringID.cs" />
-    <Compile Include="ValueTypes\ValueTypes.cs" />
-    <Compile Include="ValueTypes\Vector3t.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Documentation\halo_2_header.txt" />
     <Content Include="Documentation\tangent_space_calculations_cpp.txt" />
     <Content Include="Documentation\vertex_formats.txt" />
     <Content Include="Documentation\vertex_resource_raw.txt" />

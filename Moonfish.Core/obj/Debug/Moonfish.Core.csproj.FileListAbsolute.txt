@@ -49,3 +49,4 @@ C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.xml
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\bin\Debug\OpenTK.GLControl.xml
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.exe
 C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.pdb
+C:\Users\stem\Documents\moonfish\Moonfish\Moonfish.Core\obj\Debug\Moonfish.Graphics.ShaderViewer.resources

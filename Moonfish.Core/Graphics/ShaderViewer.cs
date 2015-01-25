@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -50,9 +51,44 @@ namespace Moonfish.Graphics
             Application.Idle += HandleApplicationIdle;
             Scene.OnFrameReady += Scene_OnFrameReady;
 
-            MapStream file = new MapStream(@"C:\Users\stem\Documents\modding\shared.map");
-            Scene.ObjectManager.Add( file["mode", "box"].Meta.Identifier, 
-                new ScenarioObject((ModelBlock)(file["hlmt", "box"].Deserialize())));
+            glControl1.Resize += glControl1_Resize;
+            glControl1.MouseDown += Scene.Camera.OnMouseDown;
+            glControl1.MouseMove += Scene.Camera.OnMouseMove;
+            glControl1.MouseUp += Scene.Camera.OnMouseUp;
+            glControl1.MouseCaptureChanged += Scene.Camera.OnMouseCaptureChanged;
+
+            var fileName = @"C:\Users\stem\Documents\modding\mainmenu.map";
+            var directory = Path.GetDirectoryName(fileName);
+            var maps = Directory.GetFiles(directory, "*.map", SearchOption.TopDirectoryOnly);
+            var resourceMaps = maps.GroupBy(
+                x =>
+                {
+                    return Halo2.CheckMapType(x);
+                }
+            ).Where(x => x.Key == MapType.MainMenu
+                || x.Key == MapType.Shared
+                || x.Key == MapType.SinglePlayerShared)
+                .Select(g => g.First()).ToList();
+            resourceMaps.ForEach(x => Halo2.LoadResource(new MapStream(x)));
+            MapStream file = new MapStream(fileName);
+            Scene.ObjectManager.Add(file["hlmt", "masterchief"].Meta.Identifier,
+                new ScenarioObject((ModelBlock)(file["hlmt", "masterchief"].Deserialize())));
+
+            file.Tags.Where(x => x.Type.ToString() == "shad").Select(x => listView1.Items.Add(new ListViewItem(x.Path) { Tag = file[x.Identifier].Deserialize() }));
+
+            //  firing this method is meant to load the view-projection matrix values into 
+            //  the shader uniforms, and initalizes the camera
+            glControl1_Resize(this, new EventArgs());
+        }
+
+        void glControl1_Resize(object sender, EventArgs e)
+        {
+            ChangeViewport(glControl1.Width, glControl1.Height);
+        }
+
+        private void ChangeViewport(int width, int height)
+        {
+            Scene.Camera.Viewport.Size = new Size(width, height);
         }
 
         void Scene_OnFrameReady(object sender, EventArgs e)

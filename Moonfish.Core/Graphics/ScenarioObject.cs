@@ -93,6 +93,7 @@ namespace Moonfish.Graphics
             };
 
             collisionSpaceMatrix = Matrix4.CreateTranslation(this.Model.RenderModel.compressionInfo[0].ToExtentsMatrix().ExtractTranslation());
+            worldMatrix = Matrix4.Identity;
 
             foreach (var section in model.RenderModel.sections)
             {

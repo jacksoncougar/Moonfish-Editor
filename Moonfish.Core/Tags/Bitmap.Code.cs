@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Moonfish.Tags
 {
-    class Bitmap
+    class Bitmap 
     {
     }
 }

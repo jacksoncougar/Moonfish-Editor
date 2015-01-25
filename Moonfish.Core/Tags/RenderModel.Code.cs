@@ -50,7 +50,7 @@ namespace Moonfish.Guerilla.Tags
                 new Vector4( positionBoundsX.Length / 2, 0.0f, 0.0f, 0.0f ),
                 new Vector4( 0.0f, positionBoundsY.Length / 2, 0.0f, 0.0f ),
                 new Vector4( 0.0f, 0.0f, positionBoundsZ.Length / 2, 0.0f ),
-                new Vector4( positionBoundsX.min + positionBoundsX.Length / 2, positionBoundsY.min + positionBoundsY.Length / 2, positionBoundsZ.min + positionBoundsZ.Length / 2, 1.0f )
+                new Vector4( positionBoundsX.Min + positionBoundsX.Length / 2, positionBoundsY.Min + positionBoundsY.Length / 2, positionBoundsZ.Min + positionBoundsZ.Length / 2, 1.0f )
                 );
             return extents_matrix;
         }
