@@ -628,7 +628,7 @@ namespace Moonfish
     public class Tag
     {
         public TagClass Type;
-        public string Path;
+        public string Path { get; set; }
         public TagIdent Identifier;
         public int VirtualAddress;
         public int Length;

@@ -78,7 +78,7 @@ namespace Moonfish.Graphics
             GL.DeleteBuffer(elementBuffer);
         }
     }
-    
+ 
     public class Primitive : IDisposable
     {
         protected int elementBufferOffset;

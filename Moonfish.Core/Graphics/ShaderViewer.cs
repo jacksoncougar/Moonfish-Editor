@@ -74,7 +74,10 @@ namespace Moonfish.Graphics
             Scene.ObjectManager.Add(file["hlmt", "masterchief"].Meta.Identifier,
                 new ScenarioObject((ModelBlock)(file["hlmt", "masterchief"].Deserialize())));
 
-            file.Tags.Where(x => x.Type.ToString() == "shad").Select(x => listView1.Items.Add(new ListViewItem(x.Path) { Tag = file[x.Identifier].Deserialize() }));
+            
+            var shaderTags = file.Tags.Where(x => x.Type.ToString() == "shad").ToArray();
+            listBox1.Items.AddRange(shaderTags);
+            listBox1.DisplayMember = "Path";
 
             //  firing this method is meant to load the view-projection matrix values into 
             //  the shader uniforms, and initalizes the camera

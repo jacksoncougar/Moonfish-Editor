@@ -102,6 +102,7 @@ namespace Moonfish
                 types = assembly.GetTypes( );
             }
             catch( ReflectionTypeLoadException e )
+
             {
                 types = e.Types.Where( t => t != null ).ToArray( );
             }
