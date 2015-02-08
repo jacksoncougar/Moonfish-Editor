@@ -16,6 +16,7 @@ namespace Moonfish.Graphics
     public partial class ShaderViewer : Form
     {
         Scene Scene { get; set; }
+        MapStream Map { get; set; }
 
         #region Peek Message Native
         [StructLayout(LayoutKind.Sequential)]
@@ -57,7 +58,7 @@ namespace Moonfish.Graphics
             glControl1.MouseUp += Scene.Camera.OnMouseUp;
             glControl1.MouseCaptureChanged += Scene.Camera.OnMouseCaptureChanged;
 
-            var fileName = @"C:\Users\stem\Documents\modding\mainmenu.map";
+            var fileName = @"C:\Users\seed\Documents\Halo 2 Modding\mainmenu.map";
             var directory = Path.GetDirectoryName(fileName);
             var maps = Directory.GetFiles(directory, "*.map", SearchOption.TopDirectoryOnly);
             var resourceMaps = maps.GroupBy(
@@ -70,12 +71,12 @@ namespace Moonfish.Graphics
                 || x.Key == MapType.SinglePlayerShared)
                 .Select(g => g.First()).ToList();
             resourceMaps.ForEach(x => Halo2.LoadResource(new MapStream(x)));
-            MapStream file = new MapStream(fileName);
-            Scene.ObjectManager.Add(file["hlmt", "masterchief"].Meta.Identifier,
-                new ScenarioObject((ModelBlock)(file["hlmt", "masterchief"].Deserialize())));
+            Map = new MapStream(fileName);
+            Scene.ObjectManager.Add(Map["hlmt", "masterchief"].Meta.Identifier,
+                new ScenarioObject((ModelBlock)(Map["hlmt", "masterchief"].Deserialize())));
 
-            
-            var shaderTags = file.Tags.Where(x => x.Type.ToString() == "shad").ToArray();
+
+            var shaderTags = Map.Tags.Where(x => x.Type.ToString() == "shad").ToArray();
             listBox1.Items.AddRange(shaderTags);
             listBox1.DisplayMember = "Path";
 
@@ -107,6 +108,14 @@ namespace Moonfish.Graphics
                 Scene.Update();
                 Scene.RenderFrame();
             }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0) return;
+            var selectedShaderTag = (listBox1.SelectedItem as Tag);
+            var shader = Map[selectedShaderTag.Identifier].Deserialize() as ShaderBlock;   
+            //var template = Map[shader.template.Ident].Deserialize() as
         }
     }
 }
