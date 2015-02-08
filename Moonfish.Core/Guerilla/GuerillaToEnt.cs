@@ -16,8 +16,8 @@ namespace Moonfish.Guerilla
 {
     public class GuerillaToEnt : Guerilla
     {
-        public List<tag_group> h2Tags;
-        public IEnumerable<tag_group> DumpTagLayout(string exePath, string folder, string tagName)
+        //public List<tag_group> h2Tags;
+        public IEnumerable<tag_group> DumpTagLayout(string folder)
         {
             foreach (var tag in h2Tags)
             {

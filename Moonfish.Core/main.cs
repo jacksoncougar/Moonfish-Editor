@@ -20,6 +20,10 @@ namespace Moonfish
         [STAThread]
         static void Main()
         {
+            GuerillaToEnt ripperEnt = new GuerillaToEnt(@"C:\Users\seed\Documents\Halo 2 Modding\H2Guerilla.exe");
+            ripperEnt.DumpTagLayout(@"C:\Users\seed\Documents\plugins");
+            return;
+
             GuerillaCs ripper = new GuerillaCs(@"C:\Users\seed\Documents\Halo 2 Modding\H2Guerilla.exe");
 
             ripper.DumpTagLayout(@"C:\Users\seed\Documents\Moonfish-Editor\Moonfish.Core\Guerilla\Tags", "stem", "");
