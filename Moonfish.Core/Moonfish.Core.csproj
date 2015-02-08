@@ -177,6 +177,7 @@
     <Compile Include="Guerilla\Preprocess\ModelVariantRegionBlockBase.cs" />
     <Compile Include="Guerilla\Preprocess\ScenarioBlock.cs" />
     <Compile Include="Guerilla\Preprocess\ScenarioCutsceneTitleBlock.cs" />
+    <Compile Include="Guerilla\Preprocess\TagBlockIndexStructBlock.cs" />
     <Compile Include="Guerilla\TagGroups.cs" />
     <Compile Include="Guerilla\Tags\ActorStartingLocationsBlock.cs" />
     <Compile Include="Guerilla\Tags\AiAnimationReferenceBlock.cs" />

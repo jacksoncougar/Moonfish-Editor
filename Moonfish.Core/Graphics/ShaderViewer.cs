@@ -114,8 +114,8 @@ namespace Moonfish.Graphics
         {
             if (listBox1.SelectedIndex < 0) return;
             var selectedShaderTag = (listBox1.SelectedItem as Tag);
-            var shader = Map[selectedShaderTag.Identifier].Deserialize() as ShaderBlock;   
-            //var template = Map[shader.template.Ident].Deserialize() as
+            var shader = Map[selectedShaderTag.Identifier].Deserialize() as ShaderBlock;
+            var template = Map[shader.template.Ident].Deserialize() as ShaderTemplateBlock;
         }
     }
 }
